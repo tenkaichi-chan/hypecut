@@ -1,0 +1,15 @@
+{
+  "name": "hypecut",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/serve.cjs hypecut-site 5178",
+    "deploy": "netlify deploy --prod --no-build"
+  },
+  "dependencies": {
+    "@netlify/blobs": "11.1.9"
+  },
+  "devDependencies": {
+    "netlify-cli": "27.20.1"
+  }
+}
