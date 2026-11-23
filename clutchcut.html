@@ -386,9 +386,6 @@ nav.top .btn { padding: 10px 18px; font-size: .82rem; border-radius: 11px; margi
 .price .amt { display: inline-block; transition: transform .35s var(--ease-back), opacity .25s; }
 .price .amt.flip { transform: translateY(-10px) scale(.92); opacity: 0; }
 
-/* ---------- waitlist ---------- */
-#waitlist .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
-@media (max-width: 880px) { #waitlist .wrap { grid-template-columns: 1fr; } }
 .form-shell { position: relative; border-radius: 28px; padding: 2px; background: linear-gradient(135deg, var(--cta), var(--hot) 50%, var(--hot-2)); box-shadow: 0 40px 100px -40px color-mix(in srgb, var(--hot) 90%, transparent); }
 .form { position: relative; border-radius: 26px; background: var(--panel); padding: 32px; display: grid; gap: 18px; overflow: hidden; }
 .field { display: grid; gap: 8px; }
@@ -412,18 +409,6 @@ nav.top .btn { padding: 10px 18px; font-size: .82rem; border-radius: 11px; margi
 .perks div:hover { transform: translateX(6px); box-shadow: inset 0 0 0 1px var(--hot); }
 .perks b { color: var(--fg); }
 .perks .k { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0; background: linear-gradient(135deg, var(--cta), var(--hot)); color: var(--cta-ink); font-weight: 700; }
-.admin { margin-top: 30px; border-radius: 20px; padding: 22px; display: grid; gap: 12px; background: color-mix(in srgb, var(--panel) 70%, transparent); box-shadow: inset 0 0 0 1.5px var(--cta); animation: popIn .8s var(--ease-back) both; }
-.admin h3 { font-size: 1.1rem; text-transform: uppercase; display: flex; justify-content: space-between; gap: 12px; }
-.admin h3 span { color: var(--cta); font-variant-numeric: tabular-nums; }
-.admin .note { color: var(--muted); font-size: .85rem; }
-.admin .tbl { overflow-x: auto; max-height: 320px; overflow-y: auto; }
-.admin table { width: 100%; border-collapse: collapse; font-size: .86rem; }
-.admin th, .admin td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-.admin th { font-family: var(--f-mono); font-size: .7rem; text-transform: uppercase; color: var(--muted); font-weight: 500; position: sticky; top: 0; background: var(--panel); }
-.admin td.t { color: var(--muted); font-variant-numeric: tabular-nums; }
-.admin .row-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-.admin .btn { padding: 9px 16px; font-size: .78rem; border-radius: 10px; }
-.msg.ok { color: var(--ok); }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; width: 100%; height: 100%; }
 
 /* ---------- faq ---------- */
@@ -456,34 +441,33 @@ footer a:hover { color: var(--cta); }
   .aurora, .cursor-glow { display: none; }
 }
 </style>
-<a class="skip" href="#waitlist">Skip to the waitlist</a>
+<a class="skip" href="#tool">Skip to the free tool</a>
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="grain" aria-hidden="true"></div>
 <div class="cursor-glow" id="glow" aria-hidden="true"></div>
 <div class="scroll-bar" id="scrollBar" aria-hidden="true"></div>
-<canvas id="confetti" aria-hidden="true"></canvas>
 
 <nav class="top" id="nav" aria-label="Main">
   <div class="wrap">
     <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true"></span>Hypecut</a>
     <div class="links">
       <a href="#how">How it works</a>
-      <a href="#tool">Try free</a>
+      <a href="#compare">Why Hypecut</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
-      <a class="btn magnetic" href="#waitlist">Join waitlist</a>
+      <a class="btn magnetic" href="#tool">Try it free</a>
       <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><i></i><i></i><i></i></button>
     </div>
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu" aria-label="Menu">
   <a href="#how">How it works</a>
-  <a href="#tool">Try it free</a>
+  <a href="#compare">Why Hypecut</a>
   <a href="#pricing">Pricing</a>
   <a href="#faq">FAQ</a>
-  <a class="btn" href="#waitlist">Join the waitlist <span class="arr">→</span></a>
+  <a class="btn" href="#tool">Try it free <span class="arr">→</span></a>
 </div>
-<div class="sticky-cta" id="stickyCta"><a class="btn" href="#waitlist">Join the waitlist <span class="arr">→</span></a></div>
+<div class="sticky-cta" id="stickyCta"><a class="btn" href="#tool">Try it free <span class="arr">→</span></a></div>
 
 <header class="hero" id="top">
   <div class="wrap">
@@ -496,10 +480,10 @@ footer a:hover { color: var(--cta); }
       </h1>
       <p class="lede fade-up" style="--d:.7s">Upload a raw session recording. <b>Hypecut finds the best moments</b> and hands back vertical Shorts and TikToks with captions, ready to post.</p>
       <div class="ctas fade-up" style="--d:.85s">
-        <a class="btn magnetic" href="#waitlist">Join the waitlist <span class="arr">→</span></a>
-        <a class="btn ghost magnetic" href="#tool">Try it free</a>
+        <a class="btn magnetic" href="#tool">Try it free <span class="arr">→</span></a>
+        <a class="btn ghost magnetic" href="#pricing">See Pro plans</a>
       </div>
-      <div class="trust fade-up" style="--d:1s"><span>No editing skills needed</span><span>9:16 with captions</span><span>Free plan at launch</span></div>
+      <div class="trust fade-up" style="--d:1s"><span>No editing skills needed</span><span>9:16 with captions</span><span>3 free clips every month</span></div>
     </div>
     <div class="phone-stage" aria-hidden="true">
       <div class="phone-tilt" id="tilt">
@@ -738,41 +722,6 @@ footer a:hover { color: var(--cta); }
   </div>
 </section>
 
-<section id="waitlist" class="band">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="eyebrow">Waitlist</p>
-      <h2 style="margin-top:14px">Get in <span class="grad">before launch</span></h2>
-      <p style="color:var(--muted);margin-top:16px;max-width:44ch;font-size:1.08rem">We're letting developers in a few studios at a time. Tell us your game and we'll make sure our highlight detection works for its genre.</p>
-      <div class="perks">
-        <div><span class="k">1</span><span><b>Early access</b> to the beta before public launch</span></div>
-        <div><span class="k">2</span><span><b>A free month of Pro</b> for waitlist members</span></div>
-        <div><span class="k">3</span><span><b>Say what to build next</b>: which genres, platforms and caption styles</span></div>
-      </div>
-      <div class="admin" id="admin" hidden>
-        <h3>Your waitlist <span id="adminCount">0</span></h3>
-        <p class="note">Only you and editors of this page see this list.</p>
-        <div class="tbl"><table><thead><tr><th>Email</th><th>Game</th><th>Joined</th></tr></thead><tbody id="adminRows"><tr><td colspan="3" style="color:var(--muted)">No sign-ups yet. Share this page to get your first one.</td></tr></tbody></table></div>
-        <div class="row-actions"><button class="btn ghost" type="button" id="copyCsv">Copy as CSV</button><span class="msg" id="copyMsg"></span></div>
-      </div>
-    </div>
-    <div class="form-shell reveal-scale" style="--d:.15s">
-      <form class="form" id="wlForm" novalidate>
-        <div class="field">
-          <label for="wlEmail">Email</label>
-          <input id="wlEmail" name="email" type="email" autocomplete="email" placeholder="you@studio.gg" required>
-        </div>
-        <div class="field">
-          <label for="wlGame">What's your Roblox game called?</label>
-          <input id="wlGame" name="game" type="text" maxlength="80" placeholder="e.g. Lava Rush Obby" required>
-        </div>
-        <button class="btn" type="submit" id="wlBtn">Join the waitlist <span class="arr">→</span></button>
-        <p class="msg" id="wlMsg" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-  </div>
-</section>
-
 <section id="faq">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -807,9 +756,8 @@ footer a:hover { color: var(--cta); }
 <section class="final">
   <div class="wrap reveal-scale">
     <h2>Stop editing.<br><span class="grad">Start posting.</span></h2>
-    <p>Try it free on your own recording, then join the waitlist for the full version.</p>
-    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:6px"><a class="btn ghost magnetic" href="#tool">Try it free</a></div>
-    <a class="btn magnetic" href="#waitlist">Join the waitlist <span class="arr">→</span></a>
+    <p>Make your first clips free in your browser. Go Pro when you want more.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap"><a class="btn magnetic" href="#tool">Try it free <span class="arr">→</span></a><a class="btn ghost magnetic" href="#pricing">See Pro plans</a></div>
   </div>
 </section>
 
@@ -964,124 +912,6 @@ footer a:hover { color: var(--cta); }
     });
   });
 
-  // ---------- confetti ----------
-  function confetti() {
-    if (reduce) return;
-    const cv = document.getElementById("confetti"), ctx = cv.getContext("2d");
-    const dpr = Math.min(2, devicePixelRatio || 1);
-    cv.width = innerWidth * dpr; cv.height = innerHeight * dpr; ctx.scale(dpr, dpr);
-    const css = getComputedStyle(document.documentElement);
-    const cols = ["--cta", "--hot", "--hot-2", "--ok"].map(v => css.getPropertyValue(v).trim());
-    const r = document.getElementById("wlForm").getBoundingClientRect();
-    const ps = Array.from({ length: 140 }, () => ({
-      x: r.left + r.width / 2, y: r.top + r.height / 2,
-      vx: (Math.random() - .5) * 16, vy: -Math.random() * 15 - 4,
-      s: 5 + Math.random() * 7, rot: Math.random() * 6, vr: (Math.random() - .5) * .4,
-      c: cols[Math.floor(Math.random() * cols.length)]
-    }));
-    let frames = 0;
-    (function draw() {
-      ctx.clearRect(0, 0, innerWidth, innerHeight);
-      ps.forEach(p => { p.vy += .45; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); });
-      if (++frames < 170) requestAnimationFrame(draw); else ctx.clearRect(0, 0, innerWidth, innerHeight);
-    })();
-  }
-
-  // ---------- waitlist (claude.ai database) ----------
-  const form = document.getElementById("wlForm");
-  const email = document.getElementById("wlEmail");
-  const game = document.getElementById("wlGame");
-  const btn = document.getElementById("wlBtn");
-  const msg = document.getElementById("wlMsg");
-  let db = null, me = null, ready = false;
-  function say(text, kind) { msg.textContent = text; msg.className = "msg" + (kind ? " " + kind : ""); }
-
-  (async () => {
-    if (!window.claude || !window.claude.use) return;
-    const [d, u] = await Promise.all([window.claude.use("db"), window.claude.use("user")]);
-    db = d;
-    if (!db) return;
-    try { me = u ? await u.id() : null; } catch (e) { me = null; }
-    ready = true;
-    if (me) {
-      try {
-        const snap = await db.collection("signups").doc(me).get();
-        if (snap.exists) { const v = snap.data(); showDone(v.email, v.game, true); }
-      } catch (e) {}
-    }
-    let canSee = false;
-    try { canSee = u ? !!(await u.canEdit()) : false; } catch (e) {}
-    if (canSee) startAdmin();
-  })();
-
-  form.addEventListener("submit", async e => {
-    e.preventDefault();
-    const ev = email.value.trim(), gv = game.value.trim();
-    email.setAttribute("aria-invalid", "false"); game.setAttribute("aria-invalid", "false");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ev)) { email.setAttribute("aria-invalid", "true"); email.focus(); return say("Enter a valid email address, like you@studio.gg.", "err"); }
-    if (!gv) { game.setAttribute("aria-invalid", "true"); game.focus(); return say("Add your game's name so we know what you're building.", "err"); }
-    if (!ready || !db || !me) return say("Sign-ups can't be saved in this view. Open the page while signed in to Claude to join.", "err");
-    btn.disabled = true; btn.textContent = "Joining…"; say("");
-    try {
-      await db.collection("signups").doc(me).set({ email: ev, game: gv, joinedAt: new Date().toISOString() });
-      try { localStorage.setItem("hypecut-signup", JSON.stringify({ email: ev, game: gv })); } catch (_) {}
-      showDone(ev, gv, false);
-      confetti();
-    } catch (err) {
-      btn.disabled = false; btn.innerHTML = 'Join the waitlist <span class="arr">→</span>';
-      const code = err && err.code;
-      say(code === "permission_denied" || code === "not_granted"
-        ? "This page's owner hasn't given you permission to sign up here. Ask them for Contributor access."
-        : "Couldn't save your sign-up. Check your connection and try again.", "err");
-    }
-  });
-
-  function startAdmin() {
-    const box = document.getElementById("admin");
-    const rows = document.getElementById("adminRows");
-    const count = document.getElementById("adminCount");
-    let data = [];
-    box.hidden = false;
-    db.collection("signups").orderBy("joinedAt", "desc").onSnapshot(snap => {
-      data = snap.docs.map(d => d.data());
-      count.textContent = data.length;
-      rows.innerHTML = "";
-      if (!data.length) { rows.innerHTML = '<tr><td colspan="3" style="color:var(--muted)">No sign-ups yet. Share this page to get your first one.</td></tr>'; return; }
-      data.forEach(r => {
-        const tr = document.createElement("tr");
-        [r.email, r.game, (r.joinedAt || "").slice(0, 10)].forEach((v, i) => { const td = document.createElement("td"); td.textContent = v || ""; if (i === 2) td.className = "t"; tr.appendChild(td); });
-        rows.appendChild(tr);
-      });
-    }, () => { box.hidden = true; });
-    document.getElementById("copyCsv").addEventListener("click", () => {
-      const esc = v => '"' + String(v || "").replace(/"/g, '""') + '"';
-      const csv = "email,game,joined\n" + data.map(r => [r.email, r.game, r.joinedAt].map(esc).join(",")).join("\n");
-      const m = document.getElementById("copyMsg");
-      navigator.clipboard.writeText(csv).then(() => { m.textContent = "Copied " + data.length + " rows."; m.className = "msg ok"; },
-        () => { m.textContent = "Copy was blocked here. Ask Claude to export your sign-ups instead."; m.className = "msg err"; });
-    });
-  }
-
-  function showDone(ev, gv, again) {
-    form.innerHTML = '<div class="done-card"><div class="check"><svg width="34" height="34" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="var(--ok)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="big">You\'re on the list</div><p></p><p style="font-size:.85rem"></p>' +
-      '<p style="font-size:.9rem;margin-top:8px">Know another dev who\'d use this?</p><div class="share-row"><button class="btn ghost" type="button" id="shareBtn">Share Hypecut</button></div><p class="msg" id="shareMsg" role="status"></p></div>';
-    const ps = form.querySelectorAll("p");
-    ps[0].textContent = (again ? "You already joined with " : "We'll email ") + ev + (again ? "." : " when the beta opens.");
-    ps[1].textContent = "Game: " + gv;
-    document.getElementById("shareBtn").addEventListener("click", async () => {
-      const url = "https://hypecut-app.netlify.app/", sm = document.getElementById("shareMsg");
-      const data = { title: "Hypecut", text: "Turns Roblox gameplay into ready-to-post Shorts and TikToks. Waitlist is open:", url };
-      try {
-        if (navigator.share) { await navigator.share(data); return; }
-        await navigator.clipboard.writeText(url);
-        sm.textContent = "Link copied. Paste it in your dev Discord."; sm.className = "msg ok";
-      } catch (e) { if (e && e.name !== "AbortError") { sm.textContent = url; sm.className = "msg"; } }
-    });
-  }
-  // returning visitor who already signed up on this device
-  try { const saved = JSON.parse(localStorage.getItem("hypecut-signup") || "null"); if (saved && saved.email) showDone(saved.email, saved.game, true); } catch (_) {}
-
   // ---------- pricing: billing switch + checkout ----------
   // Checkout is Paddle's overlay. Token + price IDs come from /api/paddle-config
   // (Netlify environment variables), so switching sandbox -> live needs no code change.
@@ -1133,14 +963,14 @@ footer a:hover { color: var(--cta); }
   document.querySelectorAll("#mobileMenu a").forEach(a => a.addEventListener("click", () => setMenu(false), { capture: true }));
   addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
 
-  // ---------- sticky join bar on phones: show after the hero, hide at the waitlist ----------
+  // ---------- sticky bar on phones: show after the hero, hide over pricing ----------
   const sticky = document.getElementById("stickyCta");
-  const heroEl = document.querySelector(".hero"), wlEl = document.getElementById("waitlist");
+  const heroEl = document.querySelector(".hero"), wlEl = document.getElementById("pricing");
   function stickyCheck() {
     const pastHero = heroEl.getBoundingClientRect().bottom < 0;
     const r = wlEl.getBoundingClientRect();
-    const atWaitlist = r.top < innerHeight && r.bottom > 0;
-    sticky.classList.toggle("show", pastHero && !atWaitlist);
+    const atPricing = r.top < innerHeight && r.bottom > 0;
+    sticky.classList.toggle("show", pastHero && !atPricing);
   }
   addEventListener("scroll", stickyCheck, { passive: true }); stickyCheck();
 })();

@@ -24,6 +24,9 @@ L = L.replace(/<\/body>\s*<\/html>\s*$/, "\n");
 L = must(L, "html { background: var(--bg); scroll-behavior: smooth; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }",
   "html { background: var(--bg); scroll-behavior: smooth; }");
 
+// (only when the site still has a waitlist form)
+const HAS_WAITLIST = L.includes("id=\"wlForm\"");
+if (HAS_WAITLIST) {
 // form posts nowhere; claude.ai database handles it
 L = L.replace(/<form class="form" id="wlForm"[^>]*>/, '<form class="form" id="wlForm" novalidate>');
 L = L.replace(/\s*<input type="hidden" name="_subject"[^>]*>/, "");
@@ -53,6 +56,7 @@ L = must(L, "#confetti { position: fixed;", `.admin { margin-top: 30px; border-r
 .admin .btn { padding: 9px 16px; font-size: .78rem; border-radius: 10px; }
 .msg.ok { color: var(--ok); }
 #confetti { position: fixed;`);
+}
 
 // JS: Formspree submit → claude.ai database submit + owner list
 const dbJs = `  // ---------- waitlist (claude.ai database) ----------
@@ -131,11 +135,13 @@ const dbJs = `  // ---------- waitlist (claude.ai database) ----------
   }
 
 `;
+if (HAS_WAITLIST) {
 L = cut(L, "  // ---------- waitlist (Formspree) ----------", "  function showDone(", dbJs);
 // share the public site, not the private claude.ai frame
 L = must(L, "const url = location.origin + location.pathname,", 'const url = "https://hypecut-app.netlify.app/",');
 // no Netlify counter here
 L = cut(L, "  // ---------- waitlist counter", "  // ---------- pricing: billing switch", "");
+}
 
 fs.writeFileSync(out, L);
 console.log("ok", L.length);

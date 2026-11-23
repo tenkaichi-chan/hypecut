@@ -11,17 +11,16 @@ Turns Roblox gameplay recordings into vertical, captioned clips for YouTube Shor
 
 | Path | What it is |
 |---|---|
-| `hypecut-site/index.html` | Landing page: hero, how it works, old way vs Hypecut, demo, pricing, waitlist, FAQ |
+| `hypecut-site/index.html` | Landing page: hero, how it works, old way vs Hypecut, demo, pricing, FAQ |
 | `hypecut-site/try.html` | The free clip tool. Runs entirely in the visitor's browser: nothing is uploaded |
 | `hypecut-site/404.html` | "You fell off the map" page |
 | `hypecut-site/og.png` | Share image shown in Discord, Twitter and iMessage link previews |
 | `hypecut-site/terms.html`, `privacy.html` | Terms & refunds (14 days) and privacy policy, with Paddle's Merchant of Record wording |
 | `hypecut-site/_headers`, `robots.txt`, `sitemap.xml` | Security headers and search-engine files |
-| `netlify/functions/joined.mjs`, `count.mjs` | `/api/joined` and `/api/count`: the public waitlist counter (stores a hash of each email, never the email) |
 | `netlify/functions/paddle-config.mjs` | `/api/paddle-config`: gives the page the public Paddle token and price IDs |
 | `netlify/functions/license.mjs` | `/api/license`: turns a Paddle payment into a Pro key, checks keys, opens the Paddle customer portal |
 | `netlify/lib/paddle.mjs` | Small helper for calling the Paddle API |
-| `clutchcut.html` | Source of the claude.ai version of the page (claude.ai waitlist + tool, no speech subtitles, Pro button links to the public site) |
+| `clutchcut.html` | Source of the claude.ai version of the page (tool, no speech subtitles, Pro button links to the public site) |
 | `tools/serve.cjs` | Local preview server |
 | `tools/paddle-setup.mjs` | One-time: creates the Hypecut Pro product and prices in Paddle and writes their IDs to `.env` |
 | `tools/claude-page-*.cjs` | Rebuild `clutchcut.html` from the public site (see below) |
@@ -45,8 +44,6 @@ First time on a new computer: run `npm install`, then `npx netlify login` (click
 
 ## Where things live
 
-- **Waitlist sign-ups:** your Formspree inbox (form `xvkavagw`). Export them as CSV from the Formspree dashboard. The form ID is in the `<form action=...>` in `hypecut-site/index.html`.
-- **Public counter:** stays hidden until 10 sign-ups (`COUNT_MIN` in `index.html`). Counts come from Netlify Blobs (store `waitlist`).
 - **Colours:** every colour is a variable at the top of the `<style>` block in each page (`--bg`, `--hot`, `--cta`…).
 
 ## Payments (Paddle)
@@ -86,7 +83,7 @@ Pro also unlocks no watermark, up to 8 clips per video, 60-second clips and the 
 
 Sandbox testing: sandbox keys live in `.env.sandbox` (also git-ignored). Run `node tools/paddle-setup.mjs .env.sandbox` to create sandbox prices. To test locally in sandbox mode, load that file into your shell, then run `npx netlify dev`.
 
-If checkout isn't allowed yet (for example, Paddle hasn't approved the account), the Pro button sends visitors to the waitlist instead of showing an error.
+If checkout isn't allowed yet (for example, Paddle hasn't approved the account), the Pro button says "Pro opens soon" and sends visitors to the free tool instead of showing an error.
 
 **Swap the API key** (do this if a key was ever shared):
 
