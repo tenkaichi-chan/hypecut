@@ -372,6 +372,10 @@ nav.top .btn { padding: 10px 18px; font-size: .82rem; border-radius: 11px; margi
 .plan li::before { content: "✓"; font-size: .8rem; color: var(--ok); font-weight: 700; }
 .plan li b { color: var(--fg); font-weight: 600; }
 .plan .btn { justify-self: stretch; }
+.deal { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: -6px; font-size: .84rem; color: var(--muted); }
+.deal-chip { font-family: var(--f-mono); font-size: .76rem; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok) 45%, transparent); }
+.guarantee { margin: -6px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.5; }
+.guarantee b { color: var(--fg); font-weight: 600; }
 .plan .fine { color: var(--muted); font-size: .8rem; margin-top: -8px; }
 .plan .soon.live { box-shadow: inset 0 0 0 1px var(--ok); color: var(--ok); }
 .billing { display: inline-flex; gap: 4px; padding: 5px; border-radius: 999px; background: color-mix(in srgb, var(--panel) 80%, transparent); box-shadow: inset 0 0 0 1px var(--line); margin-bottom: 34px; position: relative; }
@@ -594,7 +598,25 @@ footer a:hover { color: var(--cta); }
       <h2>Try it on <span class="grad">your gameplay</span></h2>
       <p>Drop in a recording of your game. Hypecut finds the loudest, most action-packed moments and cuts them into vertical clips with a hook caption. It runs in your browser, and your video never leaves your device.</p>
     </div>
-    <!-- STEP 1 -->
+    <!-- PLAN BAR -->
+  <section class="panel probar" id="proBar" aria-label="Your plan">
+    <div class="pb-row">
+      <div class="pb-status"><span class="plan-chip" id="planChip">FREE</span><span id="planText">3 free clips a month, with a small watermark.</span></div>
+      <div class="pb-actions" id="pbFree"><a class="btn sm" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">Get Pro</a><a class="btn sm ghost" href="https://hypecut-app.netlify.app/try" target="_blank" rel="noopener">Have Pro? Use it on hypecut-app.netlify.app</a><button id="haveKey" type="button" hidden></button></div>
+      <div class="pb-actions" id="pbPro" hidden><button class="btn sm ghost" id="manageSub" type="button">Manage subscription</button><button class="btn sm ghost" id="showKey" type="button">Show my key</button><button class="btn sm ghost" id="removeKey" type="button">Remove from this browser</button></div>
+    </div>
+    <div class="keybox" id="keyBox" hidden>
+      <span>Your Pro key: keep it somewhere safe to unlock Pro in other browsers.</span>
+      <div class="keyrow"><code id="keyText"></code><button class="btn sm" id="copyKey" type="button">Copy</button></div>
+    </div>
+    <form class="keyform" id="keyForm" hidden novalidate>
+      <input type="text" id="keyIn" placeholder="Paste your Pro key (starts with HC-)" autocomplete="off" spellcheck="false" aria-label="Pro key">
+      <button class="btn sm" type="submit" id="keyBtn">Activate</button>
+    </form>
+    <p class="msg" id="keyMsg" role="status" aria-live="polite"></p>
+  </section>
+
+  <!-- STEP 1 -->
   <section class="panel" id="step1" aria-labelledby="s1h">
     <div class="step-h"><span class="n">1</span><h2 id="s1h">Add your recording</h2><span class="aside">MP4 · MOV · WebM</span></div>
     <label class="drop" id="drop" for="fileIn">
@@ -614,6 +636,11 @@ footer a:hover { color: var(--cta); }
       <label for="optLayout">Layout<select id="optLayout"><option value="fit" selected>Full frame + blurred fill</option><option value="smart">Smart crop (follows the action)</option></select></label>
       <label for="optGame">Game name (optional)<input type="text" id="optGame" maxlength="40" placeholder="e.g. Lava Rush Obby"></label>
     </div>
+    <label class="toggle" for="optSpeech" hidden>
+      <input type="checkbox" id="optSpeech">
+      <span class="sw" aria-hidden="true"></span>
+      <span><b>Speech subtitles</b> <em>beta</em><br><small>Turns voice and commentary into word-by-word subtitles. Downloads a 40 MB speech model once, then runs on your device.</small></span>
+    </label>
     <div class="row">
       <button class="btn" id="analyzeBtn" type="button" disabled>Find best moments <span aria-hidden="true">→</span></button>
       <span class="note" id="step1Note">Choose a video to start.</span>
@@ -656,9 +683,9 @@ footer a:hover { color: var(--cta); }
   <section class="panel upsell" id="upsell">
     <div>
       <h3>Want this without the limits?</h3>
-      <p>Pro removes the watermark and unlocks up to 8 clips per video, 60-second clips and the Neon and Clean caption styles. $19.99 a month, or $99.99 a year.</p>
+      <p>Pro gives you 20 clips a month ($19.99/month) or 80 clips a month ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project and we auto-add 10 more for $4.99.</p>
     </div>
-    <a class="btn" href="/#pricing">See Pro <span aria-hidden="true">→</span></a>
+    <a class="btn" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">See Pro <span aria-hidden="true">→</span></a>
   </section>
     <p class="note" style="margin-top:8px">Works best in Chrome or Edge on a computer. Clips render in real time, so keep this page open while they render.</p>
   </div>
@@ -682,7 +709,7 @@ footer a:hover { color: var(--cta); }
         <h3>Free</h3>
         <div class="price">$0 <small>/ forever</small></div>
         <ul>
-          <li><span><b>Up to 3 clips</b> per video</span></li>
+          <li><span><b>3 clips</b> a month</span></li>
           <li>Clips up to 45 seconds</li>
           <li>Hook captions + speech subtitles (beta)</li>
           <li>Smart crop that follows the action</li>
@@ -695,14 +722,16 @@ footer a:hover { color: var(--cta); }
         <h3>Pro</h3>
         <div class="price"><span class="amt" id="proAmt">$99.99</span> <small id="proPer">/ year</small></div>
         <p class="fine" id="proFine">That's $8.33 a month, billed yearly.</p>
+        <div class="deal"><span class="deal-chip" id="proDeal">About 10¢ a clip</span><span>Editors often charge $15+ per Short.</span></div>
         <ul>
+          <li><span><b id="proClips">80 clips</b> a month</span></li>
           <li><span><b>No watermark</b></span></li>
-          <li><span><b>Up to 8 clips</b> per video</span></li>
-          <li>Clips up to 60 seconds</li>
+          <li>Up to 8 clips per video, up to 60 seconds each</li>
           <li>Neon and Clean caption styles</li>
-          <li>Everything in Free</li>
+          <li><span><b>Never stopped mid-project:</b> run out and we auto-add 10 clips for $4.99</span></li>
         </ul>
         <a class="btn magnetic" id="proBuy" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">Get Pro yearly <span class="arr">→</span></a>
+        <p class="guarantee">🔒 <b>Launch price, locked in</b> for as long as you stay subscribed · <b>14-day money-back guarantee</b></p>
         <p class="fine" id="proAfter">Opens secure checkout on hypecut-app.netlify.app (Paddle: cards, PayPal and more). Cancel anytime.</p>
       </article>
     </div>
@@ -765,7 +794,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Pick monthly ($19.99) or yearly ($99.99). Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Is this an official Roblox product? <span class="pm" aria-hidden="true"></span></summary>
@@ -787,7 +816,7 @@ footer a:hover { color: var(--cta); }
 <footer>
   <div class="wrap">
     <span>© 2026 Hypecut. Not affiliated with Roblox Corporation.</span>
-    <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="/terms">Terms &amp; refunds</a><a href="/privacy">Privacy</a><a href="#top">Back to top ↑</a></span>
+    <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="#top">Back to top ↑</a></span>
   </div>
 </footer>
 
@@ -1057,8 +1086,8 @@ footer a:hover { color: var(--cta); }
   // Checkout is Paddle's overlay. Token + price IDs come from /api/paddle-config
   // (Netlify environment variables), so switching sandbox -> live needs no code change.
   const PLANS = {
-    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime." },
-    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly." }
+    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip" },
+    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip" }
   };
   let billing = "yearly";
   const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly");
@@ -1079,6 +1108,8 @@ footer a:hover { color: var(--cta); }
     const buy = document.getElementById("proBuy");
     if (!buy.disabled) buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
     document.getElementById("proBadge").textContent = b === "yearly" ? "Best value" : "Most flexible";
+    document.getElementById("proClips").textContent = PLANS[b].clips;
+    document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
   // (claude.ai version: checkout happens on the public site)
 
@@ -1312,7 +1343,11 @@ footer a:hover { color: var(--cta); }
     const dur = state.dur, len = Math.min(+$("optLen").value, dur);
     const want = Math.min(maxClips(), +$("optCount").value);
     const winN = Math.max(1, Math.round(len / step));
-    if (dur <= len + 1) return [{ start: 0, len: dur, s: 1 }];
+    if (dur <= len + 1) {
+      // video is about as short as one clip: use the whole thing
+      let peak = 0; score.forEach((x, i) => { if (x > score[peak]) peak = i; });
+      return [{ start: 0, len: dur, s: 1, peakT: (peak + 0.5) * step, hype: 95, caption: HOOKS[Math.floor(Math.random() * HOOKS.length)], on: true }];
+    }
     const cands = [];
     for (let i = 0; i + winN <= score.length; i++) {
       let sum = 0, peak = 0, peakAt = i;
@@ -1620,8 +1655,19 @@ footer a:hover { color: var(--cta); }
 
   async function renderAll() {
     if (state.rendering) return;
-    const list = state.moments.filter(m => m.on);
+    let list = state.moments.filter(m => m.on);
     if (!list.length) return say($("msg2"), "Tick at least one moment to include.", "err");
+    const left = clipsLeft();
+    if (left <= 0) {
+      return say($("msg2"), pro.active
+        ? "You've used all " + pro.quota + " Pro clips for this month. They reset on " + resetDay() + "."
+        : "You've used your " + FREE_MONTHLY + " free clips this month. They reset on " + resetDay() + ", or go Pro for 20–80 clips a month.", "err");
+    }
+    let limitNote = "";
+    if (list.length > left) {
+      list = list.slice(0, left);
+      limitNote = " You had " + left + " clip" + (left === 1 ? "" : "s") + " left this month, so we made your top " + left + ".";
+    }
     const mime = pickMime();
     if (!mime || !HTMLCanvasElement.prototype.captureStream) return say($("msg2"), "Your browser can't record video. Open this page in Chrome, Edge or Firefox on a computer.", "err");
     state.rendering = true;
@@ -1646,7 +1692,7 @@ footer a:hover { color: var(--cta); }
       $("renStatus").textContent = "Finishing subtitles…";
       try { await state.subsPromise; } catch (_) {}
     }
-    let made = 0, spoke = 0;
+    let made = 0, spoke = 0, topUps = 0;
     for (let i = 0; i < list.length; i++) {
       let subs = null;
       if (wantSpeech) {
@@ -1655,11 +1701,29 @@ footer a:hover { color: var(--cta); }
         subs = timeWords(list[i], txt);
         if (subs.length) spoke++;
       }
+      // Pro: reserve this clip against the monthly allowance before rendering it
+      if (pro.active && pro.key) {
+        try {
+          const d = await licenseCall({ action: "use", key: pro.key, n: 1 });
+          if (!d.ok) {
+            setUsage(d); applyPlan();
+            for (let j = i; j < list.length; j++) cards[j].querySelector(".rendering span").textContent = d.limit ? "Monthly limit reached." : (d.error || "Couldn't check your Pro clips.");
+            limitNote = " " + (d.error || "");
+            break;
+          }
+          setUsage(d); applyPlan();
+          if (d.boosted) {
+            topUps++;
+            keyMsg("You ran out of monthly clips, so we automatically added " + d.boostClips + " more (" + d.boostPrice + ", charged to your saved payment method). Your clips keep going.", "ok");
+          }
+        } catch (_) { /* offline: let it render; the server still counts the next one */ }
+      }
       $("renStatus").textContent = "Rendering " + (i + 1) + " of " + list.length;
       try {
         const out = await renderClip(list[i], cards[i], mime, W, H, layout, game, subs);
         showResult(cards[i], out, i, mime);
         made++;
+        if (!pro.active) { addFreeUse(1); applyPlan(); }
       } catch (e) {
         cards[i].querySelector(".rendering span").textContent = "Couldn't render this clip.";
         console.error(e);
@@ -1667,7 +1731,8 @@ footer a:hover { color: var(--cta); }
     }
     $("renStatus").textContent = made + " clip" + (made === 1 ? "" : "s") + " ready";
     const speechNote = wantSpeech && !spoke ? " No subtitles were added: no speech was found and the boxes were empty." : "";
-    say($("msg3"), made ? "Done. Download your clips and post them to YouTube Shorts or TikTok." + speechNote : "Rendering failed. Try Chrome on a computer, or an MP4 (H.264) recording.", made ? "ok" : "err");
+    const topUpNote = topUps ? " " + topUps + " automatic top-up" + (topUps === 1 ? "" : "s") + " of " + (pro.boostClips || 10) + " clips added (" + (pro.boostPrice || "$4.99") + " each)." : "";
+    say($("msg3"), made ? "Done. Download your clips and post them to YouTube Shorts or TikTok." + speechNote + topUpNote + limitNote : (limitNote.trim() || "Rendering failed. Try Chrome on a computer, or an MP4 (H.264) recording."), made ? "ok" : "err");
     state.rendering = false; $("renderBtn").disabled = false; $("analyzeBtn").disabled = false;
   }
 
@@ -1762,6 +1827,158 @@ footer a:hover { color: var(--cta); }
       }
     });
     card.appendChild(btn); card.appendChild(note);
+  }
+
+  // ---------- Pro: license key ----------
+  const PRO_STORE = "hypecut-pro";
+  const RECHECK_MS = 24 * 3600 * 1000, OFFLINE_GRACE_MS = 7 * 24 * 3600 * 1000;
+  const keyMsg = (t, kind) => say($("keyMsg"), t, kind);
+  function saveLicense(o) { try { o ? localStorage.setItem(PRO_STORE, JSON.stringify(o)) : localStorage.removeItem(PRO_STORE); } catch (_) {} }
+  function loadLicense() { try { return JSON.parse(localStorage.getItem(PRO_STORE) || "null"); } catch (_) { return null; } }
+  async function licenseCall(body) {
+    const r = await fetch("/api/license", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    let d = null; try { d = await r.json(); } catch (_) {}
+    if (!d) throw new Error("network");
+    return d;
+  }
+  // ---- monthly clip allowance: Free 3 (counted in this browser), Pro 20 / 80 (counted on the server per key) ----
+  const FREE_MONTHLY = 3, FREE_STORE = "hypecut-free-usage";
+  const monthKey = () => new Date().toISOString().slice(0, 7);
+  function freeUsed() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
+  function addFreeUse(n) { try { localStorage.setItem(FREE_STORE, JSON.stringify({ period: monthKey(), used: freeUsed() + n })); } catch (_) {} }
+  // Pro can keep going past the allowance: the server auto-adds top-up packs (up to maxBoosts a month)
+  function clipsLeft() {
+    if (!pro.active) return Math.max(0, FREE_MONTHLY - freeUsed());
+    if (pro.remaining == null) return Infinity;
+    return pro.remaining + Math.max(0, (pro.maxBoosts || 0) - (pro.boosts || 0)) * (pro.boostClips || 0);
+  }
+  function setUsage(d) {
+    if (d && typeof d.quota === "number") Object.assign(pro, { quota: d.quota, remaining: d.remaining, plan: d.plan, resets: d.resets, boosts: d.boosts || 0, maxBoosts: d.maxBoosts || 0, boostClips: d.boostClips || 0, boostPrice: d.boostPrice || "" });
+  }
+  const resetDay = () => { const d = pro.resets ? new Date(pro.resets) : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 1)); return d.toLocaleDateString(undefined, { day: "numeric", month: "short" }); };
+
+  function applyPlan() {
+    const bar = $("proBar");
+    bar.classList.toggle("is-pro", pro.active);
+    $("planChip").textContent = pro.active ? "PRO" : "FREE";
+    $("planText").textContent = pro.active
+      ? (pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · auto top-up on, so you never get stopped mid-project."
+                   : "No watermark, 60-second clips and every caption style.")
+      : FREE_MONTHLY + " free clips a month · " + clipsLeft() + " left this month · small watermark.";
+    $("pbFree").hidden = pro.active; $("pbPro").hidden = !pro.active;
+    if (pro.active) { $("keyForm").hidden = true; $("haveKey").setAttribute("aria-expanded", "false"); }
+    $("upsell").hidden = pro.active;
+    document.querySelectorAll("option[data-pro]").forEach(o => {
+      o.disabled = !pro.active;
+      if (!pro.active && o.selected) { const sel = o.parentElement; sel.value = sel.querySelector("option:not([data-pro])[selected]") ? sel.querySelector("option:not([data-pro])[selected]").value : sel.options[0].value; }
+    });
+    const badge = document.querySelector(".badges span:last-child");
+    if (badge) badge.textContent = pro.active ? "Pro: " + (pro.quota ? pro.quota + " clips a month" : "no watermark") : "Free: 3 clips a month";
+  }
+  $("haveKey").addEventListener("click", () => {
+    const f = $("keyForm"); f.hidden = !f.hidden;
+    $("haveKey").setAttribute("aria-expanded", String(!f.hidden));
+    if (!f.hidden) $("keyIn").focus();
+  });
+  $("keyForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const key = $("keyIn").value.trim();
+    if (!key) return keyMsg("Paste your Pro key. It starts with HC-.", "err");
+    $("keyBtn").disabled = true; keyMsg("Checking your key…");
+    try {
+      const d = await licenseCall({ action: "validate", key });
+      if (!d.ok) { keyMsg(d.error || "That key didn't work.", "err"); return; }
+      const k = key.toUpperCase().replace(/\s+/g, "");
+      Object.assign(pro, { active: true, key: k }); setUsage(d);
+      saveLicense({ key: k, checked: Date.now() });
+      $("keyIn").value = "";
+      applyPlan();
+      keyMsg("Pro is unlocked on this browser. Enjoy!", "ok");
+    } catch (_) {
+      keyMsg("Couldn't reach the Pro check. Check your connection and try again.", "err");
+    } finally { $("keyBtn").disabled = false; }
+  });
+  function showKeyBox(key) {
+    $("keyText").textContent = key; $("keyBox").hidden = false;
+  }
+  $("showKey").addEventListener("click", () => { if ($("keyBox").hidden) showKeyBox(pro.key); else $("keyBox").hidden = true; });
+  $("copyKey").addEventListener("click", () => {
+    const k = $("keyText").textContent;
+    navigator.clipboard.writeText(k).then(() => keyMsg("Key copied. Keep it somewhere safe.", "ok"),
+      () => { const r = document.createRange(); r.selectNodeContents($("keyText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); keyMsg("Press Ctrl+C to copy the selected key.", ""); });
+  });
+  $("manageSub").addEventListener("click", async () => {
+    const b = $("manageSub"); b.disabled = true; keyMsg("Opening your subscription settings…");
+    try {
+      const d = await licenseCall({ action: "portal", key: pro.key });
+      if (d.ok && d.url) { location.href = d.url; return; }
+      keyMsg(d.error || "Couldn't open subscription settings.", "err");
+    } catch (_) { keyMsg("Couldn't reach Paddle. Try again in a minute.", "err"); }
+    b.disabled = false;
+  });
+  $("removeKey").addEventListener("click", () => {
+    Object.assign(pro, { active: false, key: "" });
+    saveLicense(null); applyPlan(); $("keyBox").hidden = true;
+    keyMsg("Pro removed from this browser. Your subscription is unchanged; paste your key to unlock again.", "ok");
+  });
+
+  (async function restorePro() {
+    // 1) back from Paddle checkout: claim the key for this payment
+    //    (the ?txn= stays in the address until it works, so a reload retries safely)
+    const sid = new URLSearchParams(location.search).get("txn");
+    if (sid) {
+      applyPlan(); keyMsg("Confirming your payment…");
+      for (let attempt = 0; attempt < 8; attempt++) {
+        try {
+          const d = await licenseCall({ action: "claim", txn: sid });
+          if (d.ok) {
+            history.replaceState(null, "", location.pathname);
+            Object.assign(pro, { active: true, key: d.key });
+            saveLicense({ key: d.key, checked: Date.now() });
+            try { setUsage(await licenseCall({ action: "validate", key: d.key })); } catch (_) {}
+            applyPlan(); showKeyBox(d.key);
+            keyMsg("You're Pro! Thanks for supporting Hypecut. Copy your key below to unlock Pro in other browsers.", "ok");
+            try { confettiLite(); } catch (_) {}
+            return;
+          }
+          if (!d.pending && attempt >= 1) { keyMsg(d.error || "We couldn't confirm that payment.", "err"); return; }
+          if (attempt === 7) keyMsg(d.error || "We couldn't confirm the payment yet. Reload this page in a minute.", "err");
+        } catch (_) { if (attempt === 7) keyMsg("Couldn't confirm your payment. Reload this page in a minute; you won't be charged twice.", "err"); }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      return;
+    }
+    // 2) a key saved in this browser: trust it right away, then check with Paddle
+    //    (every visit, to show this month's clips left; offline we keep Pro for a grace period)
+    const saved = loadLicense();
+    if (saved && saved.key) {
+      Object.assign(pro, { active: true, key: saved.key });
+      applyPlan();
+      {
+        try {
+          const d = await licenseCall({ action: "validate", key: saved.key });
+          if (d.ok) { saveLicense({ ...saved, checked: Date.now() }); setUsage(d); applyPlan(); }
+          else if (d.status === "expired" || /find/i.test(d.error || "")) {
+            Object.assign(pro, { active: false, key: "" }); saveLicense(null); applyPlan();
+            keyMsg(d.error || "Your Pro subscription is no longer active.", "err");
+          }
+        } catch (_) {
+          // offline: keep Pro for a grace period, then fall back to Free
+          if (Date.now() - (saved.checked || 0) > OFFLINE_GRACE_MS) { Object.assign(pro, { active: false }); applyPlan(); }
+        }
+      }
+    } else applyPlan();
+  })();
+
+  // small celebration after upgrading
+  function confettiLite() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const c = document.createElement("canvas"); c.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60";
+    document.body.appendChild(c); const x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
+    const cols = ["#ffd23f", "#ff3d8b", "#b14dff", "#3ee6a8"];
+    const ps = Array.from({ length: 120 }, () => ({ x: innerWidth / 2, y: innerHeight * 0.25, vx: (Math.random() - .5) * 14, vy: -Math.random() * 12 - 3, s: 5 + Math.random() * 6, r: Math.random() * 6, c: cols[Math.floor(Math.random() * 4)] }));
+    let n = 0;
+    (function f() { x.clearRect(0, 0, c.width, c.height); ps.forEach(p => { p.vy += .4; p.x += p.vx; p.y += p.vy; p.r += .2; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); }); if (++n < 160) requestAnimationFrame(f); else c.remove(); })();
   }
 
   if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {

@@ -203,13 +203,13 @@ footer a { color: inherit; }
   <header class="intro">
     <h1>Turn your gameplay into <span class="grad">Shorts</span></h1>
     <p>Drop in a recording of your game. Hypecut finds the loudest, most action-packed moments and cuts them into vertical clips with a hook caption, ready for YouTube Shorts and TikTok.</p>
-    <div class="badges"><span>Runs in your browser</span><span>Your video is never uploaded</span><span>Free: up to 3 clips per video</span></div>
+    <div class="badges"><span>Runs in your browser</span><span>Your video is never uploaded</span><span>Free: 3 clips a month</span></div>
   </header>
 
   <!-- PLAN BAR -->
   <section class="panel probar" id="proBar" aria-label="Your plan">
     <div class="pb-row">
-      <div class="pb-status"><span class="plan-chip" id="planChip">FREE</span><span id="planText">Up to 3 clips per video, with a small watermark.</span></div>
+      <div class="pb-status"><span class="plan-chip" id="planChip">FREE</span><span id="planText">3 free clips a month, with a small watermark.</span></div>
       <div class="pb-actions" id="pbFree"><a class="btn sm" href="/#pricing">Get Pro</a><button class="btn sm ghost" id="haveKey" type="button" aria-expanded="false" aria-controls="keyForm">I have a key</button></div>
       <div class="pb-actions" id="pbPro" hidden><button class="btn sm ghost" id="manageSub" type="button">Manage subscription</button><button class="btn sm ghost" id="showKey" type="button">Show my key</button><button class="btn sm ghost" id="removeKey" type="button">Remove from this browser</button></div>
     </div>
@@ -291,7 +291,7 @@ footer a { color: inherit; }
   <section class="panel upsell" id="upsell">
     <div>
       <h3>Want this without the limits?</h3>
-      <p>Pro removes the watermark and unlocks up to 8 clips per video, 60-second clips and the Neon and Clean caption styles. $19.99 a month, or $99.99 a year.</p>
+      <p>Pro gives you 20 clips a month ($19.99/month) or 80 clips a month ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project and we auto-add 10 more for $4.99.</p>
     </div>
     <a class="btn" href="/#pricing">See Pro <span aria-hidden="true">→</span></a>
   </section>
@@ -500,7 +500,11 @@ footer a { color: inherit; }
     const dur = state.dur, len = Math.min(+$("optLen").value, dur);
     const want = Math.min(maxClips(), +$("optCount").value);
     const winN = Math.max(1, Math.round(len / step));
-    if (dur <= len + 1) return [{ start: 0, len: dur, s: 1 }];
+    if (dur <= len + 1) {
+      // video is about as short as one clip: use the whole thing
+      let peak = 0; score.forEach((x, i) => { if (x > score[peak]) peak = i; });
+      return [{ start: 0, len: dur, s: 1, peakT: (peak + 0.5) * step, hype: 95, caption: HOOKS[Math.floor(Math.random() * HOOKS.length)], on: true }];
+    }
     const cands = [];
     for (let i = 0; i + winN <= score.length; i++) {
       let sum = 0, peak = 0, peakAt = i;
@@ -944,8 +948,19 @@ footer a { color: inherit; }
 
   async function renderAll() {
     if (state.rendering) return;
-    const list = state.moments.filter(m => m.on);
+    let list = state.moments.filter(m => m.on);
     if (!list.length) return say($("msg2"), "Tick at least one moment to include.", "err");
+    const left = clipsLeft();
+    if (left <= 0) {
+      return say($("msg2"), pro.active
+        ? "You've used all " + pro.quota + " Pro clips for this month. They reset on " + resetDay() + "."
+        : "You've used your " + FREE_MONTHLY + " free clips this month. They reset on " + resetDay() + ", or go Pro for 20–80 clips a month.", "err");
+    }
+    let limitNote = "";
+    if (list.length > left) {
+      list = list.slice(0, left);
+      limitNote = " You had " + left + " clip" + (left === 1 ? "" : "s") + " left this month, so we made your top " + left + ".";
+    }
     const mime = pickMime();
     if (!mime || !HTMLCanvasElement.prototype.captureStream) return say($("msg2"), "Your browser can't record video. Open this page in Chrome, Edge or Firefox on a computer.", "err");
     state.rendering = true;
@@ -970,7 +985,7 @@ footer a { color: inherit; }
       $("renStatus").textContent = "Finishing subtitles…";
       try { await state.subsPromise; } catch (_) {}
     }
-    let made = 0, spoke = 0;
+    let made = 0, spoke = 0, topUps = 0;
     for (let i = 0; i < list.length; i++) {
       let subs = null;
       if (wantSpeech) {
@@ -979,11 +994,29 @@ footer a { color: inherit; }
         subs = timeWords(list[i], txt);
         if (subs.length) spoke++;
       }
+      // Pro: reserve this clip against the monthly allowance before rendering it
+      if (pro.active && pro.key) {
+        try {
+          const d = await licenseCall({ action: "use", key: pro.key, n: 1 });
+          if (!d.ok) {
+            setUsage(d); applyPlan();
+            for (let j = i; j < list.length; j++) cards[j].querySelector(".rendering span").textContent = d.limit ? "Monthly limit reached." : (d.error || "Couldn't check your Pro clips.");
+            limitNote = " " + (d.error || "");
+            break;
+          }
+          setUsage(d); applyPlan();
+          if (d.boosted) {
+            topUps++;
+            keyMsg("You ran out of monthly clips, so we automatically added " + d.boostClips + " more (" + d.boostPrice + ", charged to your saved payment method). Your clips keep going.", "ok");
+          }
+        } catch (_) { /* offline: let it render; the server still counts the next one */ }
+      }
       $("renStatus").textContent = "Rendering " + (i + 1) + " of " + list.length;
       try {
         const out = await renderClip(list[i], cards[i], mime, W, H, layout, game, subs);
         showResult(cards[i], out, i, mime);
         made++;
+        if (!pro.active) { addFreeUse(1); applyPlan(); }
       } catch (e) {
         cards[i].querySelector(".rendering span").textContent = "Couldn't render this clip.";
         console.error(e);
@@ -991,7 +1024,8 @@ footer a { color: inherit; }
     }
     $("renStatus").textContent = made + " clip" + (made === 1 ? "" : "s") + " ready";
     const speechNote = wantSpeech && !spoke ? " No subtitles were added: no speech was found and the boxes were empty." : "";
-    say($("msg3"), made ? "Done. Download your clips and post them to YouTube Shorts or TikTok." + speechNote : "Rendering failed. Try Chrome on a computer, or an MP4 (H.264) recording.", made ? "ok" : "err");
+    const topUpNote = topUps ? " " + topUps + " automatic top-up" + (topUps === 1 ? "" : "s") + " of " + (pro.boostClips || 10) + " clips added (" + (pro.boostPrice || "$4.99") + " each)." : "";
+    say($("msg3"), made ? "Done. Download your clips and post them to YouTube Shorts or TikTok." + speechNote + topUpNote + limitNote : (limitNote.trim() || "Rendering failed. Try Chrome on a computer, or an MP4 (H.264) recording."), made ? "ok" : "err");
     state.rendering = false; $("renderBtn").disabled = false; $("analyzeBtn").disabled = false;
   }
 
@@ -1082,11 +1116,30 @@ footer a { color: inherit; }
     if (!d) throw new Error("network");
     return d;
   }
+  // ---- monthly clip allowance: Free 3 (counted in this browser), Pro 20 / 80 (counted on the server per key) ----
+  const FREE_MONTHLY = 3, FREE_STORE = "hypecut-free-usage";
+  const monthKey = () => new Date().toISOString().slice(0, 7);
+  function freeUsed() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
+  function addFreeUse(n) { try { localStorage.setItem(FREE_STORE, JSON.stringify({ period: monthKey(), used: freeUsed() + n })); } catch (_) {} }
+  // Pro can keep going past the allowance: the server auto-adds top-up packs (up to maxBoosts a month)
+  function clipsLeft() {
+    if (!pro.active) return Math.max(0, FREE_MONTHLY - freeUsed());
+    if (pro.remaining == null) return Infinity;
+    return pro.remaining + Math.max(0, (pro.maxBoosts || 0) - (pro.boosts || 0)) * (pro.boostClips || 0);
+  }
+  function setUsage(d) {
+    if (d && typeof d.quota === "number") Object.assign(pro, { quota: d.quota, remaining: d.remaining, plan: d.plan, resets: d.resets, boosts: d.boosts || 0, maxBoosts: d.maxBoosts || 0, boostClips: d.boostClips || 0, boostPrice: d.boostPrice || "" });
+  }
+  const resetDay = () => { const d = pro.resets ? new Date(pro.resets) : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 1)); return d.toLocaleDateString(undefined, { day: "numeric", month: "short" }); };
+
   function applyPlan() {
     const bar = $("proBar");
     bar.classList.toggle("is-pro", pro.active);
     $("planChip").textContent = pro.active ? "PRO" : "FREE";
-    $("planText").textContent = pro.active ? "No watermark, up to 8 clips, 60-second clips and every caption style." : "Up to 3 clips per video, with a small watermark.";
+    $("planText").textContent = pro.active
+      ? (pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · auto top-up on, so you never get stopped mid-project."
+                   : "No watermark, 60-second clips and every caption style.")
+      : FREE_MONTHLY + " free clips a month · " + clipsLeft() + " left this month · small watermark.";
     $("pbFree").hidden = pro.active; $("pbPro").hidden = !pro.active;
     if (pro.active) { $("keyForm").hidden = true; $("haveKey").setAttribute("aria-expanded", "false"); }
     $("upsell").hidden = pro.active;
@@ -1095,7 +1148,7 @@ footer a { color: inherit; }
       if (!pro.active && o.selected) { const sel = o.parentElement; sel.value = sel.querySelector("option:not([data-pro])[selected]") ? sel.querySelector("option:not([data-pro])[selected]").value : sel.options[0].value; }
     });
     const badge = document.querySelector(".badges span:last-child");
-    if (badge) badge.textContent = pro.active ? "Pro: up to 8 clips, no watermark" : "Free: up to 3 clips per video";
+    if (badge) badge.textContent = pro.active ? "Pro: " + (pro.quota ? pro.quota + " clips a month" : "no watermark") : "Free: 3 clips a month";
   }
   $("haveKey").addEventListener("click", () => {
     const f = $("keyForm"); f.hidden = !f.hidden;
@@ -1111,7 +1164,7 @@ footer a { color: inherit; }
       const d = await licenseCall({ action: "validate", key });
       if (!d.ok) { keyMsg(d.error || "That key didn't work.", "err"); return; }
       const k = key.toUpperCase().replace(/\s+/g, "");
-      Object.assign(pro, { active: true, key: k });
+      Object.assign(pro, { active: true, key: k }); setUsage(d);
       saveLicense({ key: k, checked: Date.now() });
       $("keyIn").value = "";
       applyPlan();
@@ -1157,6 +1210,7 @@ footer a { color: inherit; }
             history.replaceState(null, "", location.pathname);
             Object.assign(pro, { active: true, key: d.key });
             saveLicense({ key: d.key, checked: Date.now() });
+            try { setUsage(await licenseCall({ action: "validate", key: d.key })); } catch (_) {}
             applyPlan(); showKeyBox(d.key);
             keyMsg("You're Pro! Thanks for supporting Hypecut. Copy your key below to unlock Pro in other browsers.", "ok");
             try { confettiLite(); } catch (_) {}
@@ -1169,15 +1223,16 @@ footer a { color: inherit; }
       }
       return;
     }
-    // 2) a key saved in this browser: trust it, re-check with Paddle once a day
+    // 2) a key saved in this browser: trust it right away, then check with Paddle
+    //    (every visit, to show this month's clips left; offline we keep Pro for a grace period)
     const saved = loadLicense();
     if (saved && saved.key) {
       Object.assign(pro, { active: true, key: saved.key });
       applyPlan();
-      if (Date.now() - (saved.checked || 0) > RECHECK_MS) {
+      {
         try {
           const d = await licenseCall({ action: "validate", key: saved.key });
-          if (d.ok) saveLicense({ ...saved, checked: Date.now() });
+          if (d.ok) { saveLicense({ ...saved, checked: Date.now() }); setUsage(d); applyPlan(); }
           else if (d.status === "expired" || /find/i.test(d.error || "")) {
             Object.assign(pro, { active: false, key: "" }); saveLicense(null); applyPlan();
             keyMsg(d.error || "Your Pro subscription is no longer active.", "err");

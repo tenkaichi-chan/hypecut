@@ -51,7 +51,21 @@ First time on a new computer: run `npm install`, then `npx netlify login` (click
 
 ## Payments (Paddle)
 
-**Plans:** Pro is $19.99/month or $99.99/year. It unlocks no watermark, up to 8 clips per video, 60-second clips and the Neon and Clean caption styles.
+**Plans:**
+
+| Plan | Price | Clips per calendar month | Per clip |
+|---|---|---|---|
+| Free | $0 | 3 (counted in the visitor's browser) | — |
+| Pro monthly | $19.99/month | 20 | ~$1.00 |
+| Pro yearly | $99.99/year | 80 | ~$0.10 |
+| Auto top-up | $4.99 | +10, added automatically when a Pro user runs out (max 5 a month) | ~$0.50 |
+
+Pro also unlocks no watermark, up to 8 clips per video, 60-second clips and the Neon and Clean caption styles. Allowances live in `QUOTA`, `BOOST_CLIPS` and `MAX_BOOSTS` at the top of `netlify/functions/license.mjs` (Free: `FREE_MONTHLY` in `try.html`). Pro usage is counted on the server per key (Netlify Blobs store `licenses`), and resets on the 1st of each month (UTC).
+
+**Never stopped mid-project:**
+- Renewals charge the saved card automatically.
+- If a renewal fails, Pro stays on while Paddle retries the card.
+- If a Pro user runs out of clips, the server charges a **$4.99 top-up** to their saved card via Paddle's subscription charge API and the render continues. If that charge fails (for example, the card is declined), they see a message pointing to Manage subscription.
 
 **How a purchase works:**
 1. The buyer clicks **Get Pro** on the pricing section, and Paddle's checkout opens over the page.
@@ -68,6 +82,9 @@ First time on a new computer: run `npm install`, then `npx netlify login` (click
 | `PADDLE_API_KEY` | Secret API key. Stored as a Netlify **secret** |
 | `PADDLE_CLIENT_TOKEN` | Public client-side token (`live_…` or `test_…`) |
 | `PADDLE_PRICE_MONTHLY`, `PADDLE_PRICE_YEARLY` | Price IDs (`pri_…`) from `tools/paddle-setup.mjs` |
+| `PADDLE_PRICE_BOOST` | One-time "Extra clips (+10)" $4.99 price for automatic top-ups |
+
+Sandbox testing: sandbox keys live in `.env.sandbox` (also git-ignored). Run `node tools/paddle-setup.mjs .env.sandbox` to create sandbox prices. To test locally in sandbox mode, load that file into your shell, then run `npx netlify dev`.
 
 If checkout isn't allowed yet (for example, Paddle hasn't approved the account), the Pro button sends visitors to the waitlist instead of showing an error.
 

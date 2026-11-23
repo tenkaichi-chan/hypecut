@@ -46,8 +46,23 @@ async function ensure(interval, amount, label) {
 const monthly = await ensure("month", "1999", "Pro monthly");
 const yearly = await ensure("year", "9999", "Pro yearly");
 
+// one-time "top-up" price: +10 clips for $4.99, charged automatically to a subscriber's saved card
+const boostFound = prices.find(p => !p.billing_cycle && p.unit_price.amount === "499");
+let boost;
+if (boostFound) { boost = boostFound.id; console.log("using Extra clips", boost); }
+else {
+  const p = await api("/prices", "POST", {
+    product_id: product.id,
+    description: "Extra clips: +10 clips this month",
+    name: "Extra clips (+10)",
+    unit_price: { amount: "499", currency_code: "USD" },
+    custom_data: { app: "hypecut", kind: "boost", clips: 10 },
+  });
+  boost = p.id; console.log("created Extra clips", boost);
+}
+
 let out = envText;
 const set = (k, v) => { out = new RegExp("^" + k + "=.*$", "m").test(out) ? out.replace(new RegExp("^" + k + "=.*$", "m"), k + "=" + v) : out + "\n" + k + "=" + v; };
-set("PADDLE_PRICE_MONTHLY", monthly); set("PADDLE_PRICE_YEARLY", yearly);
+set("PADDLE_PRICE_MONTHLY", monthly); set("PADDLE_PRICE_YEARLY", yearly); set("PADDLE_PRICE_BOOST", boost);
 fs.writeFileSync(ENV_FILE, out);
 console.log("saved price IDs to " + ENV_FILE);

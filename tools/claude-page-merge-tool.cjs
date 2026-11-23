@@ -56,9 +56,9 @@ const toolCss = "/* ---------- free clip tool (scoped) ---------- */\n" + scope(
 L = cut(L, "/* ---------- demo ---------- */", "/* ---------- pricing ---------- */", toolCss);
 
 // ---- 2. tool markup replaces the mockup demo section ----
-let panels = between(T, "<!-- STEP 1 -->", '<p class="note" style="margin-top:8px">');
+let panels = between(T, "<!-- PLAN BAR -->", '<p class="note" style="margin-top:8px">');
 // speech model can't load inside claude.ai (blocked hosts), so drop that option here
-panels = panels.replace(/\s*<label class="toggle" for="optSpeech">[\s\S]*?<\/label>/, "");
+panels = panels.replace(/<label class="toggle" for="optSpeech">/, "<label class=\"toggle\" for=\"optSpeech\" hidden>"); // kept (hidden, off) because the script reads it
 panels = panels.replace('href="/#waitlist"', 'href="#waitlist"');
 const section = `<section id="tool" class="band">
   <div class="wrap">
@@ -125,7 +125,8 @@ const showResultNew = `function showResult(card, blob, i, mime) {
     });
     card.appendChild(btn); card.appendChild(note);
   }`;
-js = cut(js, "  function showResult(card, blob, i, mime) {", "\n\n  if (!window.MediaRecorder", "  " + showResultNew);
+// replace only showResult (it ends where the Pro section starts), keeping the Pro / clip-counting code after it
+js = cut(js, "  function showResult(card, blob, i, mime) {", "\n\n  // ---------- Pro: license key", "  " + showResultNew);
 L = L.replace(/<\/script>\s*$/, "</script>\n<script>\n" + js.trim() + "\n</script>\n");
 // tiny style for the save note
 L = L.replace("/* ---------- free clip tool (scoped) ---------- */", "/* ---------- free clip tool (scoped) ---------- */\n#tool .save-note { color: var(--muted); font-size: .76rem; min-height: 1em; }");

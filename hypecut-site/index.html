@@ -369,6 +369,10 @@ select:hover { box-shadow: inset 0 0 0 1px var(--muted); }
 .plan li::before { content: "✓"; font-size: .8rem; color: var(--ok); font-weight: 700; }
 .plan li b { color: var(--fg); font-weight: 600; }
 .plan .btn { justify-self: stretch; }
+.deal { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: -6px; font-size: .84rem; color: var(--muted); }
+.deal-chip { font-family: var(--f-mono); font-size: .76rem; font-weight: 500; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ok) 45%, transparent); }
+.guarantee { margin: -6px 0 0; font-size: .8rem; color: var(--muted); line-height: 1.5; }
+.guarantee b { color: var(--fg); font-weight: 600; }
 .plan .fine { color: var(--muted); font-size: .8rem; margin-top: -8px; }
 .plan .soon.live { box-shadow: inset 0 0 0 1px var(--ok); color: var(--ok); }
 .billing { display: inline-flex; gap: 4px; padding: 5px; border-radius: 999px; background: color-mix(in srgb, var(--panel) 80%, transparent); box-shadow: inset 0 0 0 1px var(--line); margin-bottom: 34px; position: relative; }
@@ -641,7 +645,7 @@ footer a:hover { color: var(--cta); }
         <h3>Free</h3>
         <div class="price">$0 <small>/ forever</small></div>
         <ul>
-          <li><span><b>Up to 3 clips</b> per video</span></li>
+          <li><span><b>3 clips</b> a month</span></li>
           <li>Clips up to 45 seconds</li>
           <li>Hook captions + speech subtitles (beta)</li>
           <li>Smart crop that follows the action</li>
@@ -654,14 +658,16 @@ footer a:hover { color: var(--cta); }
         <h3>Pro</h3>
         <div class="price"><span class="amt" id="proAmt">$99.99</span> <small id="proPer">/ year</small></div>
         <p class="fine" id="proFine">That's $8.33 a month, billed yearly.</p>
+        <div class="deal"><span class="deal-chip" id="proDeal">About 10¢ a clip</span><span>Editors often charge $15+ per Short.</span></div>
         <ul>
+          <li><span><b id="proClips">80 clips</b> a month</span></li>
           <li><span><b>No watermark</b></span></li>
-          <li><span><b>Up to 8 clips</b> per video</span></li>
-          <li>Clips up to 60 seconds</li>
+          <li>Up to 8 clips per video, up to 60 seconds each</li>
           <li>Neon and Clean caption styles</li>
-          <li>Everything in Free</li>
+          <li><span><b>Never stopped mid-project:</b> run out and we auto-add 10 clips for $4.99</span></li>
         </ul>
         <button class="btn magnetic" id="proBuy" type="button">Get Pro yearly <span class="arr">→</span></button>
+        <p class="guarantee">🔒 <b>Launch price, locked in</b> for as long as you stay subscribed · <b>14-day money-back guarantee</b></p>
         <p class="fine" id="proAfter">Secure checkout by Paddle (cards, PayPal and more). Taxes handled for you. Cancel anytime.</p>
       </article>
     </div>
@@ -721,7 +727,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Pick monthly ($19.99) or yearly ($99.99). Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Is this an official Roblox product? <span class="pm" aria-hidden="true"></span></summary>
@@ -1096,8 +1102,8 @@ footer a:hover { color: var(--cta); }
   // Checkout is Paddle's overlay. Token + price IDs come from /api/paddle-config
   // (Netlify environment variables), so switching sandbox -> live needs no code change.
   const PLANS = {
-    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime." },
-    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly." }
+    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip" },
+    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip" }
   };
   let billing = "yearly";
   const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly");
@@ -1118,6 +1124,8 @@ footer a:hover { color: var(--cta); }
     const buy = document.getElementById("proBuy");
     if (!buy.disabled) buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
     document.getElementById("proBadge").textContent = b === "yearly" ? "Best value" : "Most flexible";
+    document.getElementById("proClips").textContent = PLANS[b].clips;
+    document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
   let paddleCfg = null, paddleReady = null;
   function loadPaddle() {
