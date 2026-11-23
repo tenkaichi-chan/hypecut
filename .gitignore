@@ -8,3 +8,7 @@ node_modules/
 # secrets (Stripe keys etc.) never go in git
 .env
 .env.*
+
+# Cloudflare local secrets
+.dev.vars
+.wrangler/

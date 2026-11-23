@@ -10,6 +10,7 @@
     "@netlify/blobs": "11.1.9"
   },
   "devDependencies": {
-    "netlify-cli": "27.20.1"
+    "netlify-cli": "27.20.1",
+    "wrangler": "4.159.0"
   }
 }

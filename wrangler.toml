@@ -1,0 +1,10 @@
+# Cloudflare Pages config for Hypecut.
+# Static site: hypecut-site/   Server functions: functions/ (logic shared in core/)
+name = "hypecut"
+pages_build_output_dir = "hypecut-site"
+compatibility_date = "2026-11-01"
+
+# Pro keys + monthly clip counts. The id is filled in after `npx wrangler kv namespace create LICENSES`.
+[[kv_namespaces]]
+binding = "LICENSES"
+id = "PENDING"
