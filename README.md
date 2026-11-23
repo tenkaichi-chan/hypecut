@@ -79,6 +79,37 @@ If these aren't set, the Pro button says "Pro opens soon" and sends visitors to 
 
 To test locally, load `.env.dodo` into your shell, then run `npx netlify dev` and buy with Dodo's test "Success card" (the Autofill button in the checkout).
 
+## Paddle billing mirror (webhooks, access, portal)
+
+Built against the Paddle **sandbox**. Not wired into the live checkout yet. The live site still uses Dodo Payments.
+
+| Piece | Where |
+|---|---|
+| Webhook endpoint `POST /api/paddle/webhook` | `core/paddle/webhook.mjs` |
+| One idempotent handler per event (customer.created/updated, subscription.created/updated/canceled, transaction.completed) | `core/paddle/handlers.mjs` |
+| Database mirror (D1): `customers`, `subscriptions` | `migrations/0001_paddle_mirror.sql`, `core/paddle/db.mjs` |
+| Does a subscription grant access? | `core/paddle/access.mjs` |
+| `POST /api/paddle/portal` (billing portal), `/access`, `/claim` | `core/paddle/portal.mjs` |
+| Account screen | `hypecut-site/account.html` |
+
+**Webhook rules:** the raw body is read as text and verified with `paddle.webhooks.unmarshal` using the notification **signing secret** (`PADDLE_WEBHOOK_SECRET`), never the API key. A failed signature returns 401, so Paddle sees a failure and retries. An authentic event the SDK can't parse returns 500 (retry). Unknown event types return 200 and are ignored. A handler failure returns 500 (retry). Signatures are only valid for 5 seconds, which is the SDK's own limit.
+
+**Idempotency:** every write is an upsert keyed on the Paddle ID and guarded by `last_event_at`, so a duplicate delivery changes nothing and an older event arriving late never overwrites newer state. A subscription's `license_key` is generated once and never overwritten. If a subscription arrives before its customer, the customer is fetched from Paddle's API. If Paddle can't return it, a placeholder row with an empty email is kept until `customer.created` or `customer.updated` fills it in.
+
+**Access rule:** `active`, `trialing` and `past_due` (Paddle is still retrying the card) grant access. `paused` and `canceled` do not. A scheduled cancel or pause does **not** remove access: the customer paid for the current period, and access ends only when Paddle flips the status.
+
+**Who is "signed in":** the site has no user accounts, so the Pro key (`HC-…`) is the credential. The server maps the key to the Paddle customer and subscription; the client never supplies a customer id. `/api/paddle/claim` swaps a completed transaction id (from the checkout success event) for the key.
+
+**Two Cloudflare projects:**
+- `hypecut` (live site) uses `wrangler.toml` and the `hypecut-db` database.
+- `hypecut-sandbox` runs the same code against the Paddle sandbox with its own `hypecut-sandbox-db`, so sandbox keys never touch the live site. Cloudflare Pages has no custom config path, so build the sandbox folder first with `node tools/sandbox-dir.mjs`, then run `wrangler pages deploy hypecut-site --project-name hypecut-sandbox --branch main` from inside `.sandbox/`.
+
+Secrets (Pages secrets, set with `wrangler pages secret put`): `PADDLE_ENV`, `PADDLE_API_KEY`, `PADDLE_WEBHOOK_SECRET`. See `.env.example`.
+
+**Tools:** `tools/paddle-destination.mjs` creates the notification destination and saves its signing secret; `tools/paddle-webhook-test.mjs` sends correctly signed test events (including a bad-signature case and scenarios built from real sandbox data); `tools/paddle-simulate.mjs` asks Paddle to send its own simulated events.
+
+**Going live later:** create a notification destination in the live Paddle account pointing at `https://hypecut.pages.dev/api/paddle/webhook`, set the live secrets on the `hypecut` project with `PADDLE_ENV=production`, and redeploy.
+
 ## Updating the claude.ai page
 
 ```powershell

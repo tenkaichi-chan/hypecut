@@ -1,0 +1,13 @@
+# Cloudflare Pages config for the SANDBOX project "hypecut-sandbox".
+# It runs the same code against the Paddle SANDBOX, with its own database, so sandbox keys and test
+# data never touch the live site. Deploy with:
+#   npx wrangler pages deploy hypecut-site --project-name hypecut-sandbox --branch main --config wrangler.sandbox.toml
+name = "hypecut-sandbox"
+pages_build_output_dir = "hypecut-site"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hypecut-sandbox-db"
+database_id = "ee307f7f-0332-49b6-9bcc-4a14cbc7e209"

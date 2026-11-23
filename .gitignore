@@ -12,3 +12,5 @@ node_modules/
 # Cloudflare local secrets
 .dev.vars
 .wrangler/
+!.env.example
+.sandbox/

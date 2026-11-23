@@ -1,10 +1,18 @@
-# Cloudflare Pages config for Hypecut.
+# Cloudflare Pages config for Hypecut (PRODUCTION project "hypecut").
 # Static site: hypecut-site/   Server functions: functions/ (logic shared in core/)
 name = "hypecut"
 pages_build_output_dir = "hypecut-site"
 compatibility_date = "2026-11-01"
+# The Paddle SDK verifies webhook signatures with Node's crypto.
+compatibility_flags = ["nodejs_compat"]
 
-# Pro keys + monthly clip counts. The id is filled in after `npx wrangler kv namespace create LICENSES`.
+# Pro keys + monthly clip counts for the Dodo-based flow.
 [[kv_namespaces]]
 binding = "LICENSES"
 id = "71e1a42c8e6c40349b8475c500074ca9"
+
+# Mirror of Paddle customers/subscriptions (migrations/0001_paddle_mirror.sql).
+[[d1_databases]]
+binding = "DB"
+database_name = "hypecut-db"
+database_id = "c40c268c-0483-409e-b6d7-77009c210b4a"
