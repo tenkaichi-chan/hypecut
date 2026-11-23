@@ -356,9 +356,8 @@ select:hover { box-shadow: inset 0 0 0 1px var(--muted); }
 .plans { display: grid; grid-template-columns: repeat(2, minmax(0, 400px)); gap: 26px; }
 @media (max-width: 760px) { .plans { grid-template-columns: 1fr; } }
 .plan { padding: 34px 30px; display: grid; gap: 20px; align-content: start; }
-.plan.pro { isolation: isolate; }
-.plan.pro::after { content: ""; position: absolute; inset: -1.5px; border-radius: 25px; z-index: -1; background: conic-gradient(from var(--ang, 0deg), var(--cta), var(--hot), var(--hot-2), var(--cta)); animation: rotate 5s linear infinite; }
-.plan.pro { background: linear-gradient(180deg, var(--panel), var(--bg-2)); box-shadow: 0 30px 80px -30px color-mix(in srgb, var(--hot) 70%, transparent); }
+/* animated gradient border: the card fill sits on padding-box, the rotating gradient only shows in the 2px border */
+.plan.pro { border: 2px solid transparent; background: linear-gradient(180deg, var(--panel), var(--bg-2)) padding-box, conic-gradient(from var(--ang, 0deg), var(--cta), var(--hot), var(--hot-2), var(--cta)) border-box; animation: rotate 5s linear infinite; box-shadow: 0 30px 80px -30px color-mix(in srgb, var(--hot) 70%, transparent); }
 @property --ang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 @keyframes rotate { to { --ang: 360deg; } }
 .plan .soon { position: absolute; top: -13px; right: 22px; font-family: var(--f-mono); font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; background: var(--bg); box-shadow: inset 0 0 0 1px var(--cta); color: var(--cta); padding: 4px 11px; border-radius: 999px; }
@@ -369,6 +368,16 @@ select:hover { box-shadow: inset 0 0 0 1px var(--muted); }
 .plan li { display: flex; gap: 11px; color: var(--muted); align-items: baseline; }
 .plan li::before { content: "✓"; font-size: .8rem; color: var(--ok); font-weight: 700; }
 .plan li b { color: var(--fg); font-weight: 600; }
+.plan .btn { justify-self: stretch; }
+.plan .fine { color: var(--muted); font-size: .8rem; margin-top: -8px; }
+.plan .soon.live { box-shadow: inset 0 0 0 1px var(--ok); color: var(--ok); }
+.billing { display: inline-flex; gap: 4px; padding: 5px; border-radius: 999px; background: color-mix(in srgb, var(--panel) 80%, transparent); box-shadow: inset 0 0 0 1px var(--line); margin-bottom: 34px; position: relative; }
+.billing button { position: relative; z-index: 1; font: inherit; font-weight: 600; font-size: .92rem; color: var(--muted); background: none; border: 0; padding: 9px 18px; border-radius: 999px; cursor: pointer; transition: color .3s; display: inline-flex; gap: 8px; align-items: center; }
+.billing button[aria-pressed="true"] { color: var(--cta-ink); }
+.billing .pill-bg { position: absolute; top: 5px; bottom: 5px; border-radius: 999px; background: var(--cta); transition: left .4s var(--ease), width .4s var(--ease); z-index: 0; }
+.billing .save { font-family: var(--f-mono); font-size: .66rem; letter-spacing: .06em; padding: 2px 7px; border-radius: 999px; background: var(--ok); color: var(--cta-ink); }
+.price .amt { display: inline-block; transition: transform .35s var(--ease-back), opacity .25s; }
+.price .amt.flip { transform: translateY(-10px) scale(.92); opacity: 0; }
 
 /* ---------- waitlist ---------- */
 #waitlist .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
@@ -618,33 +627,42 @@ footer a:hover { color: var(--cta); }
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="eyebrow">Pricing</p>
-      <h2>Start free. <span class="grad">Go Pro later.</span></h2>
-      <p>Both plans launch after the beta. Waitlist members get first access.</p>
+      <h2>Start free. <span class="grad">Go Pro when you're hooked.</span></h2>
+      <p>Everything runs in your browser, so your recordings never leave your computer. Cancel Pro anytime.</p>
+    </div>
+    <div class="billing reveal" role="group" aria-label="Billing period">
+      <span class="pill-bg" aria-hidden="true"></span>
+      <button type="button" id="billMonthly" aria-pressed="false">Monthly</button>
+      <button type="button" id="billYearly" aria-pressed="true">Yearly <span class="save">SAVE 58%</span></button>
     </div>
     <div class="plans">
       <article class="card plan tilt reveal" style="--d:0s">
-        <span class="soon">Coming soon</span>
+        <span class="soon live">Live now</span>
         <h3>Free</h3>
-        <div class="price">$0 <small>/ month</small></div>
+        <div class="price">$0 <small>/ forever</small></div>
         <ul>
-          <li><span><b>3 clips</b> per month</span></li>
-          <li>Auto captions</li>
-          <li>720p vertical export</li>
-          <li>Small watermark</li>
+          <li><span><b>Up to 3 clips</b> per video</span></li>
+          <li>Clips up to 45 seconds</li>
+          <li>Hook captions + speech subtitles (beta)</li>
+          <li>Smart crop that follows the action</li>
+          <li>Small "made with hypecut" watermark</li>
         </ul>
-        <a class="btn ghost" href="/try">Try the free demo now</a>
+        <a class="btn ghost" href="/try">Try it free</a>
       </article>
       <article class="card plan pro tilt reveal" style="--d:.15s">
-        <span class="soon">Coming soon</span>
+        <span class="soon" id="proBadge">Best value</span>
         <h3>Pro</h3>
-        <div class="price">~$12 <small>/ month</small></div>
+        <div class="price"><span class="amt" id="proAmt">$99.99</span> <small id="proPer">/ year</small></div>
+        <p class="fine" id="proFine">That's $8.33 a month, billed yearly.</p>
         <ul>
-          <li><span><b>Unlimited</b> clips</span></li>
-          <li>1080p export, no watermark</li>
-          <li>Custom caption styles &amp; game branding</li>
-          <li>Recordings up to 3 hours</li>
-          <li>Priority processing</li>
+          <li><span><b>No watermark</b></span></li>
+          <li><span><b>Up to 8 clips</b> per video</span></li>
+          <li>Clips up to 60 seconds</li>
+          <li>Neon and Clean caption styles</li>
+          <li>Everything in Free</li>
         </ul>
+        <a class="btn magnetic" id="proBuy" href="#waitlist">Get Pro <span class="arr">→</span></a>
+        <p class="fine" id="proAfter">After paying you get a license key by email. Paste it into the tool to unlock Pro.</p>
       </article>
     </div>
   </div>
@@ -701,6 +719,10 @@ footer a:hover { color: var(--cta); }
         <summary>Can I post the clips on YouTube Shorts and TikTok? <span class="pm" aria-hidden="true"></span></summary>
         <div class="ans">Yes. Clips export at 9:16 with captions burned in and stay under 60 seconds, so they fit both platforms. You own the footage you upload and the clips we make from it.</div>
       </details>
+      <details class="reveal" style="--d:.15s">
+        <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
+        <div class="ans">Pick monthly ($19.99) or yearly ($99.99). After checkout you get a license key by email; paste it into the tool and Pro unlocks right away: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Cancel anytime from your receipt email, and you can get a full refund within 14 days.</div>
+      </details>
       <details class="reveal" style="--d:.18s">
         <summary>Is this an official Roblox product? <span class="pm" aria-hidden="true"></span></summary>
         <div class="ans">No. Hypecut is an independent tool and isn't affiliated with or endorsed by Roblox Corporation. It works with recordings you make of your own game.</div>
@@ -721,7 +743,7 @@ footer a:hover { color: var(--cta); }
 <footer>
   <div class="wrap">
     <span>© 2026 Hypecut. Not affiliated with Roblox Corporation.</span>
-    <a href="#top">Back to top ↑</a>
+    <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="/terms">Terms &amp; refunds</a><a href="/privacy">Privacy</a><a href="#top">Back to top ↑</a></span>
   </div>
 </footer>
 
@@ -741,6 +763,7 @@ footer a:hover { color: var(--cta); }
   }
   document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener("click", e => {
     const id = a.getAttribute("href");
+    if (!id || id[0] !== "#") return; // link was changed to a real URL (e.g. checkout)
     const el = id === "#top" ? document.body : document.querySelector(id);
     if (!el) return;
     e.preventDefault();
@@ -1068,6 +1091,51 @@ footer a:hover { color: var(--cta); }
     }).catch(() => {});
   }
   loadCount(false);
+
+  // ---------- pricing: billing switch + checkout ----------
+  // Paste your Lemon Squeezy checkout links here (Products → Hypecut Pro → Share).
+  // Leave empty and the button points to the waitlist instead.
+  const CHECKOUT = {
+    monthly: "",
+    yearly: ""
+  };
+  const PLANS = {
+    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime." },
+    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly." }
+  };
+  let billing = "yearly";
+  const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly");
+  const pillBg = document.querySelector(".billing .pill-bg");
+  function setBilling(b, animate) {
+    billing = b;
+    bm.setAttribute("aria-pressed", String(b === "monthly")); by.setAttribute("aria-pressed", String(b === "yearly"));
+    const on = b === "monthly" ? bm : by;
+    pillBg.style.left = on.offsetLeft + "px"; pillBg.style.width = on.offsetWidth + "px";
+    const amt = document.getElementById("proAmt");
+    const apply = () => {
+      amt.textContent = PLANS[b].amt;
+      document.getElementById("proPer").textContent = PLANS[b].per;
+      document.getElementById("proFine").textContent = PLANS[b].fine;
+      amt.classList.remove("flip");
+    };
+    if (animate && !reduce) { amt.classList.add("flip"); setTimeout(apply, 180); } else apply();
+    const buy = document.getElementById("proBuy"), url = CHECKOUT[b];
+    if (url) {
+      buy.href = url; buy.target = "_blank"; buy.rel = "noopener";
+      buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
+      document.getElementById("proAfter").textContent = "After paying you get a license key by email. Paste it into the tool to unlock Pro.";
+    } else {
+      buy.href = "#waitlist"; buy.removeAttribute("target");
+      buy.innerHTML = 'Pro opens soon: join the waitlist <span class="arr">→</span>';
+      document.getElementById("proBadge").textContent = "Opening soon";
+      document.getElementById("proAfter").textContent = "Waitlist members hear first when Pro checkout opens.";
+    }
+  }
+  bm.addEventListener("click", () => setBilling("monthly", true));
+  by.addEventListener("click", () => setBilling("yearly", true));
+  setBilling("yearly", false);
+  addEventListener("resize", () => setBilling(billing, false));
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setBilling(billing, false));
 
   // ---------- mobile menu ----------
   const burger = document.getElementById("burger");
