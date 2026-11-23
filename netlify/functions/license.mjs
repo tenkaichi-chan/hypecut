@@ -1,20 +1,30 @@
-// Hypecut Pro keys, backed by Paddle subscriptions.
+// Hypecut Pro keys, backed by Dodo Payments subscriptions.
 //
-// POST /api/license { action: "claim",    txn }  -> { ok, key, plan, status }  after Paddle checkout
-// POST /api/license { action: "validate", key }  -> { ok, plan, status, renews, quota, used, remaining, resets }
-// POST /api/license { action: "use", key, n }    -> same, after counting n clips (refuses past the monthly allowance)
-// POST /api/license { action: "portal",   key }  -> { ok, url }                Paddle customer portal
+// POST /api/license { action: "claim",    subscription_id } -> { ok, key, plan, status }  after checkout
+// POST /api/license { action: "validate", key }  -> { ok, plan, status, renews, quota, used, remaining, resets, ... }
+// POST /api/license { action: "use", key, n }    -> same, after counting n clips (auto top-up when out)
+// POST /api/license { action: "portal",   key }  -> { ok, url }   Dodo customer portal
 //
-// A key maps to a Paddle customer + subscription (stored in Netlify Blobs; also written to the
-// subscription's custom_data so you can find it in the Paddle dashboard).
-// Pro is on while the subscription is active, trialing or past_due (Paddle retries payment).
-// Env: PADDLE_ENV, PADDLE_API_KEY.
+// A key maps to a Dodo customer + subscription (Netlify Blobs; also written to the subscription's
+// metadata so you can find it in the Dodo dashboard). Pro is on while the subscription is
+// active or past_due/on_hold (Dodo retries payment), so customers aren't cut off by a failed renewal.
+// Env: DODO_ENV, DODO_API_KEY, DODO_PRODUCT_MONTHLY, DODO_PRODUCT_YEARLY, DODO_PRODUCT_BOOST.
 import { getStore } from "@netlify/blobs";
-import { paddle } from "../lib/paddle.mjs";
+import { dodo } from "../lib/dodo.mjs";
 
-const ON = new Set(["active", "trialing", "past_due"]);
+const ON = new Set(["active", "past_due", "on_hold"]);
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
+
+// Monthly clip allowance: monthly plan 20 clips/month, yearly plan 80 clips/month. Resets on the 1st (UTC).
+const QUOTA = { month: 20, year: 80 };
+// Auto top-up when a subscriber runs out: +10 clips for $4.99, charged to the saved payment method, max 5 a month.
+const BOOST_CLIPS = 10, MAX_BOOSTS = 5; // price lives on the DODO_PRODUCT_BOOST product ($4.99)
+const interval = (sub) => String((sub && sub.payment_frequency_interval) || "Month").toLowerCase();
+const quotaFor = (sub) => QUOTA[interval(sub)] || QUOTA.month;
+const planName = (sub) => (interval(sub) === "year" ? "Pro yearly" : "Pro monthly");
+const period = () => new Date().toISOString().slice(0, 7); // "YYYY-MM"
+const nextReset = () => { const d = new Date(); return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)).toISOString(); };
 
 function newKey() {
   const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I to avoid typos
@@ -23,43 +33,32 @@ function newKey() {
   bytes.forEach((b, i) => { s += abc[b % abc.length]; if (i % 4 === 3 && i < 15) s += "-"; });
   return "HC-" + s;
 }
-// Monthly clip allowance: monthly plan 20 clips/month, yearly plan 80 clips/month.
-// Usage resets on the 1st of each month (UTC).
-const QUOTA = { month: 20, year: 80 };
-// Auto top-up when a subscriber runs out: +10 clips for $4.99 (env PADDLE_PRICE_BOOST), at most 5 per month.
-const BOOST_CLIPS = 10, MAX_BOOSTS = 5;
-const quotaFor = (sub) => QUOTA[(sub && sub.billing_cycle && sub.billing_cycle.interval) || "month"] || QUOTA.month;
-const period = () => new Date().toISOString().slice(0, 7); // "YYYY-MM"
-const nextReset = () => { const d = new Date(); return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)).toISOString(); };
 const cleanKey = (k) => String(k || "").trim().toUpperCase().replace(/\s+/g, "");
-const planName = (sub) => {
-  const iv = sub && sub.billing_cycle && sub.billing_cycle.interval;
-  return iv === "year" ? "Pro yearly" : "Pro monthly";
-};
 
 export default async (req) => {
   if (req.method !== "POST") return json({ ok: false, error: "Use POST." }, 405);
-  if (!process.env.PADDLE_API_KEY) return json({ ok: false, error: "Pro isn't switched on yet. Try again soon." }, 503);
+  if (!process.env.DODO_API_KEY) return json({ ok: false, error: "Pro isn't switched on yet. Try again soon." }, 503);
   let body;
   try { body = await req.json(); } catch { return json({ ok: false, error: "Bad request." }, 400); }
   const store = getStore({ name: "licenses", consistency: "strong" });
+  const ours = new Set([process.env.DODO_PRODUCT_MONTHLY, process.env.DODO_PRODUCT_YEARLY].filter(Boolean));
 
   try {
-    // ---- after checkout: turn a paid transaction into a key (same key if called again) ----
+    // ---- after checkout: turn a paid subscription into a key (same key if called again) ----
     if (body.action === "claim") {
-      const txn = String(body.txn || "");
-      if (!/^txn_[a-z0-9]{10,40}$/.test(txn)) return json({ ok: false, error: "Bad request." }, 400);
-      const existing = await store.get("t_" + txn);
-      const t = await paddle("/transactions/" + txn);
-      if (!["paid", "completed"].includes(t.status) || !t.subscription_id) {
-        return json({ ok: false, pending: true, error: "Your payment is still being confirmed. This page will keep checking." });
+      const sid = String(body.subscription_id || "");
+      if (!/^sub_[A-Za-z0-9]{6,60}$/.test(sid)) return json({ ok: false, error: "Bad request." }, 400);
+      const sub = await dodo("/subscriptions/" + sid);
+      if (ours.size && !ours.has(sub.product_id)) return json({ ok: false, error: "That subscription isn't for Hypecut Pro." });
+      if (!ON.has(sub.status)) {
+        return json({ ok: false, pending: sub.status === "pending", error: sub.status === "pending" ? "Your payment is still being confirmed. This page will keep checking." : "This subscription isn't active." });
       }
-      const sub = await paddle("/subscriptions/" + t.subscription_id);
+      const existing = await store.get("d_" + sid);
       if (existing) return json({ ok: true, key: existing, plan: planName(sub), status: sub.status });
       const key = newKey();
-      await store.setJSON("k_" + key, { sub: sub.id, customer: t.customer_id, created: Date.now() });
-      await store.set("t_" + txn, key);
-      await paddle("/subscriptions/" + sub.id, { method: "PATCH", body: { custom_data: { ...(sub.custom_data || {}), hypecut_key: key } } }).catch(() => {});
+      await store.setJSON("k_" + key, { provider: "dodo", sub: sid, customer: sub.customer && sub.customer.customer_id, created: Date.now() });
+      await store.set("d_" + sid, key);
+      await dodo("/subscriptions/" + sid, { method: "PATCH", body: { metadata: { ...(sub.metadata || {}), hypecut_key: key } } }).catch(() => {});
       return json({ ok: true, key, plan: planName(sub), status: sub.status });
     }
 
@@ -67,10 +66,10 @@ export default async (req) => {
     const key = cleanKey(body.key);
     if (!/^HC-[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key)) return json({ ok: false, error: "That doesn't look like a Hypecut key. It starts with HC-." }, 400);
     const rec = await store.get("k_" + key, { type: "json" });
-    if (!rec) return json({ ok: false, error: "We couldn't find that key. Check it and try again." });
+    if (!rec || rec.provider !== "dodo") return json({ ok: false, error: "We couldn't find that key. Check it and try again." });
 
     if (body.action === "validate" || body.action === "use") {
-      const sub = await paddle("/subscriptions/" + rec.sub);
+      const sub = await dodo("/subscriptions/" + rec.sub);
       if (!ON.has(sub.status)) {
         return json({ ok: false, status: "expired", error: "This Pro subscription has ended. Renew it to unlock Pro again." });
       }
@@ -81,14 +80,21 @@ export default async (req) => {
       let boosted = false;
       if (body.action === "use") {
         const n = Math.max(1, Math.min(8, parseInt(body.n, 10) || 1));
-        // out of clips: automatically add a top-up pack, charged now to the saved payment method,
-        // so the subscriber's project isn't interrupted (capped per month to avoid surprise bills)
-        while (used + n > quota && boosts < MAX_BOOSTS && process.env.PADDLE_PRICE_BOOST) {
+        // out of clips: automatically charge a top-up to the saved payment method so the project isn't interrupted
+        while (used + n > quota && boosts < MAX_BOOSTS && process.env.DODO_PRODUCT_BOOST) {
+          // charge the one-time "extra clips" product to the card saved on the subscription, with no checkout screen.
+          // Clips unlock once Dodo accepts the charge (Indian card mandates can take a while to settle).
           try {
-            await paddle("/subscriptions/" + sub.id + "/charge", { method: "POST", body: {
-              effective_from: "immediately",
-              items: [{ price_id: process.env.PADDLE_PRICE_BOOST, quantity: 1 }],
+            if (!sub.payment_method_id) throw new Error("no saved payment method");
+            const pay = await dodo("/checkouts", { method: "POST", body: {
+              product_cart: [{ product_id: process.env.DODO_PRODUCT_BOOST, quantity: 1 }],
+              customer: { customer_id: sub.customer && sub.customer.customer_id },
+              payment_method_id: sub.payment_method_id,
+              confirm: true,
+              ...(sub.billing && sub.billing.country ? { billing_address: sub.billing } : {}),
+              metadata: { app: "hypecut", kind: "topup", clips: String(BOOST_CLIPS), subscription_id: rec.sub },
             } });
+            if (!pay || !pay.payment_id) throw new Error("no payment created");
           } catch (e) {
             console.error("top-up charge failed", e && e.message);
             break; // e.g. card declined: fall through to the limit message
@@ -105,14 +111,14 @@ export default async (req) => {
         used += n;
         await store.set(ukey, String(used));
       }
-      return json({ ok: true, plan: planName(sub), status: sub.status, cancelsAtEnd: !!sub.scheduled_change, renews: sub.next_billed_at || null,
+      return json({ ok: true, plan: planName(sub), status: sub.status, cancelsAtEnd: !!sub.cancel_at_next_billing_date, renews: sub.next_billing_date || null,
         quota, used, remaining: Math.max(0, quota - used), boosts, boosted, boostClips: BOOST_CLIPS, boostPrice: "$4.99", maxBoosts: MAX_BOOSTS, resets: nextReset() });
     }
 
     if (body.action === "portal") {
-      const s = await paddle("/customers/" + rec.customer + "/portal-sessions", { method: "POST", body: { subscription_ids: [rec.sub] } });
-      const url = s && s.urls && s.urls.general && s.urls.general.overview;
-      return url ? json({ ok: true, url }) : json({ ok: false, error: "Couldn't open subscription settings." }, 502);
+      const origin = new URL(req.url).origin;
+      const s = await dodo("/customers/" + rec.customer + "/customer-portal/session?return_url=" + encodeURIComponent(origin + "/try"), { method: "POST" });
+      return s && s.link ? json({ ok: true, url: s.link }) : json({ ok: false, error: "Couldn't open subscription settings." }, 502);
     }
 
     return json({ ok: false, error: "Bad request." }, 400);

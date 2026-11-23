@@ -529,7 +529,7 @@ footer a:hover { color: var(--cta); }
         </ul>
         <button class="btn magnetic" id="proBuy" type="button">Get Pro yearly <span class="arr">→</span></button>
         <p class="guarantee"><b>14-day money-back guarantee</b> · cancel anytime</p>
-        <p class="fine" id="proAfter">Secure checkout by Paddle (cards, PayPal and more). Taxes handled for you. Cancel anytime.</p>
+        <p class="fine" id="proAfter">Secure checkout by Dodo Payments (cards, UPI and more). Taxes handled for you. Cancel anytime.</p>
       </article>
     </div>
   </div>
@@ -556,7 +556,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Dodo Payments (cards, UPI and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Which games does it work with? <span class="pm" aria-hidden="true"></span></summary>
@@ -725,8 +725,7 @@ footer a:hover { color: var(--cta); }
   });
 
   // ---------- pricing: billing switch + checkout ----------
-  // Checkout is Paddle's overlay. Token + price IDs come from /api/paddle-config
-  // (Netlify environment variables), so switching sandbox -> live needs no code change.
+  // Checkout is Dodo Payments' overlay (see /api/checkout).
   const PLANS = {
     monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip" },
     yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip" }
@@ -753,41 +752,30 @@ footer a:hover { color: var(--cta); }
     document.getElementById("proClips").textContent = PLANS[b].clips;
     document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
-  let paddleCfg = null, paddleReady = null;
-  function loadPaddle() {
-    if (paddleReady) return paddleReady;
-    paddleReady = (async () => {
-      const r = await fetch("/api/paddle-config");
-      paddleCfg = r.ok ? await r.json() : { ready: false };
-      if (!paddleCfg.ready) return false;
-      await new Promise((ok, bad) => {
-        const s = document.createElement("script");
-        s.src = "https://cdn.paddle.com/paddle/v2/paddle.js"; s.onload = ok; s.onerror = bad;
-        document.head.appendChild(s);
-      });
-      if (paddleCfg.env === "sandbox") window.Paddle.Environment.set("sandbox");
-      window.Paddle.Initialize({
-        token: paddleCfg.token,
-        eventCallback: ev => {
-          if (ev && ev.name === "checkout.error") {
-            // e.g. Paddle hasn't enabled checkout for this account yet: close it and explain
-            try { window.Paddle.Checkout.close(); } catch (_) {}
-            const after = document.getElementById("proAfter");
-            after.textContent = "Pro checkout is opening very soon. Please try again in a little while. Meanwhile your free clips are ready to use in the tool.";
-            return;
-          }
-          if (ev && ev.name === "checkout.completed" && ev.data && ev.data.transaction_id) {
-            // send them to the tool, which turns this payment into a Pro key
-            setTimeout(() => { location.href = "/try?txn=" + encodeURIComponent(ev.data.transaction_id); }, 1200);
-          }
-        }
-      });
-      return true;
-    })().catch(() => { paddleReady = null; return false; });
-    return paddleReady;
+  // ---- Dodo Payments overlay checkout (session created by /api/checkout) ----
+  let checkoutReady = null, dodoMode = "test", dodoLoaded = null;
+  function checkStatus() {
+    if (!checkoutReady) checkoutReady = fetch("/api/checkout").then(r => r.ok ? r.json() : { ready: false }).then(d => { dodoMode = d.mode || "test"; return !!d.ready; }).catch(() => false);
+    return checkoutReady;
   }
-  // if checkout isn't switched on yet, say so on the button
-  loadPaddle().then(ok => {
+  function loadDodo() {
+    if (dodoLoaded) return dodoLoaded;
+    dodoLoaded = new Promise((ok, bad) => {
+      const sc = document.createElement("script");
+      sc.src = "https://cdn.jsdelivr.net/npm/dodopayments-checkout@2.1.0/dist/index.js"; sc.onload = ok; sc.onerror = bad;
+      document.head.appendChild(sc);
+    }).then(() => {
+      const D = window.DodoPaymentsCheckout && window.DodoPaymentsCheckout.DodoPayments;
+      if (!D) throw new Error("no sdk");
+      D.Initialize({ mode: dodoMode, displayType: "overlay", onEvent: ev => {
+        if (ev && ev.event_type === "checkout.error") document.getElementById("proAfter").textContent = "Checkout hit a problem. Please try again in a minute.";
+      } });
+      return D;
+    }).catch(e => { dodoLoaded = null; throw e; });
+    return dodoLoaded;
+  }
+  // if checkout isn't switched on, say so on the button
+  checkStatus().then(ok => {
     if (ok) return;
     const buy = document.getElementById("proBuy");
     buy.dataset.soon = "1";
@@ -801,14 +789,13 @@ footer a:hover { color: var(--cta); }
     const label = buy.innerHTML;
     buy.disabled = true; buy.textContent = "Opening secure checkout…";
     try {
-      const ok = await loadPaddle();
-      if (!ok) { after.textContent = "Checkout isn't available right now. Please try again in a little while."; }
+      await checkStatus();
+      const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan: billing }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.url) { after.textContent = d.error || "Couldn't open checkout. Try again in a minute."; }
       else {
-        window.Paddle.Checkout.open({
-          items: [{ priceId: paddleCfg.prices[billing], quantity: 1 }],
-          customData: { app: "hypecut", plan: billing },
-          settings: { displayMode: "overlay", theme: "dark", locale: "en", allowLogout: true }
-        });
+        try { const D = await loadDodo(); D.Checkout.open({ checkoutUrl: d.url }); }
+        catch (_) { location.href = d.url; } // overlay unavailable: go to the hosted checkout page
       }
     } catch (_) {
       after.textContent = "Couldn't open checkout. Check your connection and try again.";

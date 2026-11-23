@@ -307,7 +307,7 @@ footer a { color: inherit; }
 (function () {
   "use strict";
   const $ = id => document.getElementById(id);
-  // Pro is unlocked by a Pro key (HC-…) tied to a Paddle subscription, checked by /api/license.
+  // Pro is unlocked by a Pro key (HC-…) tied to a Dodo Payments subscription, checked by /api/license.
   // (Everything renders in the browser, so this is a convenience lock, not DRM.)
   const pro = { active: false, key: "" };
   const maxClips = () => (pro.active ? 8 : 3);
@@ -1188,7 +1188,7 @@ footer a { color: inherit; }
       const d = await licenseCall({ action: "portal", key: pro.key });
       if (d.ok && d.url) { location.href = d.url; return; }
       keyMsg(d.error || "Couldn't open subscription settings.", "err");
-    } catch (_) { keyMsg("Couldn't reach Paddle. Try again in a minute.", "err"); }
+    } catch (_) { keyMsg("Couldn't reach the payment provider. Try again in a minute.", "err"); }
     b.disabled = false;
   });
   $("removeKey").addEventListener("click", () => {
@@ -1198,14 +1198,14 @@ footer a { color: inherit; }
   });
 
   (async function restorePro() {
-    // 1) back from Paddle checkout: claim the key for this payment
-    //    (the ?txn= stays in the address until it works, so a reload retries safely)
-    const sid = new URLSearchParams(location.search).get("txn");
+    // 1) back from Dodo checkout: claim the key for this subscription
+    //    (?subscription_id= stays in the address until it works, so a reload retries safely)
+    const sid = new URLSearchParams(location.search).get("subscription_id");
     if (sid) {
       applyPlan(); keyMsg("Confirming your payment…");
       for (let attempt = 0; attempt < 8; attempt++) {
         try {
-          const d = await licenseCall({ action: "claim", txn: sid });
+          const d = await licenseCall({ action: "claim", subscription_id: sid });
           if (d.ok) {
             history.replaceState(null, "", location.pathname);
             Object.assign(pro, { active: true, key: d.key });
@@ -1223,7 +1223,7 @@ footer a { color: inherit; }
       }
       return;
     }
-    // 2) a key saved in this browser: trust it right away, then check with Paddle
+    // 2) a key saved in this browser: trust it right away, then check with Dodo
     //    (every visit, to show this month's clips left; offline we keep Pro for a grace period)
     const saved = loadLicense();
     if (saved && saved.key) {

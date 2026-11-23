@@ -716,7 +716,7 @@ footer a:hover { color: var(--cta); }
         </ul>
         <a class="btn magnetic" id="proBuy" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">Get Pro yearly <span class="arr">→</span></a>
         <p class="guarantee"><b>14-day money-back guarantee</b> · cancel anytime</p>
-        <p class="fine" id="proAfter">Opens secure checkout on hypecut-app.netlify.app (Paddle: cards, PayPal and more). Cancel anytime.</p>
+        <p class="fine" id="proAfter">Opens secure checkout on hypecut-app.netlify.app (Dodo Payments: cards, UPI and more). Cancel anytime.</p>
       </article>
     </div>
   </div>
@@ -743,7 +743,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Dodo Payments (cards, UPI and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Which games does it work with? <span class="pm" aria-hidden="true"></span></summary>
@@ -913,8 +913,7 @@ footer a:hover { color: var(--cta); }
   });
 
   // ---------- pricing: billing switch + checkout ----------
-  // Checkout is Paddle's overlay. Token + price IDs come from /api/paddle-config
-  // (Netlify environment variables), so switching sandbox -> live needs no code change.
+  // Checkout is Dodo Payments' overlay (see /api/checkout).
   const PLANS = {
     monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip" },
     yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip" }
@@ -980,7 +979,7 @@ footer a:hover { color: var(--cta); }
   "use strict";
   const $ = id => document.getElementById(id);
   const scrollTo = el => { if (window.__lenis) window.__lenis.scrollTo(el, { offset: -80 }); else el.scrollIntoView({ behavior: "smooth", block: "start" }); };
-  // Pro is unlocked by a Pro key (HC-…) tied to a Paddle subscription, checked by /api/license.
+  // Pro is unlocked by a Pro key (HC-…) tied to a Dodo Payments subscription, checked by /api/license.
   // (Everything renders in the browser, so this is a convenience lock, not DRM.)
   const pro = { active: false, key: "" };
   const maxClips = () => (pro.active ? 8 : 3);
@@ -1743,7 +1742,7 @@ footer a:hover { color: var(--cta); }
       const d = await licenseCall({ action: "portal", key: pro.key });
       if (d.ok && d.url) { location.href = d.url; return; }
       keyMsg(d.error || "Couldn't open subscription settings.", "err");
-    } catch (_) { keyMsg("Couldn't reach Paddle. Try again in a minute.", "err"); }
+    } catch (_) { keyMsg("Couldn't reach the payment provider. Try again in a minute.", "err"); }
     b.disabled = false;
   });
   $("removeKey").addEventListener("click", () => {
@@ -1753,14 +1752,14 @@ footer a:hover { color: var(--cta); }
   });
 
   (async function restorePro() {
-    // 1) back from Paddle checkout: claim the key for this payment
-    //    (the ?txn= stays in the address until it works, so a reload retries safely)
-    const sid = new URLSearchParams(location.search).get("txn");
+    // 1) back from Dodo checkout: claim the key for this subscription
+    //    (?subscription_id= stays in the address until it works, so a reload retries safely)
+    const sid = new URLSearchParams(location.search).get("subscription_id");
     if (sid) {
       applyPlan(); keyMsg("Confirming your payment…");
       for (let attempt = 0; attempt < 8; attempt++) {
         try {
-          const d = await licenseCall({ action: "claim", txn: sid });
+          const d = await licenseCall({ action: "claim", subscription_id: sid });
           if (d.ok) {
             history.replaceState(null, "", location.pathname);
             Object.assign(pro, { active: true, key: d.key });
@@ -1778,7 +1777,7 @@ footer a:hover { color: var(--cta); }
       }
       return;
     }
-    // 2) a key saved in this browser: trust it right away, then check with Paddle
+    // 2) a key saved in this browser: trust it right away, then check with Dodo
     //    (every visit, to show this month's clips left; offline we keep Pro for a grace period)
     const saved = loadLicense();
     if (saved && saved.key) {

@@ -15,14 +15,14 @@ Turns Roblox gameplay recordings into vertical, captioned clips for YouTube Shor
 | `hypecut-site/try.html` | The free clip tool. Runs entirely in the visitor's browser: nothing is uploaded |
 | `hypecut-site/404.html` | "You fell off the map" page |
 | `hypecut-site/og.png` | Share image shown in Discord, Twitter and iMessage link previews |
-| `hypecut-site/terms.html`, `privacy.html` | Terms & refunds (14 days) and privacy policy, with Paddle's Merchant of Record wording |
+| `hypecut-site/terms.html`, `privacy.html` | Terms, refund policy (14 days) and privacy policy |
 | `hypecut-site/_headers`, `robots.txt`, `sitemap.xml` | Security headers and search-engine files |
-| `netlify/functions/paddle-config.mjs` | `/api/paddle-config`: gives the page the public Paddle token and price IDs |
-| `netlify/functions/license.mjs` | `/api/license`: turns a Paddle payment into a Pro key, checks keys, opens the Paddle customer portal |
-| `netlify/lib/paddle.mjs` | Small helper for calling the Paddle API |
+| `netlify/functions/checkout.mjs` | `/api/checkout`: creates a Dodo checkout session |
+| `netlify/functions/license.mjs` | `/api/license`: Pro keys, monthly clip counting, auto top-ups, Dodo customer portal |
+| `netlify/lib/dodo.mjs` | Small helper for calling the Dodo Payments API |
 | `clutchcut.html` | Source of the claude.ai version of the page (tool, no speech subtitles, Pro button links to the public site) |
 | `tools/serve.cjs` | Local preview server |
-| `tools/paddle-setup.mjs` | One-time: creates the Hypecut Pro product and prices in Paddle and writes their IDs to `.env` |
+| `tools/dodo-setup.mjs` | One-time: creates the Pro monthly/yearly and extra-clips products in Dodo and writes their IDs to the env file |
 | `tools/claude-page-*.cjs` | Rebuild `clutchcut.html` from the public site (see below) |
 | `.env` | Your private keys. **Never commit or share it.** Git ignores it |
 
@@ -46,7 +46,9 @@ First time on a new computer: run `npm install`, then `npx netlify login` (click
 
 - **Colours:** every colour is a variable at the top of the `<style>` block in each page (`--bg`, `--hot`, `--cta`…).
 
-## Payments (Paddle)
+## Payments (Dodo Payments)
+
+Dodo Payments is the Merchant of Record: it handles checkout, tax (GST/VAT) and payouts. Paddle rejected the original site; its code is in git history.
 
 **Plans:**
 
@@ -57,42 +59,25 @@ First time on a new computer: run `npm install`, then `npx netlify login` (click
 | Pro yearly | $99.99/year | 80 | ~$0.10 |
 | Auto top-up | $4.99 | +10, added automatically when a Pro user runs out (max 5 a month) | ~$0.50 |
 
-Pro also unlocks no watermark, up to 8 clips per video, 60-second clips and the Neon and Clean caption styles. Allowances live in `QUOTA`, `BOOST_CLIPS` and `MAX_BOOSTS` at the top of `netlify/functions/license.mjs` (Free: `FREE_MONTHLY` in `try.html`). Pro usage is counted on the server per key (Netlify Blobs store `licenses`), and resets on the 1st of each month (UTC).
-
-**Never stopped mid-project:**
-- Renewals charge the saved card automatically.
-- If a renewal fails, Pro stays on while Paddle retries the card.
-- If a Pro user runs out of clips, the server charges a **$4.99 top-up** to their saved card via Paddle's subscription charge API and the render continues. If that charge fails (for example, the card is declined), they see a message pointing to Manage subscription.
+Pro also unlocks no watermark, up to 8 clips per video, 60-second clips and the Neon and Clean caption styles. Allowances live in `QUOTA`, `BOOST_CLIPS` and `MAX_BOOSTS` in `netlify/functions/license.mjs` (Free: `FREE_MONTHLY` in `try.html`).
 
 **How a purchase works:**
-1. The buyer clicks **Get Pro** on the pricing section, and Paddle's checkout opens over the page.
-2. After paying, they're sent to `/try?txn=…`. The tool asks `/api/license` to turn that payment into a Pro key (`HC-XXXX-XXXX-XXXX-XXXX`).
-3. Pro unlocks in that browser and the key is shown so they can save it.
-4. **Manage subscription** in the tool opens Paddle's customer portal (cancel, change card, invoices).
-5. The key is re-checked with Paddle once a day. If the subscription ends, Pro switches off.
+1. **Get Pro** calls `/api/checkout`, which creates a Dodo checkout session, and Dodo's overlay checkout opens on the page.
+2. After paying, Dodo sends the buyer to `/try?subscription_id=…`. The tool asks `/api/license` to turn that subscription into a Pro key (`HC-XXXX-XXXX-XXXX-XXXX`). The key is also saved in the subscription's metadata (`hypecut_key`) in the Dodo dashboard.
+3. **Manage subscription** opens Dodo's customer portal (cancel, change card, invoices).
+4. **Auto top-up:** when a Pro user runs out, the server charges the one-time "Hypecut extra clips (+10)" product to the card saved on their subscription, with no checkout screen, and the clips unlock straight away. Indian card payments can stay "processing" for a while because of RBI mandate rules.
 
-**Settings** live in Netlify (Project configuration → Environment variables), and in `.env` for local testing:
+**Settings** live in Netlify (Project configuration → Environment variables), and in `.env.dodo` for local testing (git-ignored):
 
 | Variable | What |
 |---|---|
-| `PADDLE_ENV` | `production` (live) or `sandbox` |
-| `PADDLE_API_KEY` | Secret API key. Stored as a Netlify **secret** |
-| `PADDLE_CLIENT_TOKEN` | Public client-side token (`live_…` or `test_…`) |
-| `PADDLE_PRICE_MONTHLY`, `PADDLE_PRICE_YEARLY` | Price IDs (`pri_…`) from `tools/paddle-setup.mjs` |
-| `PADDLE_PRICE_BOOST` | One-time "Extra clips (+10)" $4.99 price for automatic top-ups |
+| `DODO_ENV` | `live` or `test` |
+| `DODO_API_KEY` | Secret API key (`dodo_live_…` or `dodo_test_…`). Store it as a Netlify **secret** |
+| `DODO_PRODUCT_MONTHLY`, `DODO_PRODUCT_YEARLY`, `DODO_PRODUCT_BOOST` | Product IDs from `node tools/dodo-setup.mjs` |
 
-Sandbox testing: sandbox keys live in `.env.sandbox` (also git-ignored). Run `node tools/paddle-setup.mjs .env.sandbox` to create sandbox prices. To test locally in sandbox mode, load that file into your shell, then run `npx netlify dev`.
+If these aren't set, the Pro button says "Pro opens soon" and sends visitors to the free tool. **Never put test keys on the live site**: anyone could then get Pro with a test card.
 
-If checkout isn't allowed yet (for example, Paddle hasn't approved the account), the Pro button says "Pro opens soon" and sends visitors to the free tool instead of showing an error.
-
-**Swap the API key** (do this if a key was ever shared):
-
-```powershell
-npx netlify env:set PADDLE_API_KEY "new-key" --secret --context production deploy-preview branch-deploy
-npm run deploy
-```
-
-Each Pro key is also saved on the Paddle subscription (`custom_data.hypecut_key`), so you can look up a customer's key in the Paddle dashboard if they lose it.
+To test locally, load `.env.dodo` into your shell, then run `npx netlify dev` and buy with Dodo's test "Success card" (the Autofill button in the checkout).
 
 ## Updating the claude.ai page
 
