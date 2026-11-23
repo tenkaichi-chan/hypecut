@@ -138,7 +138,7 @@ const dbJs = `  // ---------- waitlist (claude.ai database) ----------
 if (HAS_WAITLIST) {
 L = cut(L, "  // ---------- waitlist (Formspree) ----------", "  function showDone(", dbJs);
 // share the public site, not the private claude.ai frame
-L = must(L, "const url = location.origin + location.pathname,", 'const url = "https://hypecut-app.netlify.app/",');
+L = must(L, "const url = location.origin + location.pathname,", 'const url = "https://hypecut.pages.dev/",');
 // no Netlify counter here
 L = cut(L, "  // ---------- waitlist counter", "  // ---------- pricing: billing switch", "");
 }

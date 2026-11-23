@@ -116,14 +116,14 @@ const showResultNew = `function showResult(card, blob, i, mime) {
     btn.addEventListener("click", async () => {
       let dl = null;
       try { dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (_) {}
-      if (!dl) { note.textContent = "Saving isn't available in this view. Use the free tool at hypecut-app.netlify.app/try to download."; return; }
+      if (!dl) { note.textContent = "Saving isn't available in this view. Use the free tool at hypecut.pages.dev/try to download."; return; }
       btn.disabled = true; btn.textContent = "Waiting for you to confirm…";
       try {
         await dl.save({ filename: "hypecut-clip-" + (i + 1) + "." + ext, data: blob });
         btn.textContent = "✓ Saved"; note.textContent = "";
       } catch (e) {
         btn.disabled = false; btn.textContent = label;
-        note.textContent = e && e.code === "declined" ? "Save cancelled." : e && e.code === "rate_limited" ? "A save prompt is already open. Try again in a moment." : "Couldn't save here. Use the free tool at hypecut-app.netlify.app/try instead.";
+        note.textContent = e && e.code === "declined" ? "Save cancelled." : e && e.code === "rate_limited" ? "A save prompt is already open. Try again in a moment." : "Couldn't save here. Use the free tool at hypecut.pages.dev/try instead.";
       }
     });
     card.appendChild(btn); card.appendChild(note);

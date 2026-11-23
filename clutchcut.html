@@ -586,7 +586,7 @@ footer a:hover { color: var(--cta); }
   <section class="panel probar" id="proBar" aria-label="Your plan">
     <div class="pb-row">
       <div class="pb-status"><span class="plan-chip" id="planChip">FREE</span><span id="planText">3 free clips a month, with a small watermark.</span></div>
-      <div class="pb-actions" id="pbFree"><a class="btn sm" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">Get Pro</a><a class="btn sm ghost" href="https://hypecut-app.netlify.app/try" target="_blank" rel="noopener">Have Pro? Use it on hypecut-app.netlify.app</a><button id="haveKey" type="button" hidden></button></div>
+      <div class="pb-actions" id="pbFree"><a class="btn sm" href="https://hypecut.pages.dev/#pricing" target="_blank" rel="noopener">Get Pro</a><a class="btn sm ghost" href="https://hypecut.pages.dev/try" target="_blank" rel="noopener">Have Pro? Use it on hypecut.pages.dev</a><button id="haveKey" type="button" hidden></button></div>
       <div class="pb-actions" id="pbPro" hidden><button class="btn sm ghost" id="manageSub" type="button">Manage subscription</button><button class="btn sm ghost" id="showKey" type="button">Show my key</button><button class="btn sm ghost" id="removeKey" type="button">Remove from this browser</button></div>
     </div>
     <div class="keybox" id="keyBox" hidden>
@@ -669,7 +669,7 @@ footer a:hover { color: var(--cta); }
       <h3>Want this without the limits?</h3>
       <p>Pro gives you 20 clips a month ($19.99/month) or 80 clips a month ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project and we auto-add 10 more for $4.99.</p>
     </div>
-    <a class="btn" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">See Pro <span aria-hidden="true">→</span></a>
+    <a class="btn" href="https://hypecut.pages.dev/#pricing" target="_blank" rel="noopener">See Pro <span aria-hidden="true">→</span></a>
   </section>
     <p class="note" style="margin-top:8px">Works best in Chrome or Edge on a computer. Clips render in real time, so keep this page open while they render.</p>
   </div>
@@ -714,9 +714,9 @@ footer a:hover { color: var(--cta); }
           <li>Neon and Clean caption styles</li>
           <li><span><b>Never stopped mid-project:</b> run out and we auto-add 10 clips for $4.99</span></li>
         </ul>
-        <a class="btn magnetic" id="proBuy" href="https://hypecut-app.netlify.app/#pricing" target="_blank" rel="noopener">Get Pro yearly <span class="arr">→</span></a>
+        <a class="btn magnetic" id="proBuy" href="https://hypecut.pages.dev/#pricing" target="_blank" rel="noopener">Get Pro yearly <span class="arr">→</span></a>
         <p class="guarantee"><b>14-day money-back guarantee</b> · cancel anytime</p>
-        <p class="fine" id="proAfter">Opens secure checkout on hypecut-app.netlify.app (Dodo Payments: cards, UPI and more). Cancel anytime.</p>
+        <p class="fine" id="proAfter">Opens secure checkout on hypecut.pages.dev (Dodo Payments: cards, UPI and more). Cancel anytime.</p>
       </article>
     </div>
   </div>
@@ -1645,14 +1645,14 @@ footer a:hover { color: var(--cta); }
     btn.addEventListener("click", async () => {
       let dl = null;
       try { dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (_) {}
-      if (!dl) { note.textContent = "Saving isn't available in this view. Use the free tool at hypecut-app.netlify.app/try to download."; return; }
+      if (!dl) { note.textContent = "Saving isn't available in this view. Use the free tool at hypecut.pages.dev/try to download."; return; }
       btn.disabled = true; btn.textContent = "Waiting for you to confirm…";
       try {
         await dl.save({ filename: "hypecut-clip-" + (i + 1) + "." + ext, data: blob });
         btn.textContent = "✓ Saved"; note.textContent = "";
       } catch (e) {
         btn.disabled = false; btn.textContent = label;
-        note.textContent = e && e.code === "declined" ? "Save cancelled." : e && e.code === "rate_limited" ? "A save prompt is already open. Try again in a moment." : "Couldn't save here. Use the free tool at hypecut-app.netlify.app/try instead.";
+        note.textContent = e && e.code === "declined" ? "Save cancelled." : e && e.code === "rate_limited" ? "A save prompt is already open. Try again in a moment." : "Couldn't save here. Use the free tool at hypecut.pages.dev/try instead.";
       }
     });
     card.appendChild(btn); card.appendChild(note);

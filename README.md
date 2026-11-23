@@ -2,8 +2,8 @@
 
 Turns Roblox gameplay recordings into vertical, captioned clips for YouTube Shorts and TikTok.
 
-- **Live site:** https://hypecut-app.netlify.app
-- **Free tool:** https://hypecut-app.netlify.app/try
+- **Live site:** https://hypecut.pages.dev
+- **Free tool:** https://hypecut.pages.dev/try
 - **Netlify project:** https://app.netlify.com/projects/hypecut-app
 - **claude.ai page (private):** https://claude.ai/artifact/AnrNaoHpYrQvsSN4yvPoum
 

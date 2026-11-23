@@ -7,4 +7,4 @@ compatibility_date = "2026-11-01"
 # Pro keys + monthly clip counts. The id is filled in after `npx wrangler kv namespace create LICENSES`.
 [[kv_namespaces]]
 binding = "LICENSES"
-id = "PENDING"
+id = "71e1a42c8e6c40349b8475c500074ca9"
