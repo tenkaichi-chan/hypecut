@@ -106,6 +106,9 @@ header.intro p { color: var(--muted); font-size: 1.08rem; max-width: 60ch; }
 .keyform { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .keyform input { flex: 1 1 260px; font-family: var(--f-mono); font-size: .88rem; }
 .probar .msg { margin-top: 8px; }
+.keybox { margin-top: 12px; padding: 12px 14px; border-radius: 14px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--cta); display: grid; gap: 8px; color: var(--muted); font-size: .86rem; }
+.keyrow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.keyrow code { font-family: var(--f-mono); font-size: 1rem; color: var(--fg); letter-spacing: .04em; user-select: all; word-break: break-all; }
 option[disabled] { color: #6d6799; }
 .settings label { display: grid; gap: 6px; font-family: var(--f-mono); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); min-width: 0; }
 select, input[type="text"] { font: inherit; font-family: var(--f-body); text-transform: none; letter-spacing: 0; font-size: .95rem; background: var(--bg); color: var(--fg); border: 0; box-shadow: inset 0 0 0 1px var(--line); border-radius: 12px; padding: 11px 12px; width: 100%; min-width: 0; transition: box-shadow .25s; }
@@ -208,10 +211,14 @@ footer a { color: inherit; }
     <div class="pb-row">
       <div class="pb-status"><span class="plan-chip" id="planChip">FREE</span><span id="planText">Up to 3 clips per video, with a small watermark.</span></div>
       <div class="pb-actions" id="pbFree"><a class="btn sm" href="/#pricing">Get Pro</a><button class="btn sm ghost" id="haveKey" type="button" aria-expanded="false" aria-controls="keyForm">I have a key</button></div>
-      <div class="pb-actions" id="pbPro" hidden><button class="btn sm ghost" id="removeKey" type="button">Remove key from this browser</button></div>
+      <div class="pb-actions" id="pbPro" hidden><button class="btn sm ghost" id="manageSub" type="button">Manage subscription</button><button class="btn sm ghost" id="showKey" type="button">Show my key</button><button class="btn sm ghost" id="removeKey" type="button">Remove from this browser</button></div>
+    </div>
+    <div class="keybox" id="keyBox" hidden>
+      <span>Your Pro key: keep it somewhere safe to unlock Pro in other browsers.</span>
+      <div class="keyrow"><code id="keyText"></code><button class="btn sm" id="copyKey" type="button">Copy</button></div>
     </div>
     <form class="keyform" id="keyForm" hidden novalidate>
-      <input type="text" id="keyIn" placeholder="Paste your license key from the receipt email" autocomplete="off" spellcheck="false" aria-label="License key">
+      <input type="text" id="keyIn" placeholder="Paste your Pro key (starts with HC-)" autocomplete="off" spellcheck="false" aria-label="Pro key">
       <button class="btn sm" type="submit" id="keyBtn">Activate</button>
     </form>
     <p class="msg" id="keyMsg" role="status" aria-live="polite"></p>
@@ -300,9 +307,9 @@ footer a { color: inherit; }
 (function () {
   "use strict";
   const $ = id => document.getElementById(id);
-  // Pro is unlocked by a Lemon Squeezy license key, checked by /api/license.
+  // Pro is unlocked by a Pro key (HC-…) tied to a Paddle subscription, checked by /api/license.
   // (Everything renders in the browser, so this is a convenience lock, not DRM.)
-  const pro = { active: false, key: "", instance: "" };
+  const pro = { active: false, key: "" };
   const maxClips = () => (pro.active ? 8 : 3);
   const isMobile = matchMedia("(max-width: 760px)").matches || /Android|iPhone|iPad/i.test(navigator.userAgent);
   const HOOKS = [
@@ -1098,39 +1105,82 @@ footer a { color: inherit; }
   $("keyForm").addEventListener("submit", async e => {
     e.preventDefault();
     const key = $("keyIn").value.trim();
-    if (!key) return keyMsg("Paste the license key from your receipt email.", "err");
+    if (!key) return keyMsg("Paste your Pro key. It starts with HC-.", "err");
     $("keyBtn").disabled = true; keyMsg("Checking your key…");
     try {
-      const d = await licenseCall({ action: "activate", key });
+      const d = await licenseCall({ action: "validate", key });
       if (!d.ok) { keyMsg(d.error || "That key didn't work.", "err"); return; }
-      Object.assign(pro, { active: true, key, instance: d.instance });
-      saveLicense({ key, instance: d.instance, checked: Date.now() });
+      const k = key.toUpperCase().replace(/\s+/g, "");
+      Object.assign(pro, { active: true, key: k });
+      saveLicense({ key: k, checked: Date.now() });
       $("keyIn").value = "";
       applyPlan();
       keyMsg("Pro is unlocked on this browser. Enjoy!", "ok");
     } catch (_) {
-      keyMsg("Couldn't reach the license check. Check your connection and try again.", "err");
+      keyMsg("Couldn't reach the Pro check. Check your connection and try again.", "err");
     } finally { $("keyBtn").disabled = false; }
   });
-  $("removeKey").addEventListener("click", async () => {
-    const saved = loadLicense();
-    Object.assign(pro, { active: false, key: "", instance: "" });
-    saveLicense(null); applyPlan();
-    keyMsg("Key removed from this browser. You can use it on another browser now.", "ok");
-    if (saved && saved.key && saved.instance) licenseCall({ action: "deactivate", key: saved.key, instance: saved.instance }).catch(() => {});
+  function showKeyBox(key) {
+    $("keyText").textContent = key; $("keyBox").hidden = false;
+  }
+  $("showKey").addEventListener("click", () => { if ($("keyBox").hidden) showKeyBox(pro.key); else $("keyBox").hidden = true; });
+  $("copyKey").addEventListener("click", () => {
+    const k = $("keyText").textContent;
+    navigator.clipboard.writeText(k).then(() => keyMsg("Key copied. Keep it somewhere safe.", "ok"),
+      () => { const r = document.createRange(); r.selectNodeContents($("keyText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); keyMsg("Press Ctrl+C to copy the selected key.", ""); });
   });
+  $("manageSub").addEventListener("click", async () => {
+    const b = $("manageSub"); b.disabled = true; keyMsg("Opening your subscription settings…");
+    try {
+      const d = await licenseCall({ action: "portal", key: pro.key });
+      if (d.ok && d.url) { location.href = d.url; return; }
+      keyMsg(d.error || "Couldn't open subscription settings.", "err");
+    } catch (_) { keyMsg("Couldn't reach Paddle. Try again in a minute.", "err"); }
+    b.disabled = false;
+  });
+  $("removeKey").addEventListener("click", () => {
+    Object.assign(pro, { active: false, key: "" });
+    saveLicense(null); applyPlan(); $("keyBox").hidden = true;
+    keyMsg("Pro removed from this browser. Your subscription is unchanged; paste your key to unlock again.", "ok");
+  });
+
   (async function restorePro() {
+    // 1) back from Paddle checkout: claim the key for this payment
+    //    (the ?txn= stays in the address until it works, so a reload retries safely)
+    const sid = new URLSearchParams(location.search).get("txn");
+    if (sid) {
+      applyPlan(); keyMsg("Confirming your payment…");
+      for (let attempt = 0; attempt < 8; attempt++) {
+        try {
+          const d = await licenseCall({ action: "claim", txn: sid });
+          if (d.ok) {
+            history.replaceState(null, "", location.pathname);
+            Object.assign(pro, { active: true, key: d.key });
+            saveLicense({ key: d.key, checked: Date.now() });
+            applyPlan(); showKeyBox(d.key);
+            keyMsg("You're Pro! Thanks for supporting Hypecut. Copy your key below to unlock Pro in other browsers.", "ok");
+            try { confettiLite(); } catch (_) {}
+            return;
+          }
+          if (!d.pending && attempt >= 1) { keyMsg(d.error || "We couldn't confirm that payment.", "err"); return; }
+          if (attempt === 7) keyMsg(d.error || "We couldn't confirm the payment yet. Reload this page in a minute.", "err");
+        } catch (_) { if (attempt === 7) keyMsg("Couldn't confirm your payment. Reload this page in a minute; you won't be charged twice.", "err"); }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+      return;
+    }
+    // 2) a key saved in this browser: trust it, re-check with Paddle once a day
     const saved = loadLicense();
-    if (saved && saved.key && saved.instance) {
-      Object.assign(pro, { active: true, key: saved.key, instance: saved.instance });
+    if (saved && saved.key) {
+      Object.assign(pro, { active: true, key: saved.key });
       applyPlan();
       if (Date.now() - (saved.checked || 0) > RECHECK_MS) {
         try {
-          const d = await licenseCall({ action: "validate", key: saved.key, instance: saved.instance });
+          const d = await licenseCall({ action: "validate", key: saved.key });
           if (d.ok) saveLicense({ ...saved, checked: Date.now() });
-          else if (d.status === "expired" || d.status === "disabled" || /find|isn't for/i.test(d.error || "")) {
-            Object.assign(pro, { active: false }); saveLicense(null); applyPlan();
-            keyMsg(d.error || "Your Pro key is no longer active.", "err");
+          else if (d.status === "expired" || /find/i.test(d.error || "")) {
+            Object.assign(pro, { active: false, key: "" }); saveLicense(null); applyPlan();
+            keyMsg(d.error || "Your Pro subscription is no longer active.", "err");
           }
         } catch (_) {
           // offline: keep Pro for a grace period, then fall back to Free
@@ -1138,12 +1188,18 @@ footer a { color: inherit; }
         }
       }
     } else applyPlan();
-    // arriving from checkout: open the key box
-    if (/[?&]welcome=pro\b/.test(location.search) && !pro.active) {
-      $("keyForm").hidden = false; $("haveKey").setAttribute("aria-expanded", "true");
-      keyMsg("Thanks for going Pro! Your license key is in your receipt email. Paste it here.", "ok");
-    }
   })();
+
+  // small celebration after upgrading
+  function confettiLite() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const c = document.createElement("canvas"); c.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60";
+    document.body.appendChild(c); const x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
+    const cols = ["#ffd23f", "#ff3d8b", "#b14dff", "#3ee6a8"];
+    const ps = Array.from({ length: 120 }, () => ({ x: innerWidth / 2, y: innerHeight * 0.25, vx: (Math.random() - .5) * 14, vy: -Math.random() * 12 - 3, s: 5 + Math.random() * 6, r: Math.random() * 6, c: cols[Math.floor(Math.random() * 4)] }));
+    let n = 0;
+    (function f() { x.clearRect(0, 0, c.width, c.height); ps.forEach(p => { p.vy += .4; p.x += p.vx; p.y += p.vy; p.r += .2; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); }); if (++n < 160) requestAnimationFrame(f); else c.remove(); })();
+  }
 
   if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
     say($("msg1"), "Heads up: this browser can find moments but can't save clips. Use Chrome, Edge or Firefox to download them.", "err");

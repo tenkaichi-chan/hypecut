@@ -34,7 +34,7 @@ Publish changes to the live site:
 npm run deploy
 ```
 
-First time on a new computer: run `npm install`, then `npx netlify login` and click **Authorize** in the browser.
+First time on a new computer: run `npm install`, then `npx netlify login` (click **Authorize** in the browser), then `npx netlify link --id 108c5e2f-cfc3-4bbd-b572-a9c6daf9e78b`.
 
 ## Where things live
 

@@ -661,8 +661,8 @@ footer a:hover { color: var(--cta); }
           <li>Neon and Clean caption styles</li>
           <li>Everything in Free</li>
         </ul>
-        <a class="btn magnetic" id="proBuy" href="#waitlist">Get Pro <span class="arr">→</span></a>
-        <p class="fine" id="proAfter">After paying you get a license key by email. Paste it into the tool to unlock Pro.</p>
+        <button class="btn magnetic" id="proBuy" type="button">Get Pro yearly <span class="arr">→</span></button>
+        <p class="fine" id="proAfter">Secure checkout by Paddle (cards, PayPal and more). Taxes handled for you. Cancel anytime.</p>
       </article>
     </div>
   </div>
@@ -721,7 +721,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Pick monthly ($19.99) or yearly ($99.99). After checkout you get a license key by email; paste it into the tool and Pro unlocks right away: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Cancel anytime from your receipt email, and you can get a full refund within 14 days.</div>
+        <div class="ans">Pick monthly ($19.99) or yearly ($99.99). Checkout is handled securely by Paddle (cards, PayPal and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Is this an official Roblox product? <span class="pm" aria-hidden="true"></span></summary>
@@ -1093,12 +1093,8 @@ footer a:hover { color: var(--cta); }
   loadCount(false);
 
   // ---------- pricing: billing switch + checkout ----------
-  // Paste your Lemon Squeezy checkout links here (Products → Hypecut Pro → Share).
-  // Leave empty and the button points to the waitlist instead.
-  const CHECKOUT = {
-    monthly: "",
-    yearly: ""
-  };
+  // Checkout is Paddle's overlay. Token + price IDs come from /api/paddle-config
+  // (Netlify environment variables), so switching sandbox -> live needs no code change.
   const PLANS = {
     monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime." },
     yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly." }
@@ -1119,18 +1115,65 @@ footer a:hover { color: var(--cta); }
       amt.classList.remove("flip");
     };
     if (animate && !reduce) { amt.classList.add("flip"); setTimeout(apply, 180); } else apply();
-    const buy = document.getElementById("proBuy"), url = CHECKOUT[b];
-    if (url) {
-      buy.href = url; buy.target = "_blank"; buy.rel = "noopener";
-      buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
-      document.getElementById("proAfter").textContent = "After paying you get a license key by email. Paste it into the tool to unlock Pro.";
-    } else {
-      buy.href = "#waitlist"; buy.removeAttribute("target");
-      buy.innerHTML = 'Pro opens soon: join the waitlist <span class="arr">→</span>';
-      document.getElementById("proBadge").textContent = "Opening soon";
-      document.getElementById("proAfter").textContent = "Waitlist members hear first when Pro checkout opens.";
-    }
+    const buy = document.getElementById("proBuy");
+    if (!buy.disabled) buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
+    document.getElementById("proBadge").textContent = b === "yearly" ? "Best value" : "Most flexible";
   }
+  let paddleCfg = null, paddleReady = null;
+  function loadPaddle() {
+    if (paddleReady) return paddleReady;
+    paddleReady = (async () => {
+      const r = await fetch("/api/paddle-config");
+      paddleCfg = r.ok ? await r.json() : { ready: false };
+      if (!paddleCfg.ready) return false;
+      await new Promise((ok, bad) => {
+        const s = document.createElement("script");
+        s.src = "https://cdn.paddle.com/paddle/v2/paddle.js"; s.onload = ok; s.onerror = bad;
+        document.head.appendChild(s);
+      });
+      if (paddleCfg.env === "sandbox") window.Paddle.Environment.set("sandbox");
+      window.Paddle.Initialize({
+        token: paddleCfg.token,
+        eventCallback: ev => {
+          if (ev && ev.name === "checkout.completed" && ev.data && ev.data.transaction_id) {
+            // send them to the tool, which turns this payment into a Pro key
+            setTimeout(() => { location.href = "/try?txn=" + encodeURIComponent(ev.data.transaction_id); }, 1200);
+          }
+        }
+      });
+      return true;
+    })().catch(() => { paddleReady = null; return false; });
+    return paddleReady;
+  }
+  // if checkout isn't switched on yet, point the button at the waitlist instead
+  loadPaddle().then(ok => {
+    if (ok) return;
+    const buy = document.getElementById("proBuy");
+    buy.dataset.waitlist = "1";
+    buy.innerHTML = 'Pro opens soon: join the waitlist <span class="arr">→</span>';
+    document.getElementById("proBadge").textContent = "Opening soon";
+    document.getElementById("proAfter").textContent = "Waitlist members hear first when Pro checkout opens.";
+  });
+  document.getElementById("proBuy").addEventListener("click", async () => {
+    const buy = document.getElementById("proBuy"), after = document.getElementById("proAfter");
+    if (buy.dataset.waitlist) { const w = document.getElementById("waitlist"); if (lenis) lenis.scrollTo(w, { offset: -70 }); else w.scrollIntoView({ behavior: "smooth" }); return; }
+    const label = buy.innerHTML;
+    buy.disabled = true; buy.textContent = "Opening secure checkout…";
+    try {
+      const ok = await loadPaddle();
+      if (!ok) { after.textContent = "Checkout isn't available right now. Join the waitlist and we'll tell you when it opens."; }
+      else {
+        window.Paddle.Checkout.open({
+          items: [{ priceId: paddleCfg.prices[billing], quantity: 1 }],
+          customData: { app: "hypecut", plan: billing },
+          settings: { displayMode: "overlay", theme: "dark", locale: "en", allowLogout: true }
+        });
+      }
+    } catch (_) {
+      after.textContent = "Couldn't open checkout. Check your connection and try again.";
+    }
+    buy.disabled = false; buy.innerHTML = label;
+  });
   bm.addEventListener("click", () => setBilling("monthly", true));
   by.addEventListener("click", () => setBilling("yearly", true));
   setBilling("yearly", false);

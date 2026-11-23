@@ -1,6 +1,10 @@
 node_modules/
 # Netlify build cache; keep only the link to the live site
 .netlify/*
-!.netlify/state.json
+
 .claude/settings.local.json
 *.log
+
+# secrets (Stripe keys etc.) never go in git
+.env
+.env.*
