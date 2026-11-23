@@ -1,9 +1,10 @@
 // One-time setup: creates the "Hypecut Pro" product with $19.99/month and $99.99/year prices
 // in Paddle, then writes the price IDs into .env. Safe to re-run: it reuses an existing product.
-// Usage: fill PADDLE_ENV + PADDLE_API_KEY in .env, then:  node tools/paddle-setup.mjs
+// Usage: fill PADDLE_ENV + PADDLE_API_KEY in .env, then:  node tools/paddle-setup.mjs [.env.sandbox]
 import fs from "node:fs";
 
-const envText = fs.readFileSync(".env", "utf8");
+const ENV_FILE = process.argv[2] || ".env";
+const envText = fs.readFileSync(ENV_FILE, "utf8");
 const env = Object.fromEntries(envText.split(/\r?\n/).filter(l => /^\w+=/.test(l)).map(l => [l.slice(0, l.indexOf("=")), l.slice(l.indexOf("=") + 1).trim()]));
 if (!env.PADDLE_API_KEY) { console.error("Put PADDLE_API_KEY in .env first."); process.exit(1); }
 const base = env.PADDLE_ENV === "production" ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
@@ -48,5 +49,5 @@ const yearly = await ensure("year", "9999", "Pro yearly");
 let out = envText;
 const set = (k, v) => { out = new RegExp("^" + k + "=.*$", "m").test(out) ? out.replace(new RegExp("^" + k + "=.*$", "m"), k + "=" + v) : out + "\n" + k + "=" + v; };
 set("PADDLE_PRICE_MONTHLY", monthly); set("PADDLE_PRICE_YEARLY", yearly);
-fs.writeFileSync(".env", out);
-console.log("saved price IDs to .env");
+fs.writeFileSync(ENV_FILE, out);
+console.log("saved price IDs to " + ENV_FILE);
