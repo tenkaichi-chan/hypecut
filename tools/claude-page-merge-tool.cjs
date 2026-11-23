@@ -53,7 +53,8 @@ function scope(cssText, prefix) {
   return out;
 }
 const toolCss = "/* ---------- free clip tool (scoped) ---------- */\n" + scope(css, "#tool") + "\n";
-L = cut(L, "/* ---------- demo ---------- */", "/* ---------- pricing ---------- */", toolCss);
+if (L.includes("/* ---------- demo ---------- */")) L = cut(L, "/* ---------- demo ---------- */", "/* ---------- pricing ---------- */", toolCss);
+else L = L.replace("/* ---------- pricing ---------- */", toolCss + "/* ---------- pricing ---------- */");
 
 // ---- 2. tool markup replaces the mockup demo section ----
 let panels = between(T, "<!-- PLAN BAR -->", '<p class="note" style="margin-top:8px">');
@@ -73,14 +74,16 @@ const section = `<section id="tool" class="band">
 </section>
 
 `;
-L = cut(L, '<section id="demo" class="band">', '<section id="pricing">', section);
+// the tool replaces the old mockup demo if there is one, otherwise it goes right before pricing
+if (L.includes('<section id="demo" class="band">')) L = cut(L, '<section id="demo" class="band">', '<section id="pricing">', section);
+else L = L.replace('<section id="pricing">', section + '<section id="pricing">');
 
 // nav + hero links point at the tool
 L = L.split('<a href="#demo">Demo</a>').join('<a href="#tool">Try free</a>');
 L = L.replace('<a class="btn ghost magnetic" href="#demo">Try the demo</a>', '<a class="btn ghost magnetic" href="#tool">Try it free</a>');
 
 // ---- 3. drop mockup JS (clip cards, waveform, fake processing) ----
-L = cut(L, "  // ---------- clip cards ----------", "  // ---------- FAQ: smooth open/close ----------", "");
+if (L.includes("  // ---------- clip cards ----------")) L = cut(L, "  // ---------- clip cards ----------", "  // ---------- FAQ: smooth open/close ----------", "");
 // share the smooth-scroll instance with the tool script
 L = L.replace("lenis = new Lenis({ lerp: 0.09, smoothWheel: true });", "lenis = new Lenis({ lerp: 0.09, smoothWheel: true });\n    window.__lenis = lenis;");
 
