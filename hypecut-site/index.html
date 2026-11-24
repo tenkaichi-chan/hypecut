@@ -845,5 +845,6 @@ footer a:hover { color: var(--cta); }
 <script>
 fetch("/api/auth",{method:"POST",headers:{"Content-Type":"application/json"},body:'{"action":"me"}'}).then(r=>r.json()).then(d=>{if(!d||!d.user)return;document.querySelectorAll("[data-acct]").forEach(a=>{a.textContent="My account";a.href="/try#account";});document.querySelectorAll("[data-acct-signup]").forEach(a=>a.remove());}).catch(()=>{});
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "bee69d7075a047c7b3cee9149efa8fa6"}'></script>
 </body>
 </html>
