@@ -7,7 +7,8 @@
 // Env: GUMROAD_PRO_PRODUCT_ID, GUMROAD_TOPUP_PRODUCT_ID (product ids from Gumroad), GUMROAD_PRO_URL, GUMROAD_TOPUP_URL.
 // Gumroad can't charge a saved card on its own, so top-ups are a one-click purchase plus pasting the top-up key.
 
-const QUOTA = { monthly: 20, yearly: 80 };
+// Clips per calendar month by billing period. Quarterly is a real plan at the monthly rate (same clips, no saving).
+const QUOTA = { monthly: 20, quarterly: 20, yearly: 80 };
 const BOOST_CLIPS = 10, MAX_BOOSTS = 5;
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
@@ -33,7 +34,8 @@ function active(p) {
   if (p.subscription_ended_at) return false;
   return true;
 }
-const recurrence = (p) => (String(p.recurrence || "").toLowerCase() === "yearly" ? "yearly" : "monthly");
+const recurrence = (p) => { const r = String(p.recurrence || "").toLowerCase(); return r in QUOTA ? r : "monthly"; };
+const PLAN_NAME = { monthly: "Pro monthly", quarterly: "Pro quarterly", yearly: "Pro yearly" };
 
 export async function handleGumroadLicense(req, env, store) {
   if (req.method !== "POST") return json({ ok: false, error: "Use POST." }, 405);
@@ -54,7 +56,7 @@ export async function handleGumroadLicense(req, env, store) {
     let boosts = Number(await store.get(bkey)) || 0;
     const info = () => {
       const quota = QUOTA[plan] + boosts * BOOST_CLIPS;
-      return { plan: plan === "yearly" ? "Pro yearly" : "Pro monthly", status: p.subscription_cancelled_at ? "cancelled" : "active",
+      return { plan: PLAN_NAME[plan], status: p.subscription_cancelled_at ? "cancelled" : "active",
         cancelsAtEnd: !!p.subscription_cancelled_at, quota, used, remaining: Math.max(0, quota - used), boosts, boosted: false,
         boostClips: BOOST_CLIPS, boostPrice: "$4.99", maxBoosts: 0, manualBoosts: MAX_BOOSTS, topupUrl: env.GUMROAD_TOPUP_URL || null, resets: nextReset() };
     };

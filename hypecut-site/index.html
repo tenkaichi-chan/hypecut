@@ -657,6 +657,7 @@ footer a:hover { color: var(--cta); }
     <div class="billing reveal" role="group" aria-label="Billing period">
       <span class="pill-bg" aria-hidden="true"></span>
       <button type="button" id="billMonthly" aria-pressed="false">Monthly</button>
+      <button type="button" id="billQuarterly" aria-pressed="false">Quarterly</button>
       <button type="button" id="billYearly" aria-pressed="true">Yearly <span class="save">SAVE 58%</span></button>
     </div>
     <div class="plans">
@@ -715,7 +716,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Gumroad (taxes included). Your receipt has a license key: paste it in the tool under "I have a key" and Pro unlocks: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Log in to keep Pro on every device. Your plan renews automatically. If you run out of clips mid-project, add 10 more for $4.99 in one click (up to 5 times a month). Cancel anytime from your Gumroad receipt or the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; quarterly is $59.97 every 3 months (same clips, same rate as monthly); yearly is $99.99 for 80 clips a month. Checkout is handled securely by Gumroad (taxes included). Your receipt has a license key: paste it in the tool under "I have a key" and Pro unlocks: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Log in to keep Pro on every device. Your plan renews automatically. If you run out of clips mid-project, add 10 more for $4.99 in one click (up to 5 times a month). Cancel anytime from your Gumroad receipt or the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Which games does it work with? <span class="pm" aria-hidden="true"></span></summary>
@@ -886,17 +887,19 @@ footer a:hover { color: var(--cta); }
 
   // ---------- pricing: billing switch + checkout ----------
   // Checkout is Dodo Payments' overlay (see /api/checkout).
+  // Quarterly is a real plan priced at the monthly rate (no saving); it makes monthly look flexible and yearly look like the deal.
   const PLANS = {
-    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip" },
-    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip" }
+    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip", badge: "Most flexible", label: "monthly" },
+    quarterly: { amt: "$59.97", per: "/ 3 months", fine: "Billed every 3 months. Same price and clips as monthly.", clips: "20 clips", deal: "About $1 a clip", badge: "3-month plan", label: "quarterly" },
+    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip", badge: "Best value", label: "yearly" }
   };
   let billing = "yearly";
-  const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly");
+  const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly"), bq = document.getElementById("billQuarterly");
   const pillBg = document.querySelector(".billing .pill-bg");
   function setBilling(b, animate) {
     billing = b;
-    bm.setAttribute("aria-pressed", String(b === "monthly")); by.setAttribute("aria-pressed", String(b === "yearly"));
-    const on = b === "monthly" ? bm : by;
+    bm.setAttribute("aria-pressed", String(b === "monthly")); bq.setAttribute("aria-pressed", String(b === "quarterly")); by.setAttribute("aria-pressed", String(b === "yearly"));
+    const on = { monthly: bm, quarterly: bq, yearly: by }[b];
     pillBg.style.left = on.offsetLeft + "px"; pillBg.style.width = on.offsetWidth + "px";
     const amt = document.getElementById("proAmt");
     const apply = () => {
@@ -907,8 +910,8 @@ footer a:hover { color: var(--cta); }
     };
     if (animate && !reduce) { amt.classList.add("flip"); setTimeout(apply, 180); } else apply();
     const buy = document.getElementById("proBuy");
-    if (!buy.disabled) buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
-    document.getElementById("proBadge").textContent = b === "yearly" ? "Best value" : "Most flexible";
+    if (!buy.disabled) buy.innerHTML = "Get Pro " + PLANS[b].label + ' <span class="arr">→</span>';
+    document.getElementById("proBadge").textContent = PLANS[b].badge;
     document.getElementById("proClips").textContent = PLANS[b].clips;
     document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
@@ -968,6 +971,7 @@ footer a:hover { color: var(--cta); }
     buy.disabled = false; buy.innerHTML = label;
   });
   bm.addEventListener("click", () => setBilling("monthly", true));
+  bq.addEventListener("click", () => setBilling("quarterly", true));
   by.addEventListener("click", () => setBilling("yearly", true));
   setBilling("yearly", false);
   addEventListener("resize", () => setBilling(billing, false));
