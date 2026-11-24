@@ -31,6 +31,7 @@ button[disabled] { opacity: .6; cursor: progress; }
 .hint { font-size: .85rem; }
 .msg { min-height: 1.4em; font-size: .92rem; } .msg.err { color: var(--hot); } .msg.ok { color: var(--ok); }
 .back { text-decoration: none; font-weight: 600; }
+[hidden] { display: none !important; }
 .google { display: grid; gap: 14px; }
 .google[hidden] { display: none; }
 #gbtn { display: flex; justify-content: center; min-height: 44px; color-scheme: light; }
@@ -67,7 +68,7 @@ button[disabled] { opacity: .6; cursor: progress; }
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
   </form>
   <p class="small">You don't need an account to use the free tool. <a href="/try">Try it without one</a>.</p>
-  <p class="small" id="forgot">Forgot your password? Email <a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a> from the address you signed up with.</p>
+  <p class="small" id="forgot"><a href="/reset">Forgot your password?</a></p>
 </main>
 <script>
 (function () {

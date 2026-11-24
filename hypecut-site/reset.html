@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reset password · Hypecut</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0918">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpolygon points='0,0 7,0 10,5 7,10 0,10 3,5' fill='%23ff3d8b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root { --bg: #0b0918; --panel: #19153a; --line: #2c2760; --fg: #f4f2ff; --muted: #a9a4d4; --hot: #ff3d8b; --cta: #ffd23f; --cta-ink: #1a1300; --ok: #3ee6a8; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(900px 500px at 80% -10%, #2d106655, transparent), var(--bg); color: var(--fg); font: 16px/1.6 "Inter", system-ui, sans-serif; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top, 0px)) 16px 40px; }
+main { width: 100%; max-width: 420px; display: grid; gap: 18px; }
+a { color: var(--cta); }
+h1 { font-family: "Chakra Petch", sans-serif; text-transform: uppercase; font-size: 2rem; line-height: 1.05; margin: 0; }
+p { margin: 0; color: var(--muted); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--panel); border-radius: 14px; padding: 4px; box-shadow: inset 0 0 0 1px var(--line); }
+.tabs a { text-align: center; padding: 10px; border-radius: 10px; text-decoration: none; color: var(--muted); font-weight: 600; }
+.tabs a[aria-current="page"] { background: var(--bg); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line); }
+.card { background: var(--panel); border-radius: 20px; padding: 24px; box-shadow: inset 0 0 0 1px var(--line); display: grid; gap: 12px; }
+label { font-family: "JetBrains Mono", monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+input { font: inherit; background: var(--bg); color: var(--fg); border: 0; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--line); padding: 13px 14px; width: 100%; }
+input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--cta); }
+.pw { position: relative; }
+.pw button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; color: var(--muted); padding: 6px 8px; font: 600 .8rem "Inter", sans-serif; text-transform: none; letter-spacing: 0; }
+button.go { font-family: "Chakra Petch", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: 1rem; padding: 14px 20px; border: 0; border-radius: 14px; background: var(--cta); color: var(--cta-ink); cursor: pointer; margin-top: 6px; }
+button { cursor: pointer; border: 0; }
+button[disabled] { opacity: .6; cursor: progress; }
+.hint { font-size: .85rem; }
+.msg { min-height: 1.4em; font-size: .92rem; } .msg.err { color: var(--hot); } .msg.ok { color: var(--ok); }
+.back { text-decoration: none; font-weight: 600; }
+[hidden] { display: none !important; }
+.google { display: grid; gap: 14px; }
+.google[hidden] { display: none; }
+#gbtn { display: flex; justify-content: center; min-height: 44px; color-scheme: light; }
+#gbtn iframe { color-scheme: light; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.small { font-size: .85rem; text-align: center; }
+:focus-visible { outline: 3px solid var(--cta); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/login">← Log in</a>
+  <h1 id="title">Reset password</h1>
+  <p id="lede">Enter your account's email and we'll send you a link to set a new password.</p>
+  <form class="card" id="ask" novalidate>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" required maxlength="254">
+    <button class="go" id="askBtn" type="submit">Email me a link</button>
+    <p class="msg" id="askMsg" role="status" aria-live="polite"></p>
+  </form>
+  <form class="card" id="set" novalidate hidden>
+    <label for="password">New password</label>
+    <div class="pw">
+      <input id="password" type="password" autocomplete="new-password" required minlength="8" maxlength="200">
+      <button type="button" id="showPw" aria-pressed="false">Show</button>
+    </div>
+    <p class="hint">At least 8 characters.</p>
+    <button class="go" id="setBtn" type="submit">Save new password</button>
+    <p class="msg" id="setMsg" role="status" aria-live="polite"></p>
+  </form>
+  <p class="small">Still stuck? Email <a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a>.</p>
+</main>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const say = (el, t, k) => { el.textContent = t; el.className = "msg" + (k ? " " + k : ""); };
+  const call = (body) => fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }).then(r => r.json().catch(() => null));
+  const token = new URLSearchParams(location.search).get("token");
+  if (token) {
+    history.replaceState(null, "", "/reset"); // keep the token out of history and referrers
+    $("ask").hidden = true; $("set").hidden = false;
+    $("title").textContent = "Choose a new password"; $("lede").textContent = "This will log you out on every other device.";
+    $("password").focus();
+  }
+  $("showPw").addEventListener("click", () => {
+    const p = $("password"), show = p.type === "password";
+    p.type = show ? "text" : "password"; $("showPw").textContent = show ? "Hide" : "Show"; $("showPw").setAttribute("aria-pressed", String(show));
+  });
+  $("ask").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("email").value.trim();
+    if (!/^\S+@\S+\.\S+$/.test(email)) { say($("askMsg"), "Enter a valid email address.", "err"); return; }
+    $("askBtn").disabled = true; say($("askMsg"), "Sending…");
+    try {
+      const d = await call({ action: "reset_request", email });
+      if (d && d.ok) say($("askMsg"), d.message, "ok"); else say($("askMsg"), (d && d.error) || "Something went wrong. Try again.", "err");
+    } catch (_) { say($("askMsg"), "Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    finally { $("askBtn").disabled = false; }
+  });
+  $("set").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const password = $("password").value;
+    if (password.length < 8) { say($("setMsg"), "Use at least 8 characters for your password.", "err"); return; }
+    $("setBtn").disabled = true; say($("setMsg"), "Saving…");
+    try {
+      const d = await call({ action: "reset_confirm", token, password });
+      if (d && d.ok) { say($("setMsg"), "Password changed. You're logged in. Taking you to the tool…", "ok"); setTimeout(() => location.href = "/try", 900); return; }
+      say($("setMsg"), (d && d.error) || "Something went wrong. Try again.", "err");
+      if (d && /expired|isn't valid/.test(d.error || "")) { $("ask").hidden = false; }
+    } catch (_) { say($("setMsg"), "Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    finally { $("setBtn").disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

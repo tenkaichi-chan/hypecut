@@ -8,6 +8,8 @@
 // POST /api/auth { action: "use_free", n }             -> { ok, user }    count free clips on the account
 // Needs a D1 database bound as DB with migrations/0002_accounts.sql applied.
 
+import { sendMail, mailConfigured } from "./mailer.mjs";
+
 const COOKIE = "hc_session";
 const SESSION_DAYS = 30;
 const ITER = 100000;             // PBKDF2 iterations (Cloudflare Workers' maximum)
@@ -173,6 +175,58 @@ export async function handleAuth(req, env) {
       await db.prepare("DELETE FROM sessions WHERE user_id = ? AND expires_at <= ?").bind(u.user_id, now.toISOString()).run();
       const token = await startSession(db, u.user_id);
       return json({ ok: true, user: publicUser(u) }, 200, sessionCookie(token, req));
+    }
+
+    // ---- forgotten password: email a one-time link (same answer whether or not the email has an account) ----
+    if (action === "reset_request") {
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!validEmail(email)) return json({ ok: false, error: "Enter a valid email address." }, 400);
+      if (!mailConfigured(env)) return json({ ok: false, error: "Password reset emails aren't switched on yet. Email sehbag11@gmail.com for help." }, 503);
+      const done = json({ ok: true, message: "If there's an account for that email, a reset link is on its way. Check your inbox (and spam) in a minute." });
+      const u = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
+      if (!u) return done;
+      const hourAgo = new Date(Date.now() - 3600e3).toISOString();
+      const recent = await db.prepare("SELECT COUNT(*) AS n FROM password_resets WHERE user_id = ?1 AND created_at > ?2")
+        .bind(u.user_id, hourAgo.replace("T", " ").slice(0, 19)).first();
+      if (recent && recent.n >= 3) return done; // at most 3 emails an hour per account
+      const token = randHex(32);
+      await db.prepare("DELETE FROM password_resets WHERE user_id = ?1 AND expires_at <= ?2").bind(u.user_id, new Date().toISOString()).run();
+      await db.prepare("INSERT INTO password_resets (token_hash, user_id, expires_at) VALUES (?1, ?2, ?3)")
+        .bind(await sha256(token), u.user_id, new Date(Date.now() + 3600e3).toISOString()).run();
+      const link = new URL("/reset?token=" + token, req.url).toString();
+      const google = u.google_sub && !u.pass_hash ? "\n\nYou normally sign in with Google. Setting a password lets you log in with email too." : "";
+      try {
+        await sendMail(env, {
+          to: email,
+          subject: "Reset your Hypecut password",
+          text: `Hi,\n\nSomeone (hopefully you) asked to reset the password for your Hypecut account.\n\nSet a new password here (the link works once, for 1 hour):\n${link}${google}\n\nIf you didn't ask for this, ignore this email. Your password won't change.\n\nHypecut · https://hypecut.pages.dev`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#1a1530"><h2 style="margin:0 0 12px">Reset your Hypecut password</h2><p>Someone (hopefully you) asked to reset the password for your Hypecut account.</p><p style="margin:24px 0"><a href="${link}" style="background:#ffd23f;color:#1a1300;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Set a new password</a></p><p style="font-size:14px;color:#555">The link works once, for 1 hour.${google ? " You normally sign in with Google. Setting a password lets you log in with email too." : ""}</p><p style="font-size:14px;color:#555">If you didn't ask for this, ignore this email. Your password won't change.</p><p style="font-size:12px;color:#888">Hypecut · <a href="https://hypecut.pages.dev" style="color:#888">hypecut.pages.dev</a></p></div>`,
+        });
+      } catch (e) {
+        console.error("reset mail failed", e && e.message);
+        return json({ ok: false, error: "We couldn't send the email just now. Try again in a few minutes." }, 502);
+      }
+      return done;
+    }
+    if (action === "reset_confirm") {
+      const token = String(body.token || "");
+      const password = String(body.password || "");
+      if (!/^[a-f0-9]{64}$/.test(token)) return json({ ok: false, error: "This reset link isn't valid. Ask for a new one." }, 400);
+      if (password.length < 8) return json({ ok: false, error: "Use at least 8 characters for your password." }, 400);
+      if (password.length > 200) return json({ ok: false, error: "That password is too long." }, 400);
+      const th = await sha256(token);
+      const r = await db.prepare("SELECT * FROM password_resets WHERE token_hash = ?1 AND expires_at > ?2").bind(th, new Date().toISOString()).first();
+      if (!r) return json({ ok: false, error: "This reset link has expired or was already used. Ask for a new one." }, 400);
+      const salt = randHex(16);
+      await db.batch([
+        db.prepare("UPDATE users SET pass_hash = ?1, pass_salt = ?2 WHERE user_id = ?3").bind(await hashPassword(password, salt), salt, r.user_id),
+        db.prepare("DELETE FROM password_resets WHERE user_id = ?").bind(r.user_id),   // all links for this account stop working
+        db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(r.user_id),          // log out everywhere else
+      ]);
+      const u = await db.prepare("SELECT * FROM users WHERE user_id = ?").bind(r.user_id).first();
+      await db.prepare("DELETE FROM login_failures WHERE email = ?").bind(u.email).run();
+      const sess = await startSession(db, u.user_id);
+      return json({ ok: true, user: publicUser(u) }, 200, sessionCookie(sess, req));
     }
 
     if (action === "logout") {
