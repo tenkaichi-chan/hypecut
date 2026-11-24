@@ -24,3 +24,6 @@ work/tts/*.json
 work/chk.jpg
 .deploy/
 tools/.gmail-consent-url.txt
+work/site-build/
+work/demo/
+work/chk*.jpg
