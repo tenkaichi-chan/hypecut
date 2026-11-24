@@ -20,3 +20,10 @@ database_id = "c40c268c-0483-409e-b6d7-77009c210b4a"
 # Public settings (not secrets). Google sign-in web client: Google Cloud project "Hypecut", owner sehbag11@gmail.com.
 [vars]
 GOOGLE_CLIENT_ID = "517765449040-sskopvh0g0lje78herfdlifdkj91k8b3.apps.googleusercontent.com"
+# Payments through Gumroad (public product ids and links; no secrets needed to verify license keys).
+PAYMENTS = "gumroad"
+GUMROAD_PRO_PRODUCT_ID = "5_Gn9eNoHdcmFEBtu81Jdg=="
+GUMROAD_TOPUP_PRODUCT_ID = "mT7Xx1WSP1pKfB6KbzzmQQ=="
+GUMROAD_PRO_URL_MONTHLY = "https://sehbag.gumroad.com/l/hypecut-pro?recurrence=monthly"
+GUMROAD_PRO_URL_YEARLY = "https://sehbag.gumroad.com/l/hypecut-pro?recurrence=yearly"
+GUMROAD_TOPUP_URL = "https://sehbag.gumroad.com/l/hypecut-topup"

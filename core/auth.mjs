@@ -241,7 +241,7 @@ export async function handleAuth(req, env) {
 
     if (action === "link_key") {
       const key = String(body.key || "").trim().toUpperCase().replace(/\s+/g, "");
-      if (!/^HC-[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key)) return json({ ok: false, error: "That doesn't look like a Pro key." }, 400);
+      if (!/^HC-[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key) && !/^[A-F0-9]{8}(-[A-F0-9]{8}){3}$/.test(key)) return json({ ok: false, error: "That doesn't look like a Pro key." }, 400);
       await db.prepare("UPDATE users SET pro_key = ?1 WHERE user_id = ?2").bind(key, u.user_id).run();
       return json({ ok: true, user: publicUser({ ...u, pro_key: key }) });
     }

@@ -756,9 +756,9 @@ footer a:hover { color: var(--cta); }
     document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
   // ---- Dodo Payments overlay checkout (session created by /api/checkout) ----
-  let checkoutReady = null, dodoMode = "test", dodoLoaded = null;
+  let checkoutReady = null, dodoMode = "test", dodoLoaded = null, provider = "dodo", gumroadUrls = {};
   function checkStatus() {
-    if (!checkoutReady) checkoutReady = fetch("/api/checkout").then(r => r.ok ? r.json() : { ready: false }).then(d => { dodoMode = d.mode || "test"; return !!d.ready; }).catch(() => false);
+    if (!checkoutReady) checkoutReady = fetch("/api/checkout").then(r => r.ok ? r.json() : { ready: false }).then(d => { dodoMode = d.mode || "test"; provider = d.provider || "dodo"; gumroadUrls = d.urls || {}; return !!d.ready; }).catch(() => false);
     return checkoutReady;
   }
   function loadDodo() {
@@ -779,6 +779,7 @@ footer a:hover { color: var(--cta); }
   }
   // if checkout isn't switched on, say so on the button
   checkStatus().then(ok => {
+    if (ok && provider === "gumroad") document.getElementById("proAfter").textContent = "Secure checkout on Gumroad. After paying, copy the license key from your receipt and paste it in the tool under \"I have a key\".";
     if (ok) return;
     const buy = document.getElementById("proBuy");
     buy.dataset.soon = "1";
@@ -793,6 +794,10 @@ footer a:hover { color: var(--cta); }
     buy.disabled = true; buy.textContent = "Opening secure checkout…";
     try {
       await checkStatus();
+      if (provider === "gumroad") { // Gumroad checkout page (secure, handles card/PayPal and tax)
+        const u = gumroadUrls[billing] || gumroadUrls.monthly;
+        if (u) { location.href = u; return; }
+      }
       const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan: billing }) });
       const d = await r.json().catch(() => ({}));
       if (!r.ok || !d.url) { after.textContent = d.error || "Couldn't open checkout. Try again in a minute."; }
