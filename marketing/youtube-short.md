@@ -18,3 +18,11 @@ Published as **marketing/hypecut-promo-vo.mp4** (Zira voiceover + ducked synth p
 - Tenkaichi-san: https://youtube.com/shorts/Zd0wOljzgYU
 - GUY CLASH: https://youtube.com/shorts/w1hYTXGMTIg
 Next: check views after 24-48 h; use `?utm_source=youtube` links in future posts.
+
+## Caption-style Shorts (2026-11-24)
+Built by `node work/make-shorts.mjs` (Kokoro voice `am_michael`, local and free; word-by-word captions; app pop-up). Published Public on both channels:
+- You recorded gameplay and never posted it
+- Stop editing gameplay by hand
+- A clip maker that never uploads your video
+
+Links: YouTube Studio > Content > Shorts on each channel.

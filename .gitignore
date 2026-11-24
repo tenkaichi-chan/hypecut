@@ -14,3 +14,11 @@ node_modules/
 .wrangler/
 !.env.example
 .sandbox/
+
+work/ref/
+work/shorts/
+work/tts/node_modules/
+work/tts/*.wav
+work/tts/*.json
+!work/tts/package.json
+work/chk.jpg
