@@ -68,6 +68,35 @@ export async function currentUser(db, req) {
   ).bind(await sha256(token), new Date().toISOString()).first();
 }
 
+// ---- Google sign-in: verify the ID token (a JWT signed by Google) ourselves with WebCrypto ----
+const GOOGLE_ISS = new Set(["accounts.google.com", "https://accounts.google.com"]);
+let jwksCache = { keys: null, until: 0 };
+const b64url = (s) => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+async function googleKeys() {
+  if (jwksCache.keys && Date.now() < jwksCache.until) return jwksCache.keys;
+  const r = await fetch("https://www.googleapis.com/oauth2/v3/certs");
+  if (!r.ok) throw new Error("google certs " + r.status);
+  const maxAge = Number((r.headers.get("Cache-Control") || "").match(/max-age=(\d+)/)?.[1] || 3600);
+  jwksCache = { keys: (await r.json()).keys, until: Date.now() + Math.min(maxAge, 6 * 3600) * 1000 };
+  return jwksCache.keys;
+}
+export async function verifyGoogleIdToken(token, clientId) {
+  const parts = String(token || "").split(".");
+  if (parts.length !== 3) return null;
+  const header = JSON.parse(new TextDecoder().decode(b64url(parts[0])));
+  if (header.alg !== "RS256") return null;
+  const jwk = (await googleKeys()).find(k => k.kid === header.kid);
+  if (!jwk) return null;
+  const key = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
+  const ok = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", key, b64url(parts[2]), enc.encode(parts[0] + "." + parts[1]));
+  if (!ok) return null;
+  const p = JSON.parse(new TextDecoder().decode(b64url(parts[1])));
+  const now = Math.floor(Date.now() / 1000);
+  if (!GOOGLE_ISS.has(p.iss) || p.aud !== clientId || !(p.exp > now - 60) || !p.sub) return null;
+  if (!p.email || p.email_verified !== true) return null; // only trust emails Google has verified
+  return { sub: String(p.sub), email: String(p.email).toLowerCase() };
+}
+
 const validEmail = (e) => /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(e);
 
 export async function handleAuth(req, env) {
@@ -82,6 +111,28 @@ export async function handleAuth(req, env) {
   const action = String(body.action || "");
 
   try {
+    // public settings for the log-in page (the Google client id is public by design)
+    if (action === "config") return json({ ok: true, googleClientId: env.GOOGLE_CLIENT_ID || null });
+
+    if (action === "google") {
+      if (!env.GOOGLE_CLIENT_ID) return json({ ok: false, error: "Google sign-in isn't switched on yet." }, 503);
+      const g = await verifyGoogleIdToken(body.credential, env.GOOGLE_CLIENT_ID);
+      if (!g) return json({ ok: false, error: "Google sign-in didn't work. Try again." }, 401);
+      let u = await db.prepare("SELECT * FROM users WHERE google_sub = ?").bind(g.sub).first()
+           || await db.prepare("SELECT * FROM users WHERE email = ?").bind(g.email).first();
+      if (u && !u.google_sub) { // same verified email as an existing account: link Google to it
+        await db.prepare("UPDATE users SET google_sub = ?1 WHERE user_id = ?2").bind(g.sub, u.user_id).run();
+      }
+      if (!u) {
+        const userId = "usr_" + randHex(12);
+        await db.prepare("INSERT INTO users (user_id, email, pass_hash, pass_salt, google_sub) VALUES (?1, ?2, '', '', ?3)")
+          .bind(userId, g.email, g.sub).run();
+        u = await db.prepare("SELECT * FROM users WHERE user_id = ?").bind(userId).first();
+      }
+      const token = await startSession(db, u.user_id);
+      return json({ ok: true, user: publicUser(u) }, 200, sessionCookie(token, req));
+    }
+
     if (action === "signup" || action === "login") {
       const email = String(body.email || "").trim().toLowerCase();
       const password = String(body.password || "");
@@ -107,6 +158,7 @@ export async function handleAuth(req, env) {
       const inWindow = f && (now - new Date(f.window_at)) < FAIL_WINDOW_MIN * 60e3;
       if (inWindow && f.count >= MAX_FAILS) return json({ ok: false, error: `Too many attempts. Try again in ${FAIL_WINDOW_MIN} minutes.` }, 429);
       const u = await db.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
+      if (u && !u.pass_hash) return json({ ok: false, error: "This account uses Google sign-in. Use the Google button." }, 401);
       const salt = u ? u.pass_salt : "00".repeat(16); // hash anyway so timing doesn't reveal which emails exist
       const h = await hashPassword(password, salt);
       if (!u || !sameHex(h, u.pass_hash)) {

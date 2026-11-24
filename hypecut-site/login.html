@@ -31,6 +31,12 @@ button[disabled] { opacity: .6; cursor: progress; }
 .hint { font-size: .85rem; }
 .msg { min-height: 1.4em; font-size: .92rem; } .msg.err { color: var(--hot); } .msg.ok { color: var(--ok); }
 .back { text-decoration: none; font-weight: 600; }
+.google { display: grid; gap: 14px; }
+.google[hidden] { display: none; }
+#gbtn { display: flex; justify-content: center; min-height: 44px; color-scheme: light; }
+#gbtn iframe { color-scheme: light; }
+.or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .1em; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .small { font-size: .85rem; text-align: center; }
 :focus-visible { outline: 3px solid var(--cta); outline-offset: 3px; }
 </style>
@@ -44,6 +50,10 @@ button[disabled] { opacity: .6; cursor: progress; }
     <a href="/login" id="tabLogin">Log in</a>
     <a href="/signup" id="tabSignup">Sign up</a>
   </nav>
+  <div class="google" id="google" hidden>
+    <div id="gbtn"></div>
+    <div class="or">or with email</div>
+  </div>
   <form class="card" id="form" novalidate>
     <label for="email">Email</label>
     <input id="email" type="email" autocomplete="email" required maxlength="254">
@@ -81,6 +91,30 @@ button[disabled] { opacity: .6; cursor: progress; }
     const p = $("password"), show = p.type === "password";
     p.type = show ? "text" : "password"; $("showPw").textContent = show ? "Hide" : "Show"; $("showPw").setAttribute("aria-pressed", String(show));
   });
+
+  // Google sign-in (shown only when the server has a Google client id configured)
+  fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: '{"action":"config"}' })
+    .then(r => r.json()).then(cfg => {
+      if (!cfg || !cfg.googleClientId) return;
+      const sc = document.createElement("script");
+      sc.src = "https://accounts.google.com/gsi/client"; sc.async = true;
+      sc.onload = () => {
+        google.accounts.id.initialize({ client_id: cfg.googleClientId, callback: onGoogle, ux_mode: "popup", context: signup ? "signup" : "signin" });
+        google.accounts.id.renderButton($("gbtn"), { theme: "filled_black", size: "large", shape: "pill", text: signup ? "signup_with" : "signin_with", width: Math.min(380, $("form").clientWidth || 340) });
+        $("google").hidden = false;
+      };
+      document.head.appendChild(sc);
+    }).catch(() => {});
+  async function onGoogle(resp) {
+    say("Signing you in with Google…");
+    try {
+      const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "google", credential: resp.credential }) });
+      const d = await r.json().catch(() => null);
+      if (!d || !d.ok) { say((d && d.error) || "Google sign-in didn't work. Try again.", "err"); return; }
+      say("Signed in as " + d.user.email + ". Taking you back…", "ok");
+      setTimeout(() => location.href = next, 500);
+    } catch (_) { say("Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+  }
 
   // already logged in? go straight on
   fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: '{"action":"me"}' })

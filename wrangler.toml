@@ -16,3 +16,7 @@ id = "71e1a42c8e6c40349b8475c500074ca9"
 binding = "DB"
 database_name = "hypecut-db"
 database_id = "c40c268c-0483-409e-b6d7-77009c210b4a"
+
+# Public settings (not secrets). Google sign-in web client: Google Cloud project "Hypecut", owner sehbag11@gmail.com.
+[vars]
+GOOGLE_CLIENT_ID = "517765449040-sskopvh0g0lje78herfdlifdkj91k8b3.apps.googleusercontent.com"
