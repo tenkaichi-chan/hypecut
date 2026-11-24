@@ -296,7 +296,7 @@ footer a { color: inherit; }
   <section class="panel upsell" id="upsell">
     <div>
       <h3>Want this without the limits?</h3>
-      <p>Pro gives you 20 clips a month ($19.99/month) or 80 clips a month ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project and we auto-add 10 more for $4.99.</p>
+      <p>Pro gives you 20 clips a month ($19.99/month) or 80 clips a month ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project? Add 10 more for $4.99 in one click.</p>
     </div>
     <a class="btn" href="/#pricing">See Pro <span aria-hidden="true">→</span></a>
   </section>
@@ -1176,7 +1176,7 @@ footer a { color: inherit; }
     bar.classList.toggle("is-pro", pro.active);
     $("planChip").textContent = pro.active ? "PRO" : "FREE";
     $("planText").textContent = pro.active
-      ? (pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · auto top-up on, so you never get stopped mid-project."
+      ? (pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · need more? Add 10 clips for $4.99."
                    : "No watermark, 60-second clips and every caption style.")
       : FREE_MONTHLY + " free clips a month · " + clipsLeft() + " left this month · small watermark.";
     $("pbFree").hidden = pro.active; $("pbPro").hidden = !pro.active;
