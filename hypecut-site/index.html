@@ -345,6 +345,105 @@ footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; g
 footer a { text-decoration: none; transition: color .25s; }
 footer a:hover { color: var(--cta); }
 
+/* ---------- hero aurora (WebGL, ported from React Bits) ---------- */
+.hero-aurora { position: absolute; inset: 0 0 auto 0; height: 100%; z-index: 0; pointer-events: none; opacity: .6; mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); }
+.hero-aurora canvas { width: 100%; height: 100%; display: block; }
+.hero > .wrap { z-index: 1; }
+
+/* ---------- rotating word ---------- */
+.rot-line { margin-top: 18px; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.15rem, 2.4vw, 1.6rem); text-transform: uppercase; letter-spacing: .02em; color: var(--muted); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.rot { display: inline-flex; padding: 4px 14px 6px; border-radius: 12px; background: linear-gradient(135deg, var(--hot), var(--hot-2)); color: #fff; box-shadow: 0 10px 30px -10px var(--hot); overflow: hidden; min-height: 1.5em; }
+.rt-ch { display: inline-block; animation: hc-rtIn .5s var(--ease-back) backwards; animation-delay: calc(var(--k) * 22ms); }
+.rt-out .rt-ch { animation: hc-rtOut .35s var(--ease) both; animation-delay: calc(var(--k) * 12ms); }
+@keyframes hc-rtIn { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes hc-rtOut { to { transform: translateY(-110%); opacity: 0; } }
+
+/* ---------- shiny text (React Bits ShinyText idea) ---------- */
+.shiny { background: linear-gradient(110deg, var(--muted) 35%, #fff 50%, var(--muted) 65%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: hc-shine 3.2s linear infinite; }
+@keyframes hc-shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+/* ---------- "watch it work" motion-graphics demo ---------- */
+.mg { position: relative; border-radius: 28px; padding: clamp(20px, 3.5vw, 40px); background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 90%, transparent), color-mix(in srgb, var(--bg-2) 95%, transparent)); box-shadow: inset 0 0 0 1px var(--line), 0 50px 120px -50px color-mix(in srgb, var(--hot) 70%, transparent); overflow: hidden; }
+.mg::before { content: ""; position: absolute; inset: 0; background: radial-gradient(600px 200px at 50% 0%, color-mix(in srgb, var(--hot-2) 25%, transparent), transparent 70%); pointer-events: none; }
+.mg-top { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); margin-bottom: 18px; }
+.mg-file { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
+.mg-file::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: linear-gradient(135deg, var(--cta), var(--hot)); }
+.mg-status { display: inline-flex; gap: 8px; align-items: center; }
+.mg-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: hc-pulse 1.4s infinite; }
+.mg-stage { position: relative; }
+.mg-wave { width: 100%; height: clamp(110px, 16vw, 170px); display: block; overflow: visible; }
+.mg-bar { fill: color-mix(in srgb, var(--muted) 30%, transparent); transform-origin: center bottom; transform-box: fill-box; }
+.mg-bar.hot { fill: url(#mgG); }
+.mg-pick { fill: color-mix(in srgb, var(--cta) 10%, transparent); stroke: var(--cta); stroke-width: 2; stroke-dasharray: 6 5; opacity: 0; }
+.mg-head { position: absolute; top: -6px; bottom: -6px; left: 0; width: 2px; background: var(--cta); box-shadow: 0 0 18px 3px color-mix(in srgb, var(--cta) 70%, transparent); opacity: 0; }
+.mg-head::before { content: "SCANNING"; position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-family: var(--f-mono); font-size: .62rem; letter-spacing: .14em; color: var(--cta-ink); background: var(--cta); padding: 3px 7px; border-radius: 6px; white-space: nowrap; }
+.mg-axis { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: .68rem; color: var(--muted); margin-top: 8px; }
+.mg-steps { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.mg-steps span { font-family: var(--f-mono); font-size: .74rem; padding: 7px 12px; border-radius: 999px; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); transition: color .3s, box-shadow .3s, background .3s; }
+.mg-phones { display: grid; grid-template-columns: repeat(3, minmax(0, 170px)); gap: clamp(12px, 3vw, 34px); justify-content: center; margin-top: 30px; }
+.mg-phone { aspect-ratio: 9/16; border-radius: 22px; padding: 6px; background: linear-gradient(160deg, #3a3470, #141030); box-shadow: 0 30px 60px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.08) inset; opacity: 0; transform: translateY(40px) scale(.9); }
+.mg-phone .sc { position: relative; height: 100%; border-radius: 17px; overflow: hidden; background: radial-gradient(120% 70% at 50% 45%, var(--c1), transparent 60%), linear-gradient(180deg, #120f27, #07060f); }
+.mg-phone .sc::before { content: ""; position: absolute; left: 0; right: 0; top: 30%; height: 38%; background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--c2) 70%, transparent) 0 10px, transparent 10px 22px), linear-gradient(180deg, color-mix(in srgb, var(--c2) 40%, transparent), transparent); filter: blur(.5px); animation: hc-skypan 3s ease-in-out infinite alternate; }
+.mg-phone .cap { position: absolute; left: 8%; right: 8%; top: 16%; text-align: center; font-family: var(--f-display); font-weight: 700; font-size: clamp(.8rem, 1.8vw, 1.15rem); color: #fff; text-shadow: 0 2px 0 #000, 0 0 10px #000; transform: scale(0); }
+.mg-phone .tag { position: absolute; left: 50%; bottom: 10%; transform: translateX(-50%); font-family: var(--f-mono); font-size: .58rem; padding: 3px 8px; border-radius: 999px; background: var(--hot); color: #fff; white-space: nowrap; }
+.mg-phone .hype { position: absolute; top: 6%; right: 7%; font-family: var(--f-mono); font-size: .56rem; padding: 2px 6px; border-radius: 6px; background: rgba(0,0,0,.5); color: var(--ok); }
+/* the animation timeline (9 s loop) */
+.mg-go .mg-bar { animation: hc-mgBar 9s var(--ease) infinite; animation-delay: calc(var(--i) * 6ms); }
+@keyframes hc-mgBar { 0% { transform: scaleY(.05); } 8% { transform: scaleY(1); } 92% { transform: scaleY(1); } 100% { transform: scaleY(.05); } }
+.mg-go .mg-head { animation: hc-mgHead 9s linear infinite; }
+@keyframes hc-mgHead { 0%, 8% { left: 0; opacity: 0; } 10% { opacity: 1; } 40% { left: 100%; opacity: 1; } 42%, 100% { left: 100%; opacity: 0; } }
+.mg-go .mg-bar.hot { animation-name: hc-mgHot; }
+@keyframes hc-mgHot { 0% { transform: scaleY(.05); filter: none; } 8% { transform: scaleY(.35); } 30% { transform: scaleY(.35); } 40% { transform: scaleY(1.08); filter: drop-shadow(0 0 8px #ff3d8b); } 46%, 92% { transform: scaleY(1); filter: drop-shadow(0 0 6px #ff3d8b); } 100% { transform: scaleY(.05); } }
+.mg-go .mg-pick { animation: hc-mgPick 9s var(--ease) infinite; animation-delay: calc(var(--k) * .15s); }
+@keyframes hc-mgPick { 0%, 42% { opacity: 0; } 47%, 90% { opacity: 1; } 100% { opacity: 0; } }
+.mg-go .mg-phone { animation: hc-mgPhone 9s var(--ease-back) infinite; animation-delay: calc(var(--k) * .18s); }
+@keyframes hc-mgPhone { 0%, 52% { opacity: 0; transform: translateY(40px) scale(.9); } 58%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-20px) scale(.96); } }
+.mg-go .mg-phone .cap { animation: hc-mgCap 9s var(--ease-back) infinite; animation-delay: calc(var(--k) * .18s); }
+@keyframes hc-mgCap { 0%, 60% { transform: scale(0) rotate(-6deg); } 64% { transform: scale(1.18) rotate(2deg); } 67%, 92% { transform: scale(1); } 100% { transform: scale(0); } }
+.mg-go .mg-steps span:nth-child(1) { animation: hc-mgS1 9s infinite; }
+.mg-go .mg-steps span:nth-child(2) { animation: hc-mgS2 9s infinite; }
+.mg-go .mg-steps span:nth-child(3) { animation: hc-mgS3 9s infinite; }
+@keyframes hc-mgS1 { 8%, 40% { color: var(--cta-ink); background: var(--cta); box-shadow: none; } }
+@keyframes hc-mgS2 { 41%, 55% { color: #fff; background: var(--hot); box-shadow: none; } }
+@keyframes hc-mgS3 { 56%, 92% { color: var(--cta-ink); background: var(--ok); box-shadow: none; } }
+.mg-static .mg-pick, .mg-static .mg-phone { opacity: 1; transform: none; }
+.mg-static .mg-phone .cap { transform: none; }
+@media (max-width: 560px) { .mg-phones { grid-template-columns: repeat(3, 1fr); gap: 8px; } .mg-phone { border-radius: 14px; padding: 4px; } .mg-phone .sc { border-radius: 11px; } .mg-phone .tag { display: none; } }
+
+/* ---------- bento (React Bits MagicBento-style spotlight + border glow) ---------- */
+.bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(190px, auto); gap: 16px; }
+.bento-card { position: relative; border-radius: 24px; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; overflow: hidden; background: color-mix(in srgb, var(--panel) 75%, transparent); box-shadow: inset 0 0 0 1px var(--line); transition: transform .5s var(--ease), box-shadow .4s; isolation: isolate; --glow: 0; }
+.bento-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(380px circle at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--hot) 20%, transparent), transparent 55%); opacity: var(--glow); transition: opacity .3s; z-index: -1; }
+.bento-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), var(--cta), var(--hot) 40%, transparent 70%); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: var(--glow); pointer-events: none; }
+.bento-card:hover { transform: translateY(-4px); }
+.bento-card h3 { font-size: 1.35rem; text-transform: uppercase; }
+.bento-card p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
+.bento-card .tag { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--hot); }
+.bento-card.big { grid-column: span 2; grid-row: span 2; }
+.bento-card.wide { grid-column: span 2; }
+.bento-viz { display: flex; align-items: flex-end; gap: 5px; height: 90px; }
+.bento-viz i { flex: 1; border-radius: 4px 4px 2px 2px; background: color-mix(in srgb, var(--muted) 30%, transparent); height: var(--h); transition: height .6s var(--ease-back); }
+.bento-viz i.hot { background: linear-gradient(0deg, var(--hot-2), var(--hot), var(--cta)); box-shadow: 0 0 16px -2px var(--hot); }
+.bento-card:hover .bento-viz i { height: calc(var(--h) * 1.12); }
+.lockviz { position: relative; display: grid; place-items: center; flex: 1; min-height: 220px; }
+.lockviz .ring { position: absolute; width: 220px; height: 220px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line); animation: hc-ring 3s ease-out infinite; }
+.lockviz .ring:nth-child(2) { animation-delay: 1s; } .lockviz .ring:nth-child(3) { animation-delay: 2s; }
+@keyframes hc-ring { from { transform: scale(.4); opacity: 1; box-shadow: inset 0 0 0 2px var(--ok); } to { transform: scale(1.4); opacity: 0; } }
+.lockviz .core { width: 96px; height: 96px; border-radius: 28px; display: grid; place-items: center; background: linear-gradient(135deg, var(--ok), #1fb07c); box-shadow: 0 0 40px -6px var(--ok); color: #04140d; }
+.cropviz { position: relative; height: 110px; border-radius: 14px; background: linear-gradient(90deg, #1b1640, #2a1f5c 50%, #1b1640); overflow: hidden; }
+.cropviz::before { content: ""; position: absolute; top: 8px; bottom: 8px; width: 34%; border-radius: 10px; box-shadow: 0 0 0 2px var(--cta), 0 0 0 999px rgba(5,4,14,.55); animation: hc-crop 5s ease-in-out infinite alternate; }
+@keyframes hc-crop { from { left: 6%; } to { left: 60%; } }
+.capviz { display: flex; gap: 8px; flex-wrap: wrap; }
+.capviz b { font-family: var(--f-display); text-transform: uppercase; font-size: 1rem; padding: 6px 12px; border-radius: 10px; background: #000; color: #fff; text-shadow: 0 0 8px var(--hot); }
+.capviz b:nth-child(2) { color: var(--cta); }
+.bignum { font-family: var(--f-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 3.6rem); line-height: 1; }
+@media (max-width: 900px) { .bento { grid-template-columns: 1fr 1fr; } .bento-card.big { grid-row: span 1; } }
+@media (max-width: 560px) { .bento { grid-template-columns: 1fr; } .bento-card.big, .bento-card.wide { grid-column: span 1; } }
+
+/* ---------- click spark (React Bits ClickSpark idea) ---------- */
+.spark { position: fixed; z-index: 70; width: 3px; height: 12px; margin: -6px 0 0 -1.5px; border-radius: 2px; background: var(--cta); pointer-events: none; transform: rotate(var(--a)) translateY(0); animation: hc-spark .5s var(--ease) forwards; }
+@keyframes hc-spark { to { transform: rotate(var(--a)) translateY(-30px); opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
   html { scroll-behavior: auto; }
@@ -364,8 +463,8 @@ footer a:hover { color: var(--cta); }
   <div class="wrap">
     <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true"></span>Hypecut</a>
     <div class="links">
-      <a href="#how">How it works</a>
-      <a href="#compare">Why Hypecut</a>
+      <a href="#demo">How it works</a>
+      <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
       <a href="/login" data-acct>Log in</a>
@@ -375,8 +474,8 @@ footer a:hover { color: var(--cta); }
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu" aria-label="Menu">
-  <a href="#how">How it works</a>
-  <a href="#compare">Why Hypecut</a>
+  <a href="#demo">How it works</a>
+  <a href="#features">Features</a>
   <a href="#pricing">Pricing</a>
   <a href="#faq">FAQ</a>
   <a href="/login" data-acct>Log in</a>
@@ -386,14 +485,16 @@ footer a:hover { color: var(--cta); }
 <div class="sticky-cta" id="stickyCta"><a class="btn" href="/try">Try it free <span class="arr">→</span></a></div>
 
 <header class="hero" id="top">
+  <div class="hero-aurora" id="heroAurora" aria-hidden="true"></div>
   <div class="wrap">
     <div>
-      <span class="pill fade-up" style="--d:.05s">For game creators &amp; small studios</span>
+      <span class="pill fade-up" style="--d:.05s"><b>FREE</b><span class="shiny">For game creators &amp; small studios</span></span>
       <h1>
         <span class="ln"><span style="--d:.15s">Your gameplay,</span></span>
         <span class="ln"><span class="grad" style="--d:.3s">posted.</span></span>
         <span class="ln"><span style="--d:.45s"><span class="strike">Not edited.</span></span></span>
       </h1>
+      <p class="rot-line fade-up" style="--d:.6s">Clips for <span class="rot" data-rotate data-words="YouTube Shorts|TikTok|Instagram Reels">YouTube Shorts</span></p>
       <p class="lede fade-up" style="--d:.7s">Upload a raw session recording. <b>Hypecut finds the best moments</b> and hands back vertical Shorts and TikToks with captions, ready to post.</p>
       <div class="ctas fade-up" style="--d:.85s">
         <a class="btn magnetic" href="/try">Try it free <span class="arr">→</span></a>
@@ -426,6 +527,30 @@ footer a:hover { color: var(--cta); }
   </div>
 </div>
 
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Watch it work</p>
+      <h2>One long recording in. <span class="grad">Three clips out.</span></h2>
+      <p>Hypecut listens for the loudest moments and watches for the busiest action, then cuts those into vertical clips with a caption.</p>
+    </div>
+    <div class="mg reveal-scale" id="mgDemo" aria-label="Animation: Hypecut scans a gameplay recording, finds three loud, busy moments and turns them into three vertical captioned clips">
+      <div class="mg-top"><span class="mg-file">session_recording.mp4 · 52:14</span><span class="mg-status"><i></i>Running in your browser · nothing uploaded</span></div>
+      <div class="mg-stage">
+        <svg class="mg-wave" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <span class="mg-head" aria-hidden="true"></span>
+      </div>
+      <div class="mg-axis" aria-hidden="true"><span>0:00</span><span>sound + on-screen action</span><span>52:14</span></div>
+      <div class="mg-steps" aria-hidden="true"><span>1 · Scan audio + motion</span><span>2 · Pick the spikes</span><span>3 · Cut 9:16 clips</span></div>
+      <div class="mg-phones" aria-hidden="true">
+        <div class="mg-phone" style="--k:0;--c1:#ff3d8b55;--c2:#ff3d8b"><div class="sc"><span class="hype">HYPE 97</span><span class="cap">CLUTCH <span style="color:var(--cta)">1V3</span></span><span class="tag">from 10:27</span></div></div>
+        <div class="mg-phone" style="--k:1;--c1:#ffd23f44;--c2:#ffd23f"><div class="sc"><span class="hype">HYPE 91</span><span class="cap">NO WAY <span style="color:var(--cta)">💀</span></span><span class="tag">from 27:10</span></div></div>
+        <div class="mg-phone" style="--k:2;--c1:#b14dff55;--c2:#b14dff"><div class="sc"><span class="hype">HYPE 94</span><span class="cap">BOSS <span style="color:var(--cta)">DOWN</span></span><span class="tag">from 42:50</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="how">
   <div class="wrap">
     <div class="sec-head reveal">
@@ -439,19 +564,50 @@ footer a:hover { color: var(--cta); }
         <div class="ico-wrap"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="14" width="44" height="32" rx="5" fill="none" stroke="var(--cta)" stroke-width="4"/><path d="M28 38V22m-8 7 8-8 8 8" fill="none" stroke="var(--hot)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <span class="num">STEP 01</span>
         <h3>Upload gameplay</h3>
-        <p>Drop in a recording from your playtest, stream VOD or screen capture. MP4, MOV or WebM, up to 60 minutes.</p>
+        <p>Drop in a recording from your playtest, stream VOD or screen capture. MP4, MOV or WebM. It stays on your computer.</p>
       </article>
       <article class="card step tilt reveal" style="--d:.15s">
         <div class="ico-wrap"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><path d="M4 40h8l6-18 8 26 7-30 6 22h13" fill="none" stroke="var(--cta)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="33" cy="18" r="5" fill="var(--hot)"/></svg></div>
         <span class="num">STEP 02</span>
         <h3>We find the best moments</h3>
-        <p>We scan for clutch saves, wins, fails, boss fights and chat spikes, then score each moment for hook strength.</p>
+        <p>Every second gets a hype score from how loud it is and how much is happening on screen. The top moments win.</p>
       </article>
       <article class="card step tilt reveal" style="--d:.3s">
         <div class="ico-wrap"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><rect x="16" y="4" width="24" height="44" rx="5" fill="none" stroke="var(--cta)" stroke-width="4"/><rect x="21" y="31" width="14" height="5" rx="2" fill="var(--hot)"/><path d="M28 50v4" stroke="var(--cta)" stroke-width="4" stroke-linecap="round"/></svg></div>
         <span class="num">STEP 03</span>
         <h3>Download vertical clips</h3>
-        <p>Get 9:16 clips with auto captions and a hook title, sized for YouTube Shorts and TikTok. Post them as-is.</p>
+        <p>Get 9:16 clips with a hook caption (plus optional speech subtitles), sized for Shorts, TikTok and Reels. Post them as-is.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">What you get</p>
+      <h2>Built for people who <span class="grad">hate editing.</span></h2>
+    </div>
+    <div class="bento">
+      <article class="bento-card big reveal" style="--d:0s">
+        <div class="lockviz" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="core"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span></div>
+        <div><span class="tag">Private by design</span><h3>Your video never leaves your computer</h3><p>Everything runs in your browser. No uploading gigabytes, no waiting in a queue, no copy of your footage on our servers.</p></div>
+      </article>
+      <article class="bento-card wide reveal" style="--d:.08s">
+        <div class="bento-viz" aria-hidden="true"><i style="--h:22%"></i><i style="--h:30%"></i><i style="--h:18%"></i><i class="hot" style="--h:92%"></i><i style="--h:26%"></i><i style="--h:34%"></i><i style="--h:20%"></i><i style="--h:28%"></i><i class="hot" style="--h:78%"></i><i style="--h:24%"></i><i style="--h:16%"></i><i style="--h:30%"></i><i class="hot" style="--h:86%"></i><i style="--h:22%"></i></div>
+        <div><span class="tag">Hype score</span><h3>It finds the moments</h3><p>Loudness and on-screen motion, second by second. The spikes become your clips.</p></div>
+      </article>
+      <article class="bento-card reveal" style="--d:.14s">
+        <div class="cropviz" aria-hidden="true"></div>
+        <div><span class="tag">Smart crop</span><h3>Follows the action</h3><p>Into 9:16, or full frame with a blurred fill.</p></div>
+      </article>
+      <article class="bento-card reveal" style="--d:.2s">
+        <div class="capviz" aria-hidden="true"><b>Clutch</b><b>1v3</b><b>💀</b></div>
+        <div><span class="tag">Captions</span><h3>Hook on every clip</h3><p>Editable title, plus word-by-word speech subtitles (beta).</p></div>
+      </article>
+      <article class="bento-card wide reveal" style="--d:.26s">
+        <div class="bignum"><span class="grad">3</span> free clips <small style="font-size:.4em;color:var(--muted)">every month</small></div>
+        <div><span class="tag">No signup</span><h3>Try it right now</h3><p>Open the tool, drop a recording in, download your clips. Pro adds 20 or 80 clips a month without the watermark.</p></div>
       </article>
     </div>
   </div>
@@ -486,7 +642,7 @@ footer a:hover { color: var(--cta); }
       </article>
     </div>
     <div class="genres reveal" style="--d:.3s" aria-label="Genres we're tuning for">
-      <span>Obbies</span><span>Tycoons</span><span>Simulators</span><span>Horror</span><span>Fighting</span><span>Tower defense</span><span>Roleplay</span><span>Racing</span><span>Survival</span>
+      <span>Shooters</span><span>Platformers</span><span>Horror</span><span>Fighting</span><span>Racing</span><span>Survival</span><span>Sports</span><span>Strategy</span><span>Speedruns</span>
     </div>
   </div>
 </section>
@@ -585,6 +741,7 @@ footer a:hover { color: var(--cta); }
 </footer>
 
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="/fx.js" defer></script>
 <script>
 (function () {
   const doc = document.documentElement;
