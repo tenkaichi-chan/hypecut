@@ -15,8 +15,8 @@ const ON = new Set(["active", "past_due", "on_hold"]);
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
 
-// Monthly clip allowance: monthly plan 20 clips/month, yearly plan 80 clips/month. Resets on the 1st (UTC).
-const QUOTA = { month: 20, year: 80 };
+// Monthly clip allowance: monthly plan 20 clips/month, yearly plan 100 clips/month. Resets on the 1st (UTC).
+const QUOTA = { month: 20, year: 100 };
 // Auto top-up when a subscriber runs out: +10 clips for $4.99, charged to the saved payment method, max 5 a month.
 const BOOST_CLIPS = 10, MAX_BOOSTS = 5; // price lives on the DODO_PRODUCT_BOOST product ($4.99)
 const interval = (sub) => String((sub && sub.payment_frequency_interval) || "Month").toLowerCase();

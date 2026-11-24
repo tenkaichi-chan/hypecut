@@ -7,8 +7,8 @@
 // Env: GUMROAD_PRO_PRODUCT_ID, GUMROAD_TOPUP_PRODUCT_ID (product ids from Gumroad), GUMROAD_PRO_URL, GUMROAD_TOPUP_URL.
 // Gumroad can't charge a saved card on its own, so top-ups are a one-click purchase plus pasting the top-up key.
 
-// Clips per calendar month by billing period. Quarterly is a real plan at the monthly rate (same clips, no saving).
-const QUOTA = { monthly: 20, quarterly: 20, yearly: 80 };
+// Clips per calendar month by billing period: $19.99/month, $49.99/3 months, $159.99/year.
+const QUOTA = { monthly: 20, quarterly: 40, yearly: 100 };
 const BOOST_CLIPS = 10, MAX_BOOSTS = 5;
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
