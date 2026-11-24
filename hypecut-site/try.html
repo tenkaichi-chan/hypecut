@@ -306,7 +306,7 @@ footer a { color: inherit; }
   <section class="panel upsell" id="upsell">
     <div>
       <h3>Want this without the limits?</h3>
-      <p>Pro gives you 20 clips a month ($19.99/month), 40 clips a month ($49.99 every 3 months) or 100 clips a month ($159.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project? Add 10 more for $4.99 in one click.</p>
+      <p>Pro gives you 20 clips a month ($19.99/month), 40 clips a month ($49.99 every 3 months) or unlimited clips ($159.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project? Add 10 more for $4.99 in one click.</p>
     </div>
     <a class="btn" href="/#pricing">See Pro <span aria-hidden="true">→</span></a>
   </section>
@@ -969,7 +969,7 @@ footer a { color: inherit; }
     if (left <= 0) {
       return say($("msg2"), pro.active
         ? "You've used all " + pro.quota + " Pro clips for this month. They reset on " + resetDay() + "."
-        : "You've used your " + FREE_MONTHLY + " free clips this month. They reset on " + resetDay() + ", or go Pro for 20–100 clips a month.", "err");
+        : "You've used your " + FREE_MONTHLY + " free clips this month. They reset on " + resetDay() + ", or go Pro for more (yearly Pro is unlimited).", "err");
     }
     let limitNote = "";
     if (list.length > left) {
@@ -1177,7 +1177,8 @@ footer a { color: inherit; }
   }
   function setUsage(d) {
     if (d && d.topupUrl) { $("buyTopup").href = d.topupUrl; $("buyTopup").hidden = false; $("addTopup").hidden = false; }
-    if (d && typeof d.quota === "number") Object.assign(pro, { quota: d.quota, remaining: d.remaining, plan: d.plan, resets: d.resets, boosts: d.boosts || 0, maxBoosts: d.maxBoosts || 0, boostClips: d.boostClips || 0, boostPrice: d.boostPrice || "" });
+    if (d && d.unlimited) Object.assign(pro, { unlimited: true, quota: null, remaining: null, plan: d.plan, resets: d.resets, maxBoosts: 0 });
+    if (d && typeof d.quota === "number") Object.assign(pro, { unlimited: false }), Object.assign(pro, { quota: d.quota, remaining: d.remaining, plan: d.plan, resets: d.resets, boosts: d.boosts || 0, maxBoosts: d.maxBoosts || 0, boostClips: d.boostClips || 0, boostPrice: d.boostPrice || "" });
   }
   const resetDay = () => { const d = pro.resets ? new Date(pro.resets) : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 1)); return d.toLocaleDateString(undefined, { day: "numeric", month: "short" }); };
 
@@ -1186,7 +1187,8 @@ footer a { color: inherit; }
     bar.classList.toggle("is-pro", pro.active);
     $("planChip").textContent = pro.active ? "PRO" : "FREE";
     $("planText").textContent = pro.active
-      ? (pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · need more? Add 10 clips for $4.99."
+      ? (pro.unlimited ? (pro.plan || "Pro") + " · unlimited clips · no watermark, 60-second clips and every caption style."
+       : pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · need more? Add 10 clips for $4.99."
                    : "No watermark, 60-second clips and every caption style.")
       : FREE_MONTHLY + " free clips a month · " + clipsLeft() + " left this month · small watermark.";
     $("pbFree").hidden = pro.active; $("pbPro").hidden = !pro.active;
@@ -1197,7 +1199,7 @@ footer a { color: inherit; }
       if (!pro.active && o.selected) { const sel = o.parentElement; sel.value = sel.querySelector("option:not([data-pro])[selected]") ? sel.querySelector("option:not([data-pro])[selected]").value : sel.options[0].value; }
     });
     const badge = document.querySelector(".badges span:last-child");
-    if (badge) badge.textContent = pro.active ? "Pro: " + (pro.quota ? pro.quota + " clips a month" : "no watermark") : "Free: 3 clips a month";
+    if (badge) badge.textContent = pro.active ? "Pro: " + (pro.unlimited ? "unlimited clips" : pro.quota ? pro.quota + " clips a month" : "no watermark") : "Free: 3 clips a month";
   }
   $("haveKey").addEventListener("click", () => {
     const f = $("keyForm"); f.hidden = !f.hidden;

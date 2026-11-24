@@ -7,8 +7,9 @@
 // Env: GUMROAD_PRO_PRODUCT_ID, GUMROAD_TOPUP_PRODUCT_ID (product ids from Gumroad), GUMROAD_PRO_URL, GUMROAD_TOPUP_URL.
 // Gumroad can't charge a saved card on its own, so top-ups are a one-click purchase plus pasting the top-up key.
 
-// Clips per calendar month by billing period: $19.99/month, $49.99/3 months, $159.99/year.
-const QUOTA = { monthly: 20, quarterly: 40, yearly: 100 };
+// Clips per calendar month by billing period: $19.99/month -> 20, $49.99/3 months -> 40, $159.99/year -> unlimited.
+// Usage is still counted for every plan (useful for spotting shared keys).
+const QUOTA = { monthly: 20, quarterly: 40, yearly: Infinity };
 const BOOST_CLIPS = 10, MAX_BOOSTS = 5;
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "Cache-Control": "no-store" } });
@@ -55,10 +56,11 @@ export async function handleGumroadLicense(req, env, store) {
     let used = Number(await store.get(ukey)) || 0;
     let boosts = Number(await store.get(bkey)) || 0;
     const info = () => {
-      const quota = QUOTA[plan] + boosts * BOOST_CLIPS;
+      const unlimited = QUOTA[plan] === Infinity;
+      const quota = unlimited ? null : QUOTA[plan] + boosts * BOOST_CLIPS;
       return { plan: PLAN_NAME[plan], status: p.subscription_cancelled_at ? "cancelled" : "active",
-        cancelsAtEnd: !!p.subscription_cancelled_at, quota, used, remaining: Math.max(0, quota - used), boosts, boosted: false,
-        boostClips: BOOST_CLIPS, boostPrice: "$4.99", maxBoosts: 0, manualBoosts: MAX_BOOSTS, topupUrl: env.GUMROAD_TOPUP_URL || null, resets: nextReset() };
+        cancelsAtEnd: !!p.subscription_cancelled_at, quota, used, remaining: unlimited ? null : Math.max(0, quota - used), unlimited, boosts, boosted: false,
+        boostClips: BOOST_CLIPS, boostPrice: "$4.99", maxBoosts: 0, manualBoosts: MAX_BOOSTS, topupUrl: unlimited ? null : (env.GUMROAD_TOPUP_URL || null), resets: nextReset() };
     };
 
     if (body.action === "validate") return json({ ok: true, ...info() });
@@ -66,7 +68,7 @@ export async function handleGumroadLicense(req, env, store) {
     if (body.action === "use") {
       const n = Math.max(1, Math.min(8, parseInt(body.n, 10) || 1));
       const i = info();
-      if (used + n > i.quota) {
+      if (!i.unlimited && used + n > i.quota) {
         return json({ ok: false, limit: true, ...i,
           error: boosts >= MAX_BOOSTS
             ? `You've used all ${i.quota} clips this month, including the maximum ${MAX_BOOSTS} top-ups. Clips reset on ${nextReset().slice(0, 10)}.`
