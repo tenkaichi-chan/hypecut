@@ -22,3 +22,4 @@ work/tts/*.wav
 work/tts/*.json
 !work/tts/package.json
 work/chk.jpg
+.deploy/

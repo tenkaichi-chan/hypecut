@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Log in · Hypecut</title>
+<meta name="description" content="Log in or create a free Hypecut account to keep your Pro key and clip count on every device.">
+<meta name="theme-color" content="#0b0918">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpolygon points='0,0 7,0 10,5 7,10 0,10 3,5' fill='%23ff3d8b'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root { --bg: #0b0918; --panel: #19153a; --line: #2c2760; --fg: #f4f2ff; --muted: #a9a4d4; --hot: #ff3d8b; --cta: #ffd23f; --cta-ink: #1a1300; --ok: #3ee6a8; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(900px 500px at 80% -10%, #2d106655, transparent), var(--bg); color: var(--fg); font: 16px/1.6 "Inter", system-ui, sans-serif; display: grid; place-items: center; padding: max(24px, env(safe-area-inset-top, 0px)) 16px 40px; }
+main { width: 100%; max-width: 420px; display: grid; gap: 18px; }
+a { color: var(--cta); }
+h1 { font-family: "Chakra Petch", sans-serif; text-transform: uppercase; font-size: 2rem; line-height: 1.05; margin: 0; }
+p { margin: 0; color: var(--muted); }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--panel); border-radius: 14px; padding: 4px; box-shadow: inset 0 0 0 1px var(--line); }
+.tabs a { text-align: center; padding: 10px; border-radius: 10px; text-decoration: none; color: var(--muted); font-weight: 600; }
+.tabs a[aria-current="page"] { background: var(--bg); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line); }
+.card { background: var(--panel); border-radius: 20px; padding: 24px; box-shadow: inset 0 0 0 1px var(--line); display: grid; gap: 12px; }
+label { font-family: "JetBrains Mono", monospace; font-size: .76rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+input { font: inherit; background: var(--bg); color: var(--fg); border: 0; border-radius: 12px; box-shadow: inset 0 0 0 1.5px var(--line); padding: 13px 14px; width: 100%; }
+input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--cta); }
+.pw { position: relative; }
+.pw button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; color: var(--muted); padding: 6px 8px; font: 600 .8rem "Inter", sans-serif; text-transform: none; letter-spacing: 0; }
+button.go { font-family: "Chakra Petch", sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; font-size: 1rem; padding: 14px 20px; border: 0; border-radius: 14px; background: var(--cta); color: var(--cta-ink); cursor: pointer; margin-top: 6px; }
+button { cursor: pointer; border: 0; }
+button[disabled] { opacity: .6; cursor: progress; }
+.hint { font-size: .85rem; }
+.msg { min-height: 1.4em; font-size: .92rem; } .msg.err { color: var(--hot); } .msg.ok { color: var(--ok); }
+.back { text-decoration: none; font-weight: 600; }
+.small { font-size: .85rem; text-align: center; }
+:focus-visible { outline: 3px solid var(--cta); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/">← Hypecut</a>
+  <h1 id="title">Log in</h1>
+  <p id="lede">Your Pro key and clip count, on every device.</p>
+  <nav class="tabs" aria-label="Account">
+    <a href="/login" id="tabLogin">Log in</a>
+    <a href="/signup" id="tabSignup">Sign up</a>
+  </nav>
+  <form class="card" id="form" novalidate>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" required maxlength="254">
+    <label for="password">Password</label>
+    <div class="pw">
+      <input id="password" type="password" required minlength="8" maxlength="200">
+      <button type="button" id="showPw" aria-pressed="false">Show</button>
+    </div>
+    <p class="hint" id="pwHint" hidden>At least 8 characters.</p>
+    <button class="go" id="go" type="submit">Log in</button>
+    <p class="msg" id="msg" role="status" aria-live="polite"></p>
+  </form>
+  <p class="small">You don't need an account to use the free tool. <a href="/try">Try it without one</a>.</p>
+  <p class="small" id="forgot">Forgot your password? Email <a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a> from the address you signed up with.</p>
+</main>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const signup = /\/signup\/?$/.test(location.pathname) || new URLSearchParams(location.search).get("mode") === "signup";
+  const next = (() => { const n = new URLSearchParams(location.search).get("next") || "/try"; return /^\/[^/\\]/.test(n) || n === "/" ? n : "/try"; })();
+  document.title = (signup ? "Sign up" : "Log in") + " · Hypecut";
+  $("title").textContent = signup ? "Create your account" : "Log in";
+  $("lede").textContent = signup ? "Free. Keeps your Pro key and clip count on every device." : "Welcome back.";
+  $("go").textContent = signup ? "Create account" : "Log in";
+  $(signup ? "tabSignup" : "tabLogin").setAttribute("aria-current", "page");
+  $("password").autocomplete = signup ? "new-password" : "current-password";
+  $("pwHint").hidden = !signup;
+  $("forgot").hidden = signup;
+  const q = location.search ? location.search : "";
+  $("tabLogin").href = "/login" + q.replace(/([?&])mode=signup&?/, "$1").replace(/[?&]$/, "");
+  $("tabSignup").href = "/signup" + q.replace(/([?&])mode=signup&?/, "$1").replace(/[?&]$/, "");
+
+  const say = (t, k) => { $("msg").textContent = t; $("msg").className = "msg" + (k ? " " + k : ""); };
+  $("showPw").addEventListener("click", () => {
+    const p = $("password"), show = p.type === "password";
+    p.type = show ? "text" : "password"; $("showPw").textContent = show ? "Hide" : "Show"; $("showPw").setAttribute("aria-pressed", String(show));
+  });
+
+  // already logged in? go straight on
+  fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: '{"action":"me"}' })
+    .then(r => r.json()).then(d => { if (d && d.user) { say("You're logged in as " + d.user.email + ". Taking you back…", "ok"); setTimeout(() => location.href = next, 700); } }).catch(() => {});
+
+  $("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("email").value.trim(), password = $("password").value;
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { say("Enter a valid email address.", "err"); $("email").focus(); return; }
+    if (signup && password.length < 8) { say("Use at least 8 characters for your password.", "err"); $("password").focus(); return; }
+    if (!password) { say("Enter your password.", "err"); $("password").focus(); return; }
+    $("go").disabled = true; say(signup ? "Creating your account…" : "Logging in…");
+    try {
+      const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: signup ? "signup" : "login", email, password }) });
+      const d = await r.json().catch(() => null);
+      if (!d || !d.ok) { say((d && d.error) || "Something went wrong. Try again.", "err"); return; }
+      say(signup ? "Account created. Taking you to the tool…" : "Logged in. Taking you back…", "ok");
+      setTimeout(() => location.href = next, 500);
+    } catch (_) { say("Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    finally { $("go").disabled = false; }
+  });
+})();
+</script>
+</body>
+</html>

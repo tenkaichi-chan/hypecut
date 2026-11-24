@@ -67,6 +67,11 @@ nav.top .wrap { display: flex; align-items: center; justify-content: space-betwe
 .btn.ghost { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--fg); box-shadow: inset 0 0 0 1.5px var(--line); }
 .btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--fg); }
 .btn.sm { padding: 9px 14px; font-size: .78rem; border-radius: 10px; }
+.nav-acct { display: flex; gap: 8px; align-items: center; }
+.nav-acct .btn { white-space: nowrap; }
+@media (max-width: 420px) { nav.top .logo small { display: none; } .nav-acct .btn { padding: 8px 11px; } }
+#acctEmail { font-size: .8rem; color: var(--muted); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 520px) { #acctEmail { display: none !important; } }
 .btn[disabled] { opacity: .5; cursor: not-allowed; transform: none; }
 
 header.intro { padding-block: clamp(40px, 7vw, 72px) 28px; display: grid; gap: 14px; }
@@ -195,7 +200,7 @@ footer a { color: inherit; }
 <nav class="top">
   <div class="wrap">
     <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span>Hypecut<small>FREE DEMO</small></a>
-    <a class="btn sm ghost" href="/#pricing">See Pro plans</a>
+    <div class="nav-acct" id="account"><span id="acctEmail" hidden></span><a class="btn sm ghost" id="acctLogin" href="/login?next=/try">Log in</a><a class="btn sm" id="acctSignup" href="/signup?next=/try">Sign up</a><button class="btn sm ghost" id="acctLogout" type="button" hidden>Log out</button></div>
   </div>
 </nav>
 
@@ -1105,6 +1110,35 @@ footer a { color: inherit; }
   }
 
   // ---------- Pro: license key ----------
+  // ---------- optional account (sign up / log in) ----------
+  const acct = { user: null };
+  async function authCall(body) {
+    const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    return r.json();
+  }
+  function applyAcct() {
+    const u = acct.user;
+    $("acctEmail").hidden = !u; $("acctEmail").textContent = u ? u.email : "";
+    $("acctLogin").hidden = !!u; $("acctSignup").hidden = !!u; $("acctLogout").hidden = !u;
+  }
+  function linkKeyToAccount(key) { if (acct.user && acct.user.proKey !== key) authCall({ action: "link_key", key }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {}); }
+  $("acctLogout").addEventListener("click", async () => {
+    try { await authCall({ action: "logout" }); } catch (_) {}
+    acct.user = null; applyAcct(); applyPlan();
+  });
+  authCall({ action: "me" }).then(async d => {
+    acct.user = (d && d.user) || null; applyAcct();
+    if (!acct.user) return;
+    if (pro.active && pro.key) { linkKeyToAccount(pro.key); applyPlan(); return; }
+    if (acct.user.proKey) { // Pro key saved on the account: unlock it in this browser too
+      try {
+        const v = await licenseCall({ action: "validate", key: acct.user.proKey });
+        if (v.ok) { Object.assign(pro, { active: true, key: acct.user.proKey }); setUsage(v); saveLicense({ key: acct.user.proKey, checked: Date.now() }); }
+      } catch (_) {}
+    }
+    applyPlan();
+  }).catch(() => {});
+
   const PRO_STORE = "hypecut-pro";
   const RECHECK_MS = 24 * 3600 * 1000, OFFLINE_GRACE_MS = 7 * 24 * 3600 * 1000;
   const keyMsg = (t, kind) => say($("keyMsg"), t, kind);
@@ -1119,8 +1153,12 @@ footer a { color: inherit; }
   // ---- monthly clip allowance: Free 3 (counted in this browser), Pro 20 / 80 (counted on the server per key) ----
   const FREE_MONTHLY = 3, FREE_STORE = "hypecut-free-usage";
   const monthKey = () => new Date().toISOString().slice(0, 7);
-  function freeUsed() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
-  function addFreeUse(n) { try { localStorage.setItem(FREE_STORE, JSON.stringify({ period: monthKey(), used: freeUsed() + n })); } catch (_) {} }
+  function freeUsedLocal() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
+  function freeUsed() { return Math.max(freeUsedLocal(), (acct.user && acct.user.freeUsed) || 0); }
+  function addFreeUse(n) {
+    try { localStorage.setItem(FREE_STORE, JSON.stringify({ period: monthKey(), used: freeUsed() + n })); } catch (_) {}
+    if (acct.user) { acct.user.freeUsed = (acct.user.freeUsed || 0) + n; authCall({ action: "use_free", n }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {}); }
+  }
   // Pro can keep going past the allowance: the server auto-adds top-up packs (up to maxBoosts a month)
   function clipsLeft() {
     if (!pro.active) return Math.max(0, FREE_MONTHLY - freeUsed());
@@ -1165,7 +1203,7 @@ footer a { color: inherit; }
       if (!d.ok) { keyMsg(d.error || "That key didn't work.", "err"); return; }
       const k = key.toUpperCase().replace(/\s+/g, "");
       Object.assign(pro, { active: true, key: k }); setUsage(d);
-      saveLicense({ key: k, checked: Date.now() });
+      saveLicense({ key: k, checked: Date.now() }); linkKeyToAccount(k);
       $("keyIn").value = "";
       applyPlan();
       keyMsg("Pro is unlocked on this browser. Enjoy!", "ok");
@@ -1192,6 +1230,7 @@ footer a { color: inherit; }
     b.disabled = false;
   });
   $("removeKey").addEventListener("click", () => {
+    if (acct.user && acct.user.proKey) authCall({ action: "unlink_key" }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {});
     Object.assign(pro, { active: false, key: "" });
     saveLicense(null); applyPlan(); $("keyBox").hidden = true;
     keyMsg("Pro removed from this browser. Your subscription is unchanged; paste your key to unlock again.", "ok");
@@ -1209,7 +1248,7 @@ footer a { color: inherit; }
           if (d.ok) {
             history.replaceState(null, "", location.pathname);
             Object.assign(pro, { active: true, key: d.key });
-            saveLicense({ key: d.key, checked: Date.now() });
+            saveLicense({ key: d.key, checked: Date.now() }); linkKeyToAccount(d.key);
             try { setUsage(await licenseCall({ action: "validate", key: d.key })); } catch (_) {}
             applyPlan(); showKeyBox(d.key);
             keyMsg("You're Pro! Thanks for supporting Hypecut. Copy your key below to unlock Pro in other browsers.", "ok");

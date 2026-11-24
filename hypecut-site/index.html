@@ -368,6 +368,7 @@ footer a:hover { color: var(--cta); }
       <a href="#compare">Why Hypecut</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
+      <a href="/login" data-acct>Log in</a>
       <a class="btn magnetic" href="/try">Try it free</a>
       <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><i></i><i></i><i></i></button>
     </div>
@@ -378,6 +379,8 @@ footer a:hover { color: var(--cta); }
   <a href="#compare">Why Hypecut</a>
   <a href="#pricing">Pricing</a>
   <a href="#faq">FAQ</a>
+  <a href="/login" data-acct>Log in</a>
+  <a href="/signup" data-acct-signup>Sign up</a>
   <a class="btn" href="/try">Try it free <span class="arr">→</span></a>
 </div>
 <div class="sticky-cta" id="stickyCta"><a class="btn" href="/try">Try it free <span class="arr">→</span></a></div>
@@ -833,6 +836,9 @@ footer a:hover { color: var(--cta); }
   }
   addEventListener("scroll", stickyCheck, { passive: true }); stickyCheck();
 })();
+</script>
+<script>
+fetch("/api/auth",{method:"POST",headers:{"Content-Type":"application/json"},body:'{"action":"me"}'}).then(r=>r.json()).then(d=>{if(!d||!d.user)return;document.querySelectorAll("[data-acct]").forEach(a=>{a.textContent="My account";a.href="/try#account";});document.querySelectorAll("[data-acct-signup]").forEach(a=>a.remove());}).catch(()=>{});
 </script>
 </body>
 </html>
