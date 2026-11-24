@@ -162,6 +162,101 @@ float fade=ss(0.0,0.7,uReveal);float strength=clamp(uBrightness,0.0,2.0);glow*=f
     }, { threshold: .35 }).observe(root);
   }
 
+  /* ================= ScrollStack (port of React Bits ScrollStack, window-scroll mode) ================= */
+  function scrollStack(root) {
+    const o = { itemDistance: 90, itemStackDistance: 26, stackPosition: 0.14, itemScale: 0.05, baseScale: 0.84, dimAmount: 0.22, holdDistance: 160 };
+    const inner = root.querySelector(".scroll-stack__inner");
+    const cards = [...inner.querySelectorAll(":scope > .scroll-stack-card")];
+    if (cards.length < 2) return;
+    // build slots + spacers exactly like the React component
+    const slots = cards.map((card, i) => {
+      if (i > 0) { const gap = o.itemDistance - (cards.length - i) * o.itemStackDistance; const sp = document.createElement("div"); sp.setAttribute("aria-hidden", "true"); sp.style.height = Math.max(0, gap) + "px"; sp.style.marginTop = Math.min(0, gap) + "px"; inner.insertBefore(sp, card); }
+      const slot = document.createElement("div"); slot.className = "scroll-stack__slot";
+      slot.style.top = `calc(${(o.stackPosition * 100).toFixed(0)}vh + ${i * o.itemStackDistance}px)`;
+      slot.style.marginBottom = (cards.length - 1 - i) * o.itemStackDistance + "px"; slot.style.zIndex = i + 1;
+      inner.insertBefore(slot, card); slot.appendChild(card);
+      const shade = document.createElement("span"); shade.className = "scroll-stack-card__shade"; shade.setAttribute("aria-hidden", "true"); card.appendChild(shade);
+      return slot;
+    });
+    const end = document.createElement("div"); end.style.height = o.holdDistance + "px"; end.setAttribute("aria-hidden", "true"); inner.appendChild(end);
+    if (reduce) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const vh = innerHeight, stackTop = o.stackPosition * vh, off = o.itemStackDistance;
+      const heights = slots.map(s => s.offsetHeight), tops = slots.map(s => s.getBoundingClientRect().top);
+      const depths = slots.map(() => 0);
+      for (let j = 1; j < slots.length; j++) {
+        const pinBefore = stackTop + (j - 1) * off, start = pinBefore + heights[j - 1], span = Math.max(1, start - pinBefore - off);
+        const cover = clamp((start - tops[j]) / span, 0, 1);
+        for (let i = 0; i < j; i++) depths[i] += cover;
+      }
+      slots.forEach((slot, i) => {
+        const card = slot.firstElementChild, depth = depths[i];
+        const scale = Math.max(o.baseScale, 1 - depth * o.itemScale), dim = 1 - Math.pow(1 - o.dimAmount, depth);
+        card.style.transform = depth < .0005 ? "" : `scale(${scale.toFixed(4)})`;
+        card.style.setProperty("--scroll-stack-dim", dim.toFixed(3));
+      });
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    addEventListener("scroll", schedule, { passive: true }); addEventListener("resize", schedule); update();
+  }
+
+  /* ================= ScrollReveal (port of React Bits ScrollReveal: scrub + fade + blur + rotation) ================= */
+  function scrollReveal(el) {
+    if (reduce) return;
+    const look = { baseOpacity: .12, blur: 4, rotation: 3, stagger: .05, span: .5 };
+    // wrap every word (keeping inner spans like .grad intact)
+    const walk = (node) => {
+      [...node.childNodes].forEach(n => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(w => { if (!w) return; if (!w.trim()) { frag.appendChild(document.createTextNode(w)); return; } const s = document.createElement("span"); s.className = "sr-piece"; s.textContent = w; frag.appendChild(s); });
+          n.replaceWith(frag);
+        } else if (n.nodeType === 1 && n.tagName !== "BR") walk(n);
+      });
+    };
+    walk(el);
+    const pieces = [...el.querySelectorAll(".sr-piece")];
+    el.style.transformOrigin = "0% 50%";
+    const total = look.span + Math.max(0, pieces.length - 1) * look.stagger;
+    let raf = 0;
+    const render = () => {
+      raf = 0;
+      const r = el.getBoundingClientRect(), vh = innerHeight;
+      const start = vh - .2 * Math.min(r.height, vh);       // "top bottom-=20%"
+      const endTop = vh - r.height;                           // "bottom bottom"
+      const p = clamp((start - r.top) / Math.max(1, start - endTop), 0, 1);
+      const rot = clamp((vh - r.top) / Math.max(1, vh - endTop), 0, 1);
+      el.style.transform = rot >= 1 ? "" : `rotate(${(look.rotation * (1 - rot)).toFixed(2)}deg)`;
+      const at = p * total;
+      pieces.forEach((piece, i) => {
+        const t = clamp((at - i * look.stagger) / look.span, 0, 1);
+        piece.style.opacity = t >= 1 ? "" : (look.baseOpacity + (1 - look.baseOpacity) * t).toFixed(3);
+        piece.style.filter = t < 1 ? `blur(${(look.blur * (1 - t)).toFixed(2)}px)` : "";
+      });
+    };
+    const schedule = () => { if (!raf) raf = requestAnimationFrame(render); };
+    addEventListener("scroll", schedule, { passive: true }); addEventListener("resize", schedule); render();
+  }
+
+  /* ================= GradientText (port of React Bits GradientText, linear + yoyo) ================= */
+  function gradientText(el) {
+    const colors = (el.dataset.colors || "#ffd23f,#ff3d8b,#b14dff").split(",");
+    const speed = parseFloat(el.dataset.speed || "8"), scale = 3, angle = parseFloat(el.dataset.angle || "90");
+    const loop = [...colors, colors[0]], period = 100 * scale;
+    const paint = (time) => {
+      const cycle = time / speed, swing = cycle % 2, t = swing < 1 ? swing : 2 - swing;
+      const offset = (0.5 - Math.cos(Math.PI * t) / 2) * (period - 100);
+      const stops = loop.map((c, i) => `${c} ${((i / (loop.length - 1)) * period - offset).toFixed(2)}%`);
+      el.style.setProperty("--gt-gradient", `repeating-linear-gradient(${angle}deg, ${stops.join(", ")})`);
+    };
+    paint(0); if (reduce) return;
+    let visible = true; new IntersectionObserver(e => { visible = e.some(x => x.isIntersecting); }).observe(el);
+    const t0 = performance.now();
+    (function loopF(now) { if (visible) paint((now - t0) / 1000); requestAnimationFrame(loopF); })(t0);
+  }
+
   /* ================= boot ================= */
   const go = () => {
     document.querySelectorAll("#heroAurora, [data-aurora]").forEach(el => {
@@ -175,6 +270,9 @@ float fade=ss(0.0,0.7,uReveal);float strength=clamp(uBrightness,0.0,2.0);glow*=f
     document.querySelectorAll(".bento").forEach(spotlight);
     const m = document.getElementById("marquee"); if (m) velocityMarquee(m);
     const d = document.getElementById("mgDemo"); if (d) demo(d);
+    document.querySelectorAll(".scroll-stack").forEach(scrollStack);
+    document.querySelectorAll("[data-scroll-reveal]").forEach(scrollReveal);
+    document.querySelectorAll("[data-gradient-text]").forEach(gradientText);
     clickSpark();
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", go); else go();
