@@ -32,6 +32,12 @@ button[disabled] { opacity: .6; cursor: progress; }
 .msg { min-height: 1.4em; font-size: .92rem; } .msg.err { color: var(--hot); } .msg.ok { color: var(--ok); }
 .back { text-decoration: none; font-weight: 600; }
 [hidden] { display: none !important; }
+/* shared aurora background (WebGL, React Bits Aurora port in /fx.js) */
+.page-aurora { position: fixed; inset: 0 0 auto 0; height: 70vh; z-index: -1; pointer-events: none; opacity: .5; mask-image: linear-gradient(180deg, #000 0%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%); }
+.page-aurora canvas { width: 100%; height: 100%; display: block; }
+.spark { position: fixed; z-index: 70; width: 3px; height: 12px; margin: -6px 0 0 -1.5px; border-radius: 2px; background: var(--cta); pointer-events: none; transform: rotate(var(--a)); animation: hc-spark .5s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes hc-spark { to { transform: rotate(var(--a)) translateY(-30px); opacity: 0; } }
+
 .google { display: grid; gap: 14px; }
 .google[hidden] { display: none; }
 #gbtn { display: flex; justify-content: center; min-height: 44px; color-scheme: light; }
@@ -43,6 +49,7 @@ button[disabled] { opacity: .6; cursor: progress; }
 </style>
 </head>
 <body>
+<div class="page-aurora" data-aurora data-height=".38" aria-hidden="true"></div>
 <main>
   <a class="back" href="/login">← Log in</a>
   <h1 id="title">Reset password</h1>
@@ -107,6 +114,7 @@ button[disabled] { opacity: .6; cursor: progress; }
   });
 })();
 </script>
+<script src="/fx.js" defer></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "bee69d7075a047c7b3cee9149efa8fa6"}'></script>
 </body>
 </html>

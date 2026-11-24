@@ -74,6 +74,15 @@ nav.top .wrap { display: flex; align-items: center; justify-content: space-betwe
 @media (max-width: 520px) { #acctEmail { display: none !important; } }
 .btn[disabled] { opacity: .5; cursor: not-allowed; transform: none; }
 
+/* shared aurora background (WebGL, React Bits Aurora port in /fx.js) */
+body { background: transparent !important; }
+.page-aurora { position: fixed; inset: 0 0 auto 0; height: 70vh; z-index: -1; pointer-events: none; opacity: .5; mask-image: linear-gradient(180deg, #000 0%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 100%); }
+.page-aurora canvas { width: 100%; height: 100%; display: block; }
+.spark { position: fixed; z-index: 70; width: 3px; height: 12px; margin: -6px 0 0 -1.5px; border-radius: 2px; background: var(--cta); pointer-events: none; transform: rotate(var(--a)); animation: hc-spark .5s cubic-bezier(.2,.8,.2,1) forwards; }
+@keyframes hc-spark { to { transform: rotate(var(--a)) translateY(-30px); opacity: 0; } }
+.drop .big-ico { animation: hc-icoFloat 3s ease-in-out infinite; }
+@keyframes hc-icoFloat { 50% { transform: translateY(-6px); box-shadow: inset 0 0 0 1px var(--line), 0 0 44px -4px var(--hot); } }
+.drop:hover .big-ico, .drop.over .big-ico { animation-duration: 1s; }
 header.intro { padding-block: clamp(40px, 7vw, 72px) 28px; display: grid; gap: 14px; }
 header.intro h1 { font-size: clamp(2.2rem, 6vw, 4rem); }
 header.intro p { color: var(--muted); font-size: 1.08rem; max-width: 60ch; }
@@ -195,6 +204,7 @@ footer a { color: inherit; }
 </style>
 </head>
 <body>
+<div class="page-aurora" data-aurora data-height=".34" aria-hidden="true"></div>
 <div class="aurora" aria-hidden="true"><i></i><i></i></div>
 
 <nav class="top">
@@ -247,7 +257,7 @@ footer a { color: inherit; }
       <label for="optCount">How many clips<select id="optCount"><option value="1">1 clip</option><option value="2">2 clips</option><option value="3" selected>3 clips</option><option value="5" data-pro>5 clips · Pro</option><option value="8" data-pro>8 clips · Pro</option></select></label>
       <label for="optStyle">Caption style<select id="optStyle"><option value="bold" selected>Bold</option><option value="neon" data-pro>Neon · Pro</option><option value="clean" data-pro>Clean · Pro</option></select></label>
       <label for="optLayout">Layout<select id="optLayout"><option value="fit" selected>Full frame + blurred fill</option><option value="smart">Smart crop (follows the action)</option></select></label>
-      <label for="optGame">Game name (optional)<input type="text" id="optGame" maxlength="40" placeholder="e.g. Lava Rush Obby"></label>
+      <label for="optGame">Game name (optional)<input type="text" id="optGame" maxlength="40" placeholder="e.g. Neon Arena"></label>
     </div>
     <label class="toggle" for="optSpeech">
       <input type="checkbox" id="optSpeech">
@@ -1312,6 +1322,7 @@ footer a { color: inherit; }
   }
 })();
 </script>
+<script src="/fx.js" defer></script>
 <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "bee69d7075a047c7b3cee9149efa8fa6"}'></script>
 </body>
 </html>

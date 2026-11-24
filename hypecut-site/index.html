@@ -440,6 +440,20 @@ footer a:hover { color: var(--cta); }
 @media (max-width: 900px) { .bento { grid-template-columns: 1fr 1fr; } .bento-card.big { grid-row: span 1; } }
 @media (max-width: 560px) { .bento { grid-template-columns: 1fr; } .bento-card.big, .bento-card.wide { grid-column: span 1; } }
 
+/* ---------- final CTA card ---------- */
+.final-card { position: relative; overflow: hidden; border-radius: 36px; padding: clamp(56px, 9vw, 110px) 20px; background: radial-gradient(120% 90% at 50% 120%, color-mix(in srgb, var(--hot-2) 30%, transparent), transparent 60%), color-mix(in srgb, var(--panel) 70%, transparent); box-shadow: inset 0 0 0 1px var(--line), 0 60px 140px -60px color-mix(in srgb, var(--hot) 80%, transparent); isolation: isolate; }
+.final-card > * { position: relative; z-index: 1; }
+.final-card .final-aurora { position: absolute; inset: 0; z-index: 0; opacity: .55; transform: scaleY(-1); pointer-events: none; }
+.final-aurora canvas { width: 100%; height: 100%; display: block; }
+.final-badge { display: inline-flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, transparent); box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); margin-bottom: 22px; }
+.final-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: hc-pulse 1.4s infinite; }
+.final .btn:not(.ghost) { animation: hc-ctaGlow 2.6s ease-in-out infinite; }
+@keyframes hc-ctaGlow { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cta) 18%, transparent), 0 20px 50px -12px color-mix(in srgb, var(--hot) 90%, transparent); } }
+
+/* ---------- pricing: make the yearly card pop ---------- */
+.plan.pro .price .amt { background: linear-gradient(100deg, #fff, var(--cta)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.billing #billYearly[aria-pressed="true"] .save { animation: hc-pulse2 2.4s ease-in-out infinite; }
+
 /* ---------- click spark (React Bits ClickSpark idea) ---------- */
 .spark { position: fixed; z-index: 70; width: 3px; height: 12px; margin: -6px 0 0 -1.5px; border-radius: 2px; background: var(--cta); pointer-events: none; transform: rotate(var(--a)) translateY(0); animation: hc-spark .5s var(--ease) forwards; }
 @keyframes hc-spark { to { transform: rotate(var(--a)) translateY(-30px); opacity: 0; } }
@@ -727,7 +741,9 @@ footer a:hover { color: var(--cta); }
 </section>
 
 <section class="final">
-  <div class="wrap reveal-scale">
+  <div class="wrap reveal-scale final-card">
+    <div class="final-aurora" data-aurora data-height=".62" data-stops="#ffd23f,#ff3d8b,#b14dff" aria-hidden="true"></div>
+    <span class="final-badge"><span class="dot"></span>Free · no signup · nothing uploaded</span>
     <h2>Stop editing.<br><span class="grad">Start posting.</span></h2>
     <p>Make your first clips free in your browser. Go Pro when you want more.</p>
     <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap"><a class="btn magnetic" href="/try">Try it free <span class="arr">→</span></a><a class="btn ghost magnetic" href="#pricing">See Pro plans</a></div>

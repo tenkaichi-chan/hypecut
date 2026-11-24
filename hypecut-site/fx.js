@@ -164,7 +164,13 @@ float fade=ss(0.0,0.7,uReveal);float strength=clamp(uBrightness,0.0,2.0);glow*=f
 
   /* ================= boot ================= */
   const go = () => {
-    const a = document.getElementById("heroAurora"); if (a) aurora(a);
+    document.querySelectorAll("#heroAurora, [data-aurora]").forEach(el => {
+      const o = {};
+      if (el.dataset.height) o.height = parseFloat(el.dataset.height);
+      if (el.dataset.stops) o.stops = el.dataset.stops.split(",");
+      if (el.dataset.brightness) o.brightness = parseFloat(el.dataset.brightness);
+      aurora(el, o);
+    });
     document.querySelectorAll("[data-rotate]").forEach(rotatingText);
     document.querySelectorAll(".bento").forEach(spotlight);
     const m = document.getElementById("marquee"); if (m) velocityMarquee(m);
