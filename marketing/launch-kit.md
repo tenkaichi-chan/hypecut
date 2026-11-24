@@ -82,6 +82,6 @@ Same text, but "gameplay recordings" and "game creators" throughout.
 - Turn on **Cloudflare Web Analytics** (free, no cookies): Cloudflare dashboard → Web Analytics → add `hypecut.pages.dev`. It needs your login, so it's a 2-minute step for you.
 - The numbers that matter first: visits to `/try`, and how many people make a clip. Ask 5 users why the others didn't.
 
-## 7. Hold until payments are live
+## 7. Pro is on sale (since 24 Nov 2026, via Gumroad)
 
-Pro pricing posts, "limited launch price" offers and affiliate/referral deals. Don't promote a plan people can't buy.
+Pro can now be bought: $19.99/month (20 clips) or $99.99/year (80 clips), from the site's pricing section. It's fine to mention Pro in posts now; keep the free tool as the main call to action ("try it free"), and only quote prices and allowances that match the site. No fake "limited time" offers.
