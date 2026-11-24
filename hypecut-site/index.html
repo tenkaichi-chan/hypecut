@@ -731,7 +731,7 @@ footer.big-foot .wrap { display: block; }
       <span class="pill-bg" aria-hidden="true"></span>
       <button type="button" id="billMonthly" aria-pressed="false">Monthly</button>
       <button type="button" id="billQuarterly" aria-pressed="false">Quarterly</button>
-      <button type="button" id="billYearly" aria-pressed="true">Yearly <span class="save">SAVE 33%</span></button>
+      <button type="button" id="billYearly" aria-pressed="true">Yearly <span class="save">SAVE 58%</span></button>
     </div>
     <div class="plans">
       <article class="card plan tilt reveal" style="--d:0s">
@@ -750,8 +750,8 @@ footer.big-foot .wrap { display: block; }
       <article class="card plan pro tilt reveal" style="--d:.15s">
         <span class="soon" id="proBadge">Best value</span>
         <h3>Pro</h3>
-        <div class="price"><span class="amt" id="proAmt">$159.99</span> <small id="proPer">/ year</small></div>
-        <p class="fine" id="proFine">That's $13.33 a month, billed yearly.</p>
+        <div class="price"><span class="amt" id="proAmt">$99.99</span> <small id="proPer">/ year</small></div>
+        <p class="fine" id="proFine">That's $8.33 a month, billed yearly.</p>
         <div class="deal"><span class="deal-chip" id="proDeal">No monthly cap</span></div>
         <ul>
           <li><span id="proClips"><b>Unlimited clips</b></span></li>
@@ -789,7 +789,7 @@ footer.big-foot .wrap { display: block; }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Monthly is $19.99 for 20 clips a month; quarterly is $49.99 every 3 months for 40 clips a month; yearly is $159.99 with unlimited clips. Checkout is handled securely by Gumroad (taxes included). Your receipt has a license key: paste it in the tool under "I have a key" and Pro unlocks: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Log in to keep Pro on every device. Your plan renews automatically. If you run out of clips mid-project, add 10 more for $4.99 in one click (up to 5 times a month). Cancel anytime from your Gumroad receipt or the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; quarterly is $39.99 every 3 months for 40 clips a month; yearly is $99.99 with unlimited clips. Checkout is handled securely by Gumroad (taxes included). Your receipt has a license key: paste it in the tool under "I have a key" and Pro unlocks: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Log in to keep Pro on every device. Your plan renews automatically. If you run out of clips mid-project, add 10 more for $4.99 in one click (up to 5 times a month). Cancel anytime from your Gumroad receipt or the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Which games does it work with? <span class="pm" aria-hidden="true"></span></summary>
@@ -974,8 +974,8 @@ footer.big-foot .wrap { display: block; }
   // Checkout is Dodo Payments' overlay (see /api/checkout).
   const PLANS = {
     monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "<b>20 clips</b> a month", deal: "About $1 a clip", badge: "Most flexible", label: "monthly" },
-    quarterly: { amt: "$49.99", per: "/ 3 months", fine: "That's $16.66 a month, billed every 3 months. 2× the clips of monthly.", clips: "<b>40 clips</b> a month", deal: "About 42¢ a clip", badge: "Save 17%", label: "quarterly" },
-    yearly: { amt: "$159.99", per: "/ year", fine: "That's $13.33 a month, billed yearly. Make as many clips as you want.", clips: "<b>Unlimited clips</b>", deal: "No monthly cap", badge: "Best value", label: "yearly" }
+    quarterly: { amt: "$39.99", per: "/ 3 months", fine: "That's $13.33 a month, billed every 3 months. 2× the clips of monthly.", clips: "<b>40 clips</b> a month", deal: "About 33¢ a clip", badge: "Save 33%", label: "quarterly" },
+    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. Make as many clips as you want.", clips: "<b>Unlimited clips</b>", deal: "No monthly cap", badge: "Best value", label: "yearly" }
   };
   let billing = "yearly";
   const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly"), bq = document.getElementById("billQuarterly");

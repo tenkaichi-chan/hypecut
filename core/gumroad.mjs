@@ -7,7 +7,7 @@
 // Env: GUMROAD_PRO_PRODUCT_ID, GUMROAD_TOPUP_PRODUCT_ID (product ids from Gumroad), GUMROAD_PRO_URL, GUMROAD_TOPUP_URL.
 // Gumroad can't charge a saved card on its own, so top-ups are a one-click purchase plus pasting the top-up key.
 
-// Clips per calendar month by billing period: $19.99/month -> 20, $49.99/3 months -> 40, $159.99/year -> unlimited.
+// Clips per calendar month by billing period: $19.99/month -> 20, $39.99/3 months -> 40, $99.99/year -> unlimited.
 // Usage is still counted for every plan (useful for spotting shared keys).
 const QUOTA = { monthly: 20, quarterly: 40, yearly: Infinity };
 const BOOST_CLIPS = 10, MAX_BOOSTS = 5;
