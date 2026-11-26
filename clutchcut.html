@@ -434,6 +434,175 @@ footer .wrap { display: flex; justify-content: space-between; flex-wrap: wrap; g
 footer a { text-decoration: none; transition: color .25s; }
 footer a:hover { color: var(--cta); }
 
+/* ---------- hero aurora (WebGL, ported from React Bits) ---------- */
+.hero-aurora { position: absolute; inset: 0 0 auto 0; height: 100%; z-index: 0; pointer-events: none; opacity: .6; mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, transparent 100%); }
+.hero-aurora canvas { width: 100%; height: 100%; display: block; }
+.hero > .wrap { z-index: 1; }
+
+/* ---------- rotating word ---------- */
+.rot-line { margin-top: 18px; font-family: var(--f-display); font-weight: 700; font-size: clamp(1.15rem, 2.4vw, 1.6rem); text-transform: uppercase; letter-spacing: .02em; color: var(--muted); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.rot { display: inline-flex; padding: 4px 14px 6px; border-radius: 12px; background: linear-gradient(135deg, var(--hot), var(--hot-2)); color: #fff; box-shadow: 0 10px 30px -10px var(--hot); overflow: hidden; min-height: 1.5em; }
+.rt-ch { display: inline-block; animation: hc-rtIn .5s var(--ease-back) backwards; animation-delay: calc(var(--k) * 22ms); }
+.rt-out .rt-ch { animation: hc-rtOut .35s var(--ease) both; animation-delay: calc(var(--k) * 12ms); }
+@keyframes hc-rtIn { from { transform: translateY(110%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes hc-rtOut { to { transform: translateY(-110%); opacity: 0; } }
+
+/* ---------- shiny text (React Bits ShinyText idea) ---------- */
+.shiny { background: linear-gradient(110deg, var(--muted) 35%, #fff 50%, var(--muted) 65%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: hc-shine 3.2s linear infinite; }
+@keyframes hc-shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+/* ---------- "watch it work" motion-graphics demo ---------- */
+.mg { position: relative; border-radius: 28px; padding: clamp(20px, 3.5vw, 40px); background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 90%, transparent), color-mix(in srgb, var(--bg-2) 95%, transparent)); box-shadow: inset 0 0 0 1px var(--line), 0 50px 120px -50px color-mix(in srgb, var(--hot) 70%, transparent); overflow: hidden; }
+.mg::before { content: ""; position: absolute; inset: 0; background: radial-gradient(600px 200px at 50% 0%, color-mix(in srgb, var(--hot-2) 25%, transparent), transparent 70%); pointer-events: none; }
+.mg-top { position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; font-family: var(--f-mono); font-size: .78rem; color: var(--muted); margin-bottom: 18px; }
+.mg-file { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
+.mg-file::before { content: ""; width: 10px; height: 10px; border-radius: 3px; background: linear-gradient(135deg, var(--cta), var(--hot)); }
+.mg-status { display: inline-flex; gap: 8px; align-items: center; }
+.mg-status i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: hc-pulse 1.4s infinite; }
+.mg-stage { position: relative; }
+.mg-wave { width: 100%; height: clamp(110px, 16vw, 170px); display: block; overflow: visible; }
+.mg-bar { fill: color-mix(in srgb, var(--muted) 30%, transparent); transform-origin: center bottom; transform-box: fill-box; }
+.mg-bar.hot { fill: url(#mgG); }
+.mg-pick { fill: color-mix(in srgb, var(--cta) 10%, transparent); stroke: var(--cta); stroke-width: 2; stroke-dasharray: 6 5; opacity: 0; }
+.mg-head { position: absolute; top: -6px; bottom: -6px; left: 0; width: 2px; background: var(--cta); box-shadow: 0 0 18px 3px color-mix(in srgb, var(--cta) 70%, transparent); opacity: 0; }
+.mg-head::before { content: "SCANNING"; position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-family: var(--f-mono); font-size: .62rem; letter-spacing: .14em; color: var(--cta-ink); background: var(--cta); padding: 3px 7px; border-radius: 6px; white-space: nowrap; }
+.mg-axis { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: .68rem; color: var(--muted); margin-top: 8px; }
+.mg-steps { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+.mg-steps span { font-family: var(--f-mono); font-size: .74rem; padding: 7px 12px; border-radius: 999px; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); transition: color .3s, box-shadow .3s, background .3s; }
+.mg-phones { display: grid; grid-template-columns: repeat(3, minmax(0, 170px)); gap: clamp(12px, 3vw, 34px); justify-content: center; margin-top: 30px; }
+.mg-phone { aspect-ratio: 9/16; border-radius: 22px; padding: 6px; background: linear-gradient(160deg, #3a3470, #141030); box-shadow: 0 30px 60px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.08) inset; opacity: 0; transform: translateY(40px) scale(.9); }
+.mg-phone .sc { position: relative; height: 100%; border-radius: 17px; overflow: hidden; background: radial-gradient(120% 70% at 50% 45%, var(--c1), transparent 60%), linear-gradient(180deg, #120f27, #07060f); }
+.mg-phone .sc::before { content: ""; position: absolute; left: 0; right: 0; top: 30%; height: 38%; background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--c2) 70%, transparent) 0 10px, transparent 10px 22px), linear-gradient(180deg, color-mix(in srgb, var(--c2) 40%, transparent), transparent); filter: blur(.5px); animation: hc-skypan 3s ease-in-out infinite alternate; }
+.mg-phone .cap { position: absolute; left: 8%; right: 8%; top: 16%; text-align: center; font-family: var(--f-display); font-weight: 700; font-size: clamp(.8rem, 1.8vw, 1.15rem); color: #fff; text-shadow: 0 2px 0 #000, 0 0 10px #000; transform: scale(0); }
+.mg-phone .tag { position: absolute; left: 50%; bottom: 10%; transform: translateX(-50%); font-family: var(--f-mono); font-size: .58rem; padding: 3px 8px; border-radius: 999px; background: var(--hot); color: #fff; white-space: nowrap; }
+.mg-phone .hype { position: absolute; top: 6%; right: 7%; font-family: var(--f-mono); font-size: .56rem; padding: 2px 6px; border-radius: 6px; background: rgba(0,0,0,.5); color: var(--ok); }
+/* the animation timeline (9 s loop) */
+.mg-go .mg-bar { animation: hc-mgBar 9s var(--ease) infinite; animation-delay: calc(var(--i) * 6ms); }
+@keyframes hc-mgBar { 0% { transform: scaleY(.05); } 8% { transform: scaleY(1); } 92% { transform: scaleY(1); } 100% { transform: scaleY(.05); } }
+.mg-go .mg-head { animation: hc-mgHead 9s linear infinite; }
+@keyframes hc-mgHead { 0%, 8% { left: 0; opacity: 0; } 10% { opacity: 1; } 40% { left: 100%; opacity: 1; } 42%, 100% { left: 100%; opacity: 0; } }
+.mg-go .mg-bar.hot { animation-name: hc-mgHot; }
+@keyframes hc-mgHot { 0% { transform: scaleY(.05); filter: none; } 8% { transform: scaleY(.35); } 30% { transform: scaleY(.35); } 40% { transform: scaleY(1.08); filter: drop-shadow(0 0 8px #ff3d8b); } 46%, 92% { transform: scaleY(1); filter: drop-shadow(0 0 6px #ff3d8b); } 100% { transform: scaleY(.05); } }
+.mg-go .mg-pick { animation: hc-mgPick 9s var(--ease) infinite; animation-delay: calc(var(--k) * .15s); }
+@keyframes hc-mgPick { 0%, 42% { opacity: 0; } 47%, 90% { opacity: 1; } 100% { opacity: 0; } }
+.mg-go .mg-phone { animation: hc-mgPhone 9s var(--ease-back) infinite; animation-delay: calc(var(--k) * .18s); }
+@keyframes hc-mgPhone { 0%, 52% { opacity: 0; transform: translateY(40px) scale(.9); } 58%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-20px) scale(.96); } }
+.mg-go .mg-phone .cap { animation: hc-mgCap 9s var(--ease-back) infinite; animation-delay: calc(var(--k) * .18s); }
+@keyframes hc-mgCap { 0%, 60% { transform: scale(0) rotate(-6deg); } 64% { transform: scale(1.18) rotate(2deg); } 67%, 92% { transform: scale(1); } 100% { transform: scale(0); } }
+.mg-go .mg-steps span:nth-child(1) { animation: hc-mgS1 9s infinite; }
+.mg-go .mg-steps span:nth-child(2) { animation: hc-mgS2 9s infinite; }
+.mg-go .mg-steps span:nth-child(3) { animation: hc-mgS3 9s infinite; }
+@keyframes hc-mgS1 { 8%, 40% { color: var(--cta-ink); background: var(--cta); box-shadow: none; } }
+@keyframes hc-mgS2 { 41%, 55% { color: #fff; background: var(--hot); box-shadow: none; } }
+@keyframes hc-mgS3 { 56%, 92% { color: var(--cta-ink); background: var(--ok); box-shadow: none; } }
+.mg-static .mg-pick, .mg-static .mg-phone { opacity: 1; transform: none; }
+.mg-static .mg-phone .cap { transform: none; }
+@media (max-width: 560px) { .mg-phones { grid-template-columns: repeat(3, 1fr); gap: 8px; } .mg-phone { border-radius: 14px; padding: 4px; } .mg-phone .sc { border-radius: 11px; } .mg-phone .tag { display: none; } }
+
+/* ---------- bento (React Bits MagicBento-style spotlight + border glow) ---------- */
+.bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(190px, auto); gap: 16px; }
+.bento-card { position: relative; border-radius: 24px; padding: 26px; display: flex; flex-direction: column; justify-content: space-between; gap: 18px; overflow: hidden; background: color-mix(in srgb, var(--panel) 75%, transparent); box-shadow: inset 0 0 0 1px var(--line); transition: transform .5s var(--ease), box-shadow .4s; isolation: isolate; --glow: 0; }
+.bento-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(380px circle at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--hot) 20%, transparent), transparent 55%); opacity: var(--glow); transition: opacity .3s; z-index: -1; }
+.bento-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; background: radial-gradient(260px circle at var(--gx, 50%) var(--gy, 50%), var(--cta), var(--hot) 40%, transparent 70%); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: var(--glow); pointer-events: none; }
+.bento-card:hover { transform: translateY(-4px); }
+.bento-card h3 { font-size: 1.35rem; text-transform: uppercase; }
+.bento-card p { color: var(--muted); font-size: .95rem; margin-top: 8px; }
+.bento-card .tag { font-family: var(--f-mono); font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--hot); }
+.bento-card.big { grid-column: span 2; grid-row: span 2; }
+.bento-card.wide { grid-column: span 2; }
+.bento-viz { display: flex; align-items: flex-end; gap: 5px; height: 90px; }
+.bento-viz i { flex: 1; border-radius: 4px 4px 2px 2px; background: color-mix(in srgb, var(--muted) 30%, transparent); height: var(--h); transition: height .6s var(--ease-back); }
+.bento-viz i.hot { background: linear-gradient(0deg, var(--hot-2), var(--hot), var(--cta)); box-shadow: 0 0 16px -2px var(--hot); }
+.bento-card:hover .bento-viz i { height: calc(var(--h) * 1.12); }
+.lockviz { position: relative; display: grid; place-items: center; flex: 1; min-height: 220px; }
+.lockviz .ring { position: absolute; width: 220px; height: 220px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line); animation: hc-ring 3s ease-out infinite; }
+.lockviz .ring:nth-child(2) { animation-delay: 1s; } .lockviz .ring:nth-child(3) { animation-delay: 2s; }
+@keyframes hc-ring { from { transform: scale(.4); opacity: 1; box-shadow: inset 0 0 0 2px var(--ok); } to { transform: scale(1.4); opacity: 0; } }
+.lockviz .core { width: 96px; height: 96px; border-radius: 28px; display: grid; place-items: center; background: linear-gradient(135deg, var(--ok), #1fb07c); box-shadow: 0 0 40px -6px var(--ok); color: #04140d; }
+.cropviz { position: relative; height: 110px; border-radius: 14px; background: linear-gradient(90deg, #1b1640, #2a1f5c 50%, #1b1640); overflow: hidden; }
+.cropviz::before { content: ""; position: absolute; top: 8px; bottom: 8px; width: 34%; border-radius: 10px; box-shadow: 0 0 0 2px var(--cta), 0 0 0 999px rgba(5,4,14,.55); animation: hc-crop 5s ease-in-out infinite alternate; }
+@keyframes hc-crop { from { left: 6%; } to { left: 60%; } }
+.capviz { display: flex; gap: 8px; flex-wrap: wrap; }
+.capviz b { font-family: var(--f-display); text-transform: uppercase; font-size: 1rem; padding: 6px 12px; border-radius: 10px; background: #000; color: #fff; text-shadow: 0 0 8px var(--hot); }
+.capviz b:nth-child(2) { color: var(--cta); }
+.bignum { font-family: var(--f-display); font-weight: 700; font-size: clamp(2.6rem, 5vw, 3.6rem); line-height: 1; }
+@media (max-width: 900px) { .bento { grid-template-columns: 1fr 1fr; } .bento-card.big { grid-row: span 1; } }
+@media (max-width: 560px) { .bento { grid-template-columns: 1fr; } .bento-card.big, .bento-card.wide { grid-column: span 1; } }
+
+/* ---------- final CTA card ---------- */
+.final-card { position: relative; overflow: hidden; border-radius: 36px; padding: clamp(56px, 9vw, 110px) 20px; background: radial-gradient(120% 90% at 50% 120%, color-mix(in srgb, var(--hot-2) 30%, transparent), transparent 60%), color-mix(in srgb, var(--panel) 70%, transparent); box-shadow: inset 0 0 0 1px var(--line), 0 60px 140px -60px color-mix(in srgb, var(--hot) 80%, transparent); isolation: isolate; }
+.final-card > * { position: relative; z-index: 1; }
+.final-card .final-aurora { position: absolute; inset: 0; z-index: 0; opacity: .55; transform: scaleY(-1); pointer-events: none; }
+.final-aurora canvas { width: 100%; height: 100%; display: block; }
+.final-badge { display: inline-flex; align-items: center; gap: 10px; font-family: var(--f-mono); font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; padding: 8px 14px; border-radius: 999px; background: color-mix(in srgb, var(--bg) 70%, transparent); box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); margin-bottom: 22px; }
+.final-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: hc-pulse 1.4s infinite; }
+.final .btn:not(.ghost) { animation: hc-ctaGlow 2.6s ease-in-out infinite; }
+@keyframes hc-ctaGlow { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--cta) 18%, transparent), 0 20px 50px -12px color-mix(in srgb, var(--hot) 90%, transparent); } }
+
+/* ---------- pricing: make the yearly card pop ---------- */
+.plan.pro .price .amt { background: linear-gradient(100deg, #fff, var(--cta)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.billing #billYearly[aria-pressed="true"] .save { animation: hc-pulse2 2.4s ease-in-out infinite; }
+
+/* ---------- React Bits ScrollStack (how it works) ---------- */
+.scroll-stack { position: relative; width: 100%; }
+.scroll-stack__inner { position: relative; max-width: 940px; margin: 0 auto; }
+.scroll-stack__slot { position: sticky; }
+.scroll-stack-card { position: relative; box-sizing: border-box; width: 100%; min-height: 21rem; padding: clamp(24px, 4vw, 44px); border-radius: 30px; display: grid; grid-template-columns: 1.1fr 1fr; gap: 30px; align-items: center; color: var(--fg); background: linear-gradient(155deg, #221b4d, #120f27 70%); box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 -12px 40px -16px rgba(0,0,0,.6), 0 24px 48px -24px rgba(0,0,0,.7); transform-origin: 50% 0; will-change: transform; overflow: hidden; }
+.scroll-stack-card::before { content: ""; position: absolute; inset: -40% -10% auto auto; width: 70%; height: 120%; background: radial-gradient(closest-side, var(--glowc), transparent); opacity: .35; pointer-events: none; }
+.scroll-stack-card.ss-1 { --glowc: var(--cta); } .scroll-stack-card.ss-2 { --glowc: var(--hot); } .scroll-stack-card.ss-3 { --glowc: var(--hot-2); }
+.scroll-stack-card__shade { position: absolute; inset: 0; border-radius: inherit; background: #000; opacity: var(--scroll-stack-dim, 0); pointer-events: none; }
+.ss-text { position: relative; display: grid; gap: 12px; }
+.ss-text .num { font-family: var(--f-mono); font-size: .76rem; color: var(--hot); letter-spacing: .14em; }
+.ss-text h3 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); text-transform: uppercase; }
+.ss-text p { color: var(--muted); font-size: 1.05rem; max-width: 40ch; }
+.ss-viz { position: relative; display: grid; place-items: center; min-height: 220px; }
+.sv-drop { position: relative; width: min(100%, 300px); aspect-ratio: 4/3; border-radius: 22px; display: grid; place-items: center; background: color-mix(in srgb, var(--cta) 6%, transparent); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--cta) 55%, transparent); }
+.sv-file { position: absolute; top: 14%; padding: 10px 14px; border-radius: 12px; background: var(--panel); box-shadow: 0 16px 30px -10px rgba(0,0,0,.6), inset 0 0 0 1px var(--line); font-family: var(--f-mono); font-size: .8rem; animation: hc-svDrop 2.6s var(--ease) infinite; }
+@keyframes hc-svDrop { 0% { transform: translateY(-50px); opacity: 0; } 30%, 75% { transform: translateY(30px); opacity: 1; } 100% { transform: translateY(40px); opacity: 0; } }
+.sv-arrow { position: absolute; bottom: 16%; width: 46px; height: 46px; border-radius: 14px; background: linear-gradient(135deg, var(--cta), var(--hot)); box-shadow: 0 0 30px -4px var(--hot); }
+.sv-arrow::after { content: "↑"; position: absolute; inset: 0; display: grid; place-items: center; font-weight: 700; color: var(--cta-ink); font-size: 1.4rem; }
+.sv-local { position: absolute; bottom: 0; display: inline-flex; align-items: center; gap: 8px; font-family: var(--f-mono); font-size: .74rem; color: var(--ok); }
+.sv-local i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); animation: hc-pulse 1.4s infinite; }
+.sv-bars { display: flex; align-items: flex-end; gap: 6px; height: 170px; width: min(100%, 340px); }
+.sv-bars i { flex: 1; height: var(--h); border-radius: 5px 5px 2px 2px; background: color-mix(in srgb, var(--muted) 28%, transparent); animation: hc-svBar 2.4s ease-in-out infinite alternate; animation-delay: calc(var(--h) * .02s); transform-origin: bottom; }
+.sv-bars i.hot { background: linear-gradient(0deg, var(--hot-2), var(--hot), var(--cta)); box-shadow: 0 0 18px -2px var(--hot); }
+@keyframes hc-svBar { to { transform: scaleY(.75); } }
+.sv-score { position: absolute; top: 4px; right: 6%; font-family: var(--f-mono); font-size: .8rem; padding: 6px 10px; border-radius: 10px; background: #000a; box-shadow: inset 0 0 0 1px var(--line); }
+.sv-score b { color: var(--ok); font-weight: 500; }
+.sv-phone { position: relative; width: 150px; aspect-ratio: 9/16; border-radius: 26px; padding: 7px; background: linear-gradient(160deg, #3a3470, #141030); box-shadow: 0 30px 60px -20px #000, 0 0 50px -10px var(--hot-2); animation: hc-float 6s ease-in-out infinite; --r: -4deg; }
+.sv-phone::before { content: ""; position: absolute; inset: 7px; border-radius: 20px; background: radial-gradient(100% 60% at 50% 50%, #b14dff66, transparent 70%), repeating-linear-gradient(90deg, #b14dff55 0 9px, transparent 9px 20px), #0e0b22; }
+.sv-cap { position: absolute; left: 0; right: 0; top: 20%; text-align: center; font-family: var(--f-display); font-weight: 700; font-size: 1.1rem; text-shadow: 0 2px 0 #000; animation: hc-capPop 3.2s var(--ease-back) infinite; }
+.sv-cap em { font-style: normal; color: var(--cta); }
+.sv-dl { position: absolute; left: 50%; bottom: -46px; transform: translateX(-50%); white-space: nowrap; font-family: var(--f-mono); font-size: .74rem; padding: 7px 12px; border-radius: 10px; background: var(--ok); color: #04140d; }
+@media (max-width: 760px) { .scroll-stack-card { grid-template-columns: 1fr; min-height: 0; } .ss-viz { min-height: 190px; } .sv-bars { height: 130px; } .sv-phone { width: 118px; } }
+
+/* ---------- React Bits ScrollReveal pieces ---------- */
+.sr-piece { display: inline-block; will-change: opacity, filter; }
+.grad .sr-piece { display: inline; }
+
+/* ---------- big footer + React Bits GradientText wordmark ---------- */
+footer.big-foot { padding-block: 70px 28px; border-top: 1px solid var(--line); background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--hot-2) 8%, transparent)); overflow: hidden; }
+footer.big-foot .wrap { display: block; }
+.foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1.2fr; gap: 30px; }
+.foot-brand { display: grid; gap: 14px; align-content: start; justify-items: start; }
+.foot-brand p { color: var(--muted); max-width: 34ch; }
+.foot-col { display: grid; gap: 10px; align-content: start; }
+.foot-col b { font-family: var(--f-mono); font-size: .74rem; letter-spacing: .14em; text-transform: uppercase; color: var(--fg); font-weight: 500; margin-bottom: 4px; }
+.foot-col a { color: var(--muted); text-decoration: none; transition: color .2s, transform .2s; width: fit-content; }
+.foot-col a:hover { color: var(--cta); transform: translateX(3px); }
+.gradient-text { position: relative; display: inline-flex; align-items: center; justify-content: center; max-width: 100%; isolation: isolate; }
+.gradient-text__content { display: inline-block; background-image: var(--gt-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.gradient-text__glow { position: absolute; inset: 0; z-index: -1; background-image: var(--gt-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: blur(.3em) saturate(1.4); opacity: .55; pointer-events: none; user-select: none; }
+.foot-word { display: flex; justify-content: center; margin-top: 50px; font-family: var(--f-display); font-weight: 700; font-size: clamp(4rem, 17vw, 15rem); line-height: .85; letter-spacing: -.02em; }
+.foot-base { display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+.foot-base a { text-decoration: none; } .foot-base a:hover { color: var(--cta); }
+@media (max-width: 760px) { footer.big-foot { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); } }
+@media (max-width: 820px) { .foot-grid { grid-template-columns: 1fr 1fr; } .foot-brand { grid-column: 1 / -1; } }
+
+/* ---------- click spark (React Bits ClickSpark idea) ---------- */
+.spark { position: fixed; z-index: 70; width: 3px; height: 12px; margin: -6px 0 0 -1.5px; border-radius: 2px; background: var(--cta); pointer-events: none; transform: rotate(var(--a)) translateY(0); animation: hc-spark .5s var(--ease) forwards; }
+@keyframes hc-spark { to { transform: rotate(var(--a)) translateY(-30px); opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
   html { scroll-behavior: auto; }
@@ -441,7 +610,7 @@ footer a:hover { color: var(--cta); }
   .aurora, .cursor-glow { display: none; }
 }
 </style>
-<a class="skip" href="#tool">Skip to the free tool</a>
+<a class="skip" href="/try">Skip to the free tool</a>
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="grain" aria-hidden="true"></div>
 <div class="cursor-glow" id="glow" aria-hidden="true"></div>
@@ -451,36 +620,41 @@ footer a:hover { color: var(--cta); }
   <div class="wrap">
     <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true"></span>Hypecut</a>
     <div class="links">
-      <a href="#how">How it works</a>
-      <a href="#compare">Why Hypecut</a>
+      <a href="#demo">How it works</a>
+      <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
-      <a class="btn magnetic" href="#tool">Try it free</a>
+      <a href="/login" data-acct>Log in</a>
+      <a class="btn magnetic" href="/try">Try it free</a>
       <button class="burger" id="burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><i></i><i></i><i></i></button>
     </div>
   </div>
 </nav>
 <div class="mobile-menu" id="mobileMenu" aria-label="Menu">
-  <a href="#how">How it works</a>
-  <a href="#compare">Why Hypecut</a>
+  <a href="#demo">How it works</a>
+  <a href="#features">Features</a>
   <a href="#pricing">Pricing</a>
   <a href="#faq">FAQ</a>
-  <a class="btn" href="#tool">Try it free <span class="arr">→</span></a>
+  <a href="/login" data-acct>Log in</a>
+  <a href="/signup" data-acct-signup>Sign up</a>
+  <a class="btn" href="/try">Try it free <span class="arr">→</span></a>
 </div>
-<div class="sticky-cta" id="stickyCta"><a class="btn" href="#tool">Try it free <span class="arr">→</span></a></div>
+<div class="sticky-cta" id="stickyCta"><a class="btn" href="/try">Try it free <span class="arr">→</span></a></div>
 
 <header class="hero" id="top">
+  <div class="hero-aurora" id="heroAurora" aria-hidden="true"></div>
   <div class="wrap">
     <div>
-      <span class="pill fade-up" style="--d:.05s">For game creators &amp; small studios</span>
+      <span class="pill fade-up" style="--d:.05s"><b>FREE</b><span class="shiny">For game creators &amp; small studios</span></span>
       <h1>
         <span class="ln"><span style="--d:.15s">Your gameplay,</span></span>
         <span class="ln"><span class="grad" style="--d:.3s">posted.</span></span>
         <span class="ln"><span style="--d:.45s"><span class="strike">Not edited.</span></span></span>
       </h1>
+      <p class="rot-line fade-up" style="--d:.6s">Clips for <span class="rot" data-rotate data-words="YouTube Shorts|TikTok|Instagram Reels">YouTube Shorts</span></p>
       <p class="lede fade-up" style="--d:.7s">Upload a raw session recording. <b>Hypecut finds the best moments</b> and hands back vertical Shorts and TikToks with captions, ready to post.</p>
       <div class="ctas fade-up" style="--d:.85s">
-        <a class="btn magnetic" href="#tool">Try it free <span class="arr">→</span></a>
+        <a class="btn magnetic" href="/try">Try it free <span class="arr">→</span></a>
         <a class="btn ghost magnetic" href="#pricing">See Pro plans</a>
       </div>
       <div class="trust fade-up" style="--d:1s"><span>No editing skills needed</span><span>9:16 with captions</span><span>3 free clips every month</span></div>
@@ -510,32 +684,82 @@ footer a:hover { color: var(--cta); }
   </div>
 </div>
 
+<section id="demo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">Watch it work</p>
+      <h2 data-scroll-reveal>One long recording in. <span class="grad">Three clips out.</span></h2>
+      <p>Hypecut listens for the loudest moments and watches for the busiest action, then cuts those into vertical clips with a caption.</p>
+    </div>
+    <div class="mg reveal-scale" id="mgDemo" aria-label="Animation: Hypecut scans a gameplay recording, finds three loud, busy moments and turns them into three vertical captioned clips">
+      <div class="mg-top"><span class="mg-file">session_recording.mp4 · 52:14</span><span class="mg-status"><i></i>Running in your browser · nothing uploaded</span></div>
+      <div class="mg-stage">
+        <svg class="mg-wave" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <span class="mg-head" aria-hidden="true"></span>
+      </div>
+      <div class="mg-axis" aria-hidden="true"><span>0:00</span><span>sound + on-screen action</span><span>52:14</span></div>
+      <div class="mg-steps" aria-hidden="true"><span>1 · Scan audio + motion</span><span>2 · Pick the spikes</span><span>3 · Cut 9:16 clips</span></div>
+      <div class="mg-phones" aria-hidden="true">
+        <div class="mg-phone" style="--k:0;--c1:#ff3d8b55;--c2:#ff3d8b"><div class="sc"><span class="hype">HYPE 97</span><span class="cap">CLUTCH <span style="color:var(--cta)">1V3</span></span><span class="tag">from 10:27</span></div></div>
+        <div class="mg-phone" style="--k:1;--c1:#ffd23f44;--c2:#ffd23f"><div class="sc"><span class="hype">HYPE 91</span><span class="cap">NO WAY <span style="color:var(--cta)">💀</span></span><span class="tag">from 27:10</span></div></div>
+        <div class="mg-phone" style="--k:2;--c1:#b14dff55;--c2:#b14dff"><div class="sc"><span class="hype">HYPE 94</span><span class="cap">BOSS <span style="color:var(--cta)">DOWN</span></span><span class="tag">from 42:50</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section id="how">
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="eyebrow">How it works</p>
-      <h2>Three steps. <span class="grad">Zero timelines.</span></h2>
+      <h2 data-scroll-reveal>Three steps. <span class="grad">Zero timelines.</span></h2>
       <p>No editing software, no scrubbing through 40 minutes of footage looking for the one good jump.</p>
     </div>
-    <div class="steps reveal-group" id="steps">
-      <div class="steps-line" aria-hidden="true"></div>
-      <article class="card step tilt reveal" style="--d:0s">
-        <div class="ico-wrap"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><rect x="6" y="14" width="44" height="32" rx="5" fill="none" stroke="var(--cta)" stroke-width="4"/><path d="M28 38V22m-8 7 8-8 8 8" fill="none" stroke="var(--hot)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <span class="num">STEP 01</span>
-        <h3>Upload gameplay</h3>
-        <p>Drop in a recording from your playtest, stream VOD or screen capture. MP4, MOV or WebM, up to 60 minutes.</p>
+    <div class="scroll-stack" id="howStack">
+      <div class="scroll-stack__inner">
+        <article class="scroll-stack-card ss-1">
+          <div class="ss-text"><span class="num">STEP 01</span><h3>Drop in your gameplay</h3><p>A playtest, a stream VOD or a screen capture. MP4, MOV or WebM. It stays on your computer the whole time.</p></div>
+          <div class="ss-viz" aria-hidden="true"><div class="sv-drop"><span class="sv-file">gameplay.mp4</span><span class="sv-arrow"></span></div><div class="sv-local"><i></i>Never uploaded</div></div>
+        </article>
+        <article class="scroll-stack-card ss-2">
+          <div class="ss-text"><span class="num">STEP 02</span><h3>It finds the best moments</h3><p>Every second gets a hype score from how loud it is and how much is happening on screen. The spikes win.</p></div>
+          <div class="ss-viz" aria-hidden="true"><div class="sv-bars"><i style="--h:20%"></i><i style="--h:34%"></i><i style="--h:22%"></i><i class="hot" style="--h:92%"></i><i style="--h:28%"></i><i style="--h:18%"></i><i style="--h:30%"></i><i class="hot" style="--h:80%"></i><i style="--h:24%"></i><i style="--h:16%"></i><i style="--h:36%"></i><i class="hot" style="--h:88%"></i><i style="--h:20%"></i></div><div class="sv-score">HYPE <b>97</b></div></div>
+        </article>
+        <article class="scroll-stack-card ss-3">
+          <div class="ss-text"><span class="num">STEP 03</span><h3>Download vertical clips</h3><p>9:16 clips with a hook caption (plus optional speech subtitles), sized for Shorts, TikTok and Reels. Post them as-is.</p></div>
+          <div class="ss-viz" aria-hidden="true"><div class="sv-phone"><span class="sv-cap">CLUTCH <em>1V3</em></span><span class="sv-dl">↓ Download MP4</span></div></div>
+        </article>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <p class="eyebrow">What you get</p>
+      <h2 data-scroll-reveal>Built for people who <span class="grad">hate editing.</span></h2>
+    </div>
+    <div class="bento">
+      <article class="bento-card big reveal" style="--d:0s">
+        <div class="lockviz" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="core"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span></div>
+        <div><span class="tag">Private by design</span><h3>Your video never leaves your computer</h3><p>Everything runs in your browser. No uploading gigabytes, no waiting in a queue, no copy of your footage on our servers.</p></div>
       </article>
-      <article class="card step tilt reveal" style="--d:.15s">
-        <div class="ico-wrap"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><path d="M4 40h8l6-18 8 26 7-30 6 22h13" fill="none" stroke="var(--cta)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="33" cy="18" r="5" fill="var(--hot)"/></svg></div>
-        <span class="num">STEP 02</span>
-        <h3>We find the best moments</h3>
-        <p>We scan for clutch saves, wins, fails, boss fights and chat spikes, then score each moment for hook strength.</p>
+      <article class="bento-card wide reveal" style="--d:.08s">
+        <div class="bento-viz" aria-hidden="true"><i style="--h:22%"></i><i style="--h:30%"></i><i style="--h:18%"></i><i class="hot" style="--h:92%"></i><i style="--h:26%"></i><i style="--h:34%"></i><i style="--h:20%"></i><i style="--h:28%"></i><i class="hot" style="--h:78%"></i><i style="--h:24%"></i><i style="--h:16%"></i><i style="--h:30%"></i><i class="hot" style="--h:86%"></i><i style="--h:22%"></i></div>
+        <div><span class="tag">Hype score</span><h3>It finds the moments</h3><p>Loudness and on-screen motion, second by second. The spikes become your clips.</p></div>
       </article>
-      <article class="card step tilt reveal" style="--d:.3s">
-        <div class="ico-wrap"><svg width="34" height="34" viewBox="0 0 56 56" aria-hidden="true"><rect x="16" y="4" width="24" height="44" rx="5" fill="none" stroke="var(--cta)" stroke-width="4"/><rect x="21" y="31" width="14" height="5" rx="2" fill="var(--hot)"/><path d="M28 50v4" stroke="var(--cta)" stroke-width="4" stroke-linecap="round"/></svg></div>
-        <span class="num">STEP 03</span>
-        <h3>Download vertical clips</h3>
-        <p>Get 9:16 clips with auto captions and a hook title, sized for YouTube Shorts and TikTok. Post them as-is.</p>
+      <article class="bento-card reveal" style="--d:.14s">
+        <div class="cropviz" aria-hidden="true"></div>
+        <div><span class="tag">Smart crop</span><h3>Follows the action</h3><p>Into 9:16, or full frame with a blurred fill.</p></div>
+      </article>
+      <article class="bento-card reveal" style="--d:.2s">
+        <div class="capviz" aria-hidden="true"><b>Clutch</b><b>1v3</b><b>💀</b></div>
+        <div><span class="tag">Captions</span><h3>Hook on every clip</h3><p>Editable title, plus word-by-word speech subtitles (beta).</p></div>
+      </article>
+      <article class="bento-card wide reveal" style="--d:.26s">
+        <div class="bignum"><span class="grad">3</span> free clips <small style="font-size:.4em;color:var(--muted)">every month</small></div>
+        <div><span class="tag">No signup</span><h3>Try it right now</h3><p>Open the tool, drop a recording in, download your clips. Pro adds more clips (unlimited on yearly) without the watermark.</p></div>
       </article>
     </div>
   </div>
@@ -545,7 +769,7 @@ footer a:hover { color: var(--cta); }
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="eyebrow">Why bother</p>
-      <h2>An evening of editing, <span class="grad">or a coffee break.</span></h2>
+      <h2 data-scroll-reveal>An evening of editing, <span class="grad">or a coffee break.</span></h2>
       <p>Posting Shorts every week is the cheapest way to get new players. Cutting them by hand is why most devs stop.</p>
     </div>
     <div class="vs">
@@ -570,7 +794,7 @@ footer a:hover { color: var(--cta); }
       </article>
     </div>
     <div class="genres reveal" style="--d:.3s" aria-label="Genres we're tuning for">
-      <span>Obbies</span><span>Tycoons</span><span>Simulators</span><span>Horror</span><span>Fighting</span><span>Tower defense</span><span>Roleplay</span><span>Racing</span><span>Survival</span>
+      <span>Shooters</span><span>Platformers</span><span>Horror</span><span>Fighting</span><span>Racing</span><span>Survival</span><span>Sports</span><span>Strategy</span><span>Speedruns</span>
     </div>
   </div>
 </section>
@@ -586,8 +810,8 @@ footer a:hover { color: var(--cta); }
   <section class="panel probar" id="proBar" aria-label="Your plan">
     <div class="pb-row">
       <div class="pb-status"><span class="plan-chip" id="planChip">FREE</span><span id="planText">3 free clips a month, with a small watermark.</span></div>
-      <div class="pb-actions" id="pbFree"><a class="btn sm" href="https://hypecut.pages.dev/#pricing" target="_blank" rel="noopener">Get Pro</a><a class="btn sm ghost" href="https://hypecut.pages.dev/try" target="_blank" rel="noopener">Have Pro? Use it on hypecut.pages.dev</a><button id="haveKey" type="button" hidden></button></div>
-      <div class="pb-actions" id="pbPro" hidden><button class="btn sm ghost" id="manageSub" type="button">Manage subscription</button><button class="btn sm ghost" id="showKey" type="button">Show my key</button><button class="btn sm ghost" id="removeKey" type="button">Remove from this browser</button></div>
+      <div class="pb-actions" id="pbFree"><a class="btn sm" href="/#pricing">Get Pro</a><button class="btn sm ghost" id="haveKey" type="button" aria-expanded="false" aria-controls="keyForm">I have a key</button></div>
+      <div class="pb-actions" id="pbPro" hidden><a class="btn sm" id="buyTopup" href="#" target="_blank" rel="noopener" hidden>+10 clips · $4.99</a><button class="btn sm ghost" id="addTopup" type="button" hidden>Add top-up key</button><button class="btn sm ghost" id="manageSub" type="button">Manage subscription</button><button class="btn sm ghost" id="showKey" type="button">Show my key</button><button class="btn sm ghost" id="removeKey" type="button">Remove from this browser</button></div>
     </div>
     <div class="keybox" id="keyBox" hidden>
       <span>Your Pro key: keep it somewhere safe to unlock Pro in other browsers.</span>
@@ -618,7 +842,7 @@ footer a:hover { color: var(--cta); }
       <label for="optCount">How many clips<select id="optCount"><option value="1">1 clip</option><option value="2">2 clips</option><option value="3" selected>3 clips</option><option value="5" data-pro>5 clips · Pro</option><option value="8" data-pro>8 clips · Pro</option></select></label>
       <label for="optStyle">Caption style<select id="optStyle"><option value="bold" selected>Bold</option><option value="neon" data-pro>Neon · Pro</option><option value="clean" data-pro>Clean · Pro</option></select></label>
       <label for="optLayout">Layout<select id="optLayout"><option value="fit" selected>Full frame + blurred fill</option><option value="smart">Smart crop (follows the action)</option></select></label>
-      <label for="optGame">Game name (optional)<input type="text" id="optGame" maxlength="40" placeholder="e.g. Lava Rush Obby"></label>
+      <label for="optGame">Game name (optional)<input type="text" id="optGame" maxlength="40" placeholder="e.g. Neon Arena"></label>
     </div>
     <label class="toggle" for="optSpeech" hidden>
       <input type="checkbox" id="optSpeech">
@@ -667,9 +891,9 @@ footer a:hover { color: var(--cta); }
   <section class="panel upsell" id="upsell">
     <div>
       <h3>Want this without the limits?</h3>
-      <p>Pro gives you 20 clips a month ($19.99/month) or 80 clips a month ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project and we auto-add 10 more for $4.99.</p>
+      <p>Pro gives you 20 clips a month ($19.99/month), 40 clips a month ($39.99 every 3 months) or unlimited clips ($99.99/year), with no watermark, 60-second clips and the Neon and Clean caption styles. Run out mid-project? Add 10 more for $4.99.</p>
     </div>
-    <a class="btn" href="https://hypecut.pages.dev/#pricing" target="_blank" rel="noopener">See Pro <span aria-hidden="true">→</span></a>
+    <a class="btn" href="/#pricing">See Pro <span aria-hidden="true">→</span></a>
   </section>
     <p class="note" style="margin-top:8px">Works best in Chrome or Edge on a computer. Clips render in real time, so keep this page open while they render.</p>
   </div>
@@ -679,12 +903,13 @@ footer a:hover { color: var(--cta); }
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="eyebrow">Pricing</p>
-      <h2>Start free. <span class="grad">Go Pro when you're hooked.</span></h2>
+      <h2 data-scroll-reveal>Start free. <span class="grad">Go Pro when you're hooked.</span></h2>
       <p>Everything runs in your browser, so your recordings never leave your computer. Cancel Pro anytime.</p>
     </div>
     <div class="billing reveal" role="group" aria-label="Billing period">
       <span class="pill-bg" aria-hidden="true"></span>
       <button type="button" id="billMonthly" aria-pressed="false">Monthly</button>
+      <button type="button" id="billQuarterly" aria-pressed="false">Quarterly</button>
       <button type="button" id="billYearly" aria-pressed="true">Yearly <span class="save">SAVE 58%</span></button>
     </div>
     <div class="plans">
@@ -699,24 +924,24 @@ footer a:hover { color: var(--cta); }
           <li>Smart crop that follows the action</li>
           <li>Small "made with hypecut" watermark</li>
         </ul>
-        <a class="btn ghost" href="#tool">Try it free</a>
+        <a class="btn ghost" href="/try">Try it free</a>
       </article>
       <article class="card plan pro tilt reveal" style="--d:.15s">
         <span class="soon" id="proBadge">Best value</span>
         <h3>Pro</h3>
         <div class="price"><span class="amt" id="proAmt">$99.99</span> <small id="proPer">/ year</small></div>
         <p class="fine" id="proFine">That's $8.33 a month, billed yearly.</p>
-        <div class="deal"><span class="deal-chip" id="proDeal">About 10¢ a clip</span></div>
+        <div class="deal"><span class="deal-chip" id="proDeal">No monthly cap</span></div>
         <ul>
-          <li><span><b id="proClips">80 clips</b> a month</span></li>
+          <li><span id="proClips"><b>Unlimited clips</b></span></li>
           <li><span><b>No watermark</b></span></li>
           <li>Up to 8 clips per video, up to 60 seconds each</li>
           <li>Neon and Clean caption styles</li>
-          <li><span><b>Never stopped mid-project:</b> run out and we auto-add 10 clips for $4.99</span></li>
+          <li id="proTopup"><span><b>Need more?</b> Add 10 extra clips for $4.99</span></li>
         </ul>
-        <a class="btn magnetic" id="proBuy" href="https://hypecut.pages.dev/#pricing" target="_blank" rel="noopener">Get Pro yearly <span class="arr">→</span></a>
+        <button class="btn magnetic" id="proBuy" type="button">Get Pro yearly <span class="arr">→</span></button>
         <p class="guarantee"><b>14-day money-back guarantee</b> · cancel anytime</p>
-        <p class="fine" id="proAfter">Opens secure checkout on hypecut.pages.dev (Dodo Payments: cards, UPI and more). Cancel anytime.</p>
+        <p class="fine" id="proAfter">Secure checkout on Gumroad. Taxes handled for you. Cancel anytime.</p>
       </article>
     </div>
   </div>
@@ -726,7 +951,7 @@ footer a:hover { color: var(--cta); }
   <div class="wrap">
     <div class="sec-head reveal">
       <p class="eyebrow">FAQ</p>
-      <h2>Questions</h2>
+      <h2 data-scroll-reveal>Questions</h2>
     </div>
     <div class="faq">
       <details class="reveal" style="--d:0s" open>
@@ -743,7 +968,7 @@ footer a:hover { color: var(--cta); }
       </details>
       <details class="reveal" style="--d:.15s">
         <summary>How does Pro work, and can I cancel? <span class="pm" aria-hidden="true"></span></summary>
-        <div class="ans">Monthly is $19.99 for 20 clips a month; yearly is $99.99 for 80 clips a month. Checkout is handled securely by Dodo Payments (cards, UPI and more, with taxes included), and you land back in the tool with Pro unlocked: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Your plan renews automatically, and if you run out of clips mid-project we automatically add 10 more for $4.99 (at most 5 times a month), so you're never stopped. You also get a Pro key to unlock other browsers. Cancel anytime with the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
+        <div class="ans">Monthly is $19.99 for 20 clips a month; quarterly is $39.99 every 3 months for 40 clips a month; yearly is $99.99 with unlimited clips. Checkout is handled securely by Gumroad (taxes included). Your receipt has a license key: paste it in the tool under "I have a key" and Pro unlocks: no watermark, up to 8 clips per video, 60-second clips and extra caption styles. Log in to keep Pro on every device. Your plan renews automatically. If you run out of clips mid-project, add 10 more for $4.99 (up to 5 times a month). Cancel anytime from your Gumroad receipt or the "Manage subscription" button in the tool, and get a full refund within 14 days.</div>
       </details>
       <details class="reveal" style="--d:.18s">
         <summary>Which games does it work with? <span class="pm" aria-hidden="true"></span></summary>
@@ -754,21 +979,34 @@ footer a:hover { color: var(--cta); }
 </section>
 
 <section class="final">
-  <div class="wrap reveal-scale">
+  <div class="wrap reveal-scale final-card">
+    <div class="final-aurora" data-aurora data-height=".62" data-stops="#ffd23f,#ff3d8b,#b14dff" aria-hidden="true"></div>
+    <span class="final-badge"><span class="dot"></span>Free · no signup · nothing uploaded</span>
     <h2>Stop editing.<br><span class="grad">Start posting.</span></h2>
     <p>Make your first clips free in your browser. Go Pro when you want more.</p>
-    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap"><a class="btn magnetic" href="#tool">Try it free <span class="arr">→</span></a><a class="btn ghost magnetic" href="#pricing">See Pro plans</a></div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap"><a class="btn magnetic" href="/try">Try it free <span class="arr">→</span></a><a class="btn ghost magnetic" href="#pricing">See Pro plans</a></div>
   </div>
 </section>
 
-<footer>
+<footer class="big-foot">
   <div class="wrap">
-    <span>© 2026 Hypecut · Support: <a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a></span>
-    <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="#top">Back to top ↑</a></span>
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="logo" href="#top"><span class="logo-mark" aria-hidden="true"></span>Hypecut</a>
+        <p>Turn gameplay recordings into vertical, captioned clips. In your browser, nothing uploaded.</p>
+        <a class="btn" href="/try">Try it free <span class="arr">→</span></a>
+      </div>
+      <nav class="foot-col" aria-label="Product"><b>Product</b><a href="/try">Free tool</a><a href="#demo">How it works</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></nav>
+      <nav class="foot-col" aria-label="Account"><b>Account</b><a href="/login">Log in</a><a href="/signup">Sign up</a><a href="/reset">Reset password</a></nav>
+      <nav class="foot-col" aria-label="Help"><b>Help</b><a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a></nav>
+    </div>
+    <div class="foot-word gradient-text" data-gradient-text data-colors="#ffd23f,#ff3d8b,#b14dff,#ff3d8b" aria-hidden="true"><span class="gradient-text__glow">HYPECUT</span><span class="gradient-text__content">HYPECUT</span></div>
+    <div class="foot-base"><span>© 2026 Hypecut</span><a href="#top">Back to top ↑</a></div>
   </div>
 </footer>
 
 <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="/fx.js" defer></script>
 <script>
 (function () {
   const doc = document.documentElement;
@@ -915,16 +1153,17 @@ footer a:hover { color: var(--cta); }
   // ---------- pricing: billing switch + checkout ----------
   // Checkout is Dodo Payments' overlay (see /api/checkout).
   const PLANS = {
-    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "20 clips", deal: "About $1 a clip" },
-    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. 4× the clips of monthly.", clips: "80 clips", deal: "About 10¢ a clip" }
+    monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "<b>20 clips</b> a month", deal: "About $1 a clip", badge: "Most flexible", label: "monthly" },
+    quarterly: { amt: "$39.99", per: "/ 3 months", fine: "That's $13.33 a month, billed every 3 months. 2× the clips of monthly.", clips: "<b>40 clips</b> a month", deal: "About 33¢ a clip", badge: "Save 33%", label: "quarterly" },
+    yearly: { amt: "$99.99", per: "/ year", fine: "That's $8.33 a month, billed yearly. Make as many clips as you want.", clips: "<b>Unlimited clips</b>", deal: "No monthly cap", badge: "Best value", label: "yearly" }
   };
   let billing = "yearly";
-  const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly");
+  const bm = document.getElementById("billMonthly"), by = document.getElementById("billYearly"), bq = document.getElementById("billQuarterly");
   const pillBg = document.querySelector(".billing .pill-bg");
   function setBilling(b, animate) {
     billing = b;
-    bm.setAttribute("aria-pressed", String(b === "monthly")); by.setAttribute("aria-pressed", String(b === "yearly"));
-    const on = b === "monthly" ? bm : by;
+    bm.setAttribute("aria-pressed", String(b === "monthly")); bq.setAttribute("aria-pressed", String(b === "quarterly")); by.setAttribute("aria-pressed", String(b === "yearly"));
+    const on = { monthly: bm, quarterly: bq, yearly: by }[b];
     pillBg.style.left = on.offsetLeft + "px"; pillBg.style.width = on.offsetWidth + "px";
     const amt = document.getElementById("proAmt");
     const apply = () => {
@@ -935,14 +1174,69 @@ footer a:hover { color: var(--cta); }
     };
     if (animate && !reduce) { amt.classList.add("flip"); setTimeout(apply, 180); } else apply();
     const buy = document.getElementById("proBuy");
-    if (!buy.disabled) buy.innerHTML = "Get Pro " + (b === "yearly" ? "yearly" : "monthly") + ' <span class="arr">→</span>';
-    document.getElementById("proBadge").textContent = b === "yearly" ? "Best value" : "Most flexible";
-    document.getElementById("proClips").textContent = PLANS[b].clips;
+    if (!buy.disabled) buy.innerHTML = "Get Pro " + PLANS[b].label + ' <span class="arr">→</span>';
+    document.getElementById("proBadge").textContent = PLANS[b].badge;
+    document.getElementById("proClips").innerHTML = PLANS[b].clips;
+    document.getElementById("proTopup").hidden = b === "yearly";
     document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
-  // (claude.ai version: checkout happens on the public site)
-
+  // ---- Dodo Payments overlay checkout (session created by /api/checkout) ----
+  let checkoutReady = null, dodoMode = "test", dodoLoaded = null, provider = "dodo", gumroadUrls = {};
+  function checkStatus() {
+    if (!checkoutReady) checkoutReady = fetch("/api/checkout").then(r => r.ok ? r.json() : { ready: false }).then(d => { dodoMode = d.mode || "test"; provider = d.provider || "dodo"; gumroadUrls = d.urls || {}; return !!d.ready; }).catch(() => false);
+    return checkoutReady;
+  }
+  function loadDodo() {
+    if (dodoLoaded) return dodoLoaded;
+    dodoLoaded = new Promise((ok, bad) => {
+      const sc = document.createElement("script");
+      sc.src = "https://cdn.jsdelivr.net/npm/dodopayments-checkout@2.1.0/dist/index.js"; sc.onload = ok; sc.onerror = bad;
+      document.head.appendChild(sc);
+    }).then(() => {
+      const D = window.DodoPaymentsCheckout && window.DodoPaymentsCheckout.DodoPayments;
+      if (!D) throw new Error("no sdk");
+      D.Initialize({ mode: dodoMode, displayType: "overlay", onEvent: ev => {
+        if (ev && ev.event_type === "checkout.error") document.getElementById("proAfter").textContent = "Checkout hit a problem. Please try again in a minute.";
+      } });
+      return D;
+    }).catch(e => { dodoLoaded = null; throw e; });
+    return dodoLoaded;
+  }
+  // if checkout isn't switched on, say so on the button
+  checkStatus().then(ok => {
+    if (ok && provider === "gumroad") document.getElementById("proAfter").textContent = "Secure checkout on Gumroad. After paying, copy the license key from your receipt and paste it in the tool under \"I have a key\".";
+    if (ok) return;
+    const buy = document.getElementById("proBuy");
+    buy.dataset.soon = "1";
+    buy.innerHTML = 'Pro opens soon: try it free now <span class="arr">→</span>';
+    document.getElementById("proBadge").textContent = "Opening soon";
+    document.getElementById("proAfter").textContent = "Pro checkout is almost ready. The free plan works right now.";
+  });
+  document.getElementById("proBuy").addEventListener("click", async () => {
+    const buy = document.getElementById("proBuy"), after = document.getElementById("proAfter");
+    if (buy.dataset.soon) { location.href = "/try"; return; }
+    const label = buy.innerHTML;
+    buy.disabled = true; buy.textContent = "Opening secure checkout…";
+    try {
+      await checkStatus();
+      if (provider === "gumroad") { // Gumroad checkout page (secure, handles card/PayPal and tax)
+        const u = gumroadUrls[billing] || gumroadUrls.monthly;
+        if (u) { location.href = u; return; }
+      }
+      const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan: billing }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || !d.url) { after.textContent = d.error || "Couldn't open checkout. Try again in a minute."; }
+      else {
+        try { const D = await loadDodo(); D.Checkout.open({ checkoutUrl: d.url }); }
+        catch (_) { location.href = d.url; } // overlay unavailable: go to the hosted checkout page
+      }
+    } catch (_) {
+      after.textContent = "Couldn't open checkout. Check your connection and try again.";
+    }
+    buy.disabled = false; buy.innerHTML = label;
+  });
   bm.addEventListener("click", () => setBilling("monthly", true));
+  bq.addEventListener("click", () => setBilling("quarterly", true));
   by.addEventListener("click", () => setBilling("yearly", true));
   setBilling("yearly", false);
   addEventListener("resize", () => setBilling(billing, false));
@@ -974,6 +1268,10 @@ footer a:hover { color: var(--cta); }
   addEventListener("scroll", stickyCheck, { passive: true }); stickyCheck();
 })();
 </script>
+<script>
+fetch("/api/auth",{method:"POST",headers:{"Content-Type":"application/json"},body:'{"action":"me"}'}).then(r=>r.json()).then(d=>{if(!d||!d.user)return;document.querySelectorAll("[data-acct]").forEach(a=>{a.textContent="My account";a.href="/try#account";});document.querySelectorAll("[data-acct-signup]").forEach(a=>a.remove());}).catch(()=>{});
+</script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "bee69d7075a047c7b3cee9149efa8fa6"}'></script>
 <script>
 (function () {
   "use strict";
@@ -1490,7 +1788,7 @@ footer a:hover { color: var(--cta); }
     if (left <= 0) {
       return say($("msg2"), pro.active
         ? "You've used all " + pro.quota + " Pro clips for this month. They reset on " + resetDay() + "."
-        : "You've used your " + FREE_MONTHLY + " free clips this month. They reset on " + resetDay() + ", or go Pro for 20–80 clips a month.", "err");
+        : "You've used your " + FREE_MONTHLY + " free clips this month. They reset on " + resetDay() + ", or go Pro for more (yearly Pro is unlimited).", "err");
     }
     let limitNote = "";
     if (list.length > left) {
@@ -1659,6 +1957,35 @@ footer a:hover { color: var(--cta); }
   }
 
   // ---------- Pro: license key ----------
+  // ---------- optional account (sign up / log in) ----------
+  const acct = { user: null };
+  async function authCall(body) {
+    const r = await fetch("/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    return r.json();
+  }
+  function applyAcct() {
+    const u = acct.user;
+    $("acctEmail").hidden = !u; $("acctEmail").textContent = u ? u.email : "";
+    $("acctLogin").hidden = !!u; $("acctSignup").hidden = !!u; $("acctLogout").hidden = !u;
+  }
+  function linkKeyToAccount(key) { if (acct.user && acct.user.proKey !== key) authCall({ action: "link_key", key }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {}); }
+  $("acctLogout").addEventListener("click", async () => {
+    try { await authCall({ action: "logout" }); } catch (_) {}
+    acct.user = null; applyAcct(); applyPlan();
+  });
+  authCall({ action: "me" }).then(async d => {
+    acct.user = (d && d.user) || null; applyAcct();
+    if (!acct.user) return;
+    if (pro.active && pro.key) { linkKeyToAccount(pro.key); applyPlan(); return; }
+    if (acct.user.proKey) { // Pro key saved on the account: unlock it in this browser too
+      try {
+        const v = await licenseCall({ action: "validate", key: acct.user.proKey });
+        if (v.ok) { Object.assign(pro, { active: true, key: acct.user.proKey }); setUsage(v); saveLicense({ key: acct.user.proKey, checked: Date.now() }); }
+      } catch (_) {}
+    }
+    applyPlan();
+  }).catch(() => {});
+
   const PRO_STORE = "hypecut-pro";
   const RECHECK_MS = 24 * 3600 * 1000, OFFLINE_GRACE_MS = 7 * 24 * 3600 * 1000;
   const keyMsg = (t, kind) => say($("keyMsg"), t, kind);
@@ -1673,8 +2000,12 @@ footer a:hover { color: var(--cta); }
   // ---- monthly clip allowance: Free 3 (counted in this browser), Pro 20 / 80 (counted on the server per key) ----
   const FREE_MONTHLY = 3, FREE_STORE = "hypecut-free-usage";
   const monthKey = () => new Date().toISOString().slice(0, 7);
-  function freeUsed() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
-  function addFreeUse(n) { try { localStorage.setItem(FREE_STORE, JSON.stringify({ period: monthKey(), used: freeUsed() + n })); } catch (_) {} }
+  function freeUsedLocal() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
+  function freeUsed() { return Math.max(freeUsedLocal(), (acct.user && acct.user.freeUsed) || 0); }
+  function addFreeUse(n) {
+    try { localStorage.setItem(FREE_STORE, JSON.stringify({ period: monthKey(), used: freeUsed() + n })); } catch (_) {}
+    if (acct.user) { acct.user.freeUsed = (acct.user.freeUsed || 0) + n; authCall({ action: "use_free", n }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {}); }
+  }
   // Pro can keep going past the allowance: the server auto-adds top-up packs (up to maxBoosts a month)
   function clipsLeft() {
     if (!pro.active) return Math.max(0, FREE_MONTHLY - freeUsed());
@@ -1682,7 +2013,9 @@ footer a:hover { color: var(--cta); }
     return pro.remaining + Math.max(0, (pro.maxBoosts || 0) - (pro.boosts || 0)) * (pro.boostClips || 0);
   }
   function setUsage(d) {
-    if (d && typeof d.quota === "number") Object.assign(pro, { quota: d.quota, remaining: d.remaining, plan: d.plan, resets: d.resets, boosts: d.boosts || 0, maxBoosts: d.maxBoosts || 0, boostClips: d.boostClips || 0, boostPrice: d.boostPrice || "" });
+    if (d && d.topupUrl) { $("buyTopup").href = d.topupUrl; $("buyTopup").hidden = false; $("addTopup").hidden = false; }
+    if (d && d.unlimited) Object.assign(pro, { unlimited: true, quota: null, remaining: null, plan: d.plan, resets: d.resets, maxBoosts: 0 });
+    if (d && typeof d.quota === "number") Object.assign(pro, { unlimited: false }), Object.assign(pro, { quota: d.quota, remaining: d.remaining, plan: d.plan, resets: d.resets, boosts: d.boosts || 0, maxBoosts: d.maxBoosts || 0, boostClips: d.boostClips || 0, boostPrice: d.boostPrice || "" });
   }
   const resetDay = () => { const d = pro.resets ? new Date(pro.resets) : new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth() + 1, 1)); return d.toLocaleDateString(undefined, { day: "numeric", month: "short" }); };
 
@@ -1691,7 +2024,8 @@ footer a:hover { color: var(--cta); }
     bar.classList.toggle("is-pro", pro.active);
     $("planChip").textContent = pro.active ? "PRO" : "FREE";
     $("planText").textContent = pro.active
-      ? (pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · auto top-up on, so you never get stopped mid-project."
+      ? (pro.unlimited ? (pro.plan || "Pro") + " · unlimited clips · no watermark, 60-second clips and every caption style."
+       : pro.quota ? (pro.plan || "Pro") + " · " + pro.remaining + " of " + pro.quota + " clips left this month" + (pro.boosts ? " (incl. " + pro.boosts + " top-up" + (pro.boosts === 1 ? "" : "s") + ")" : "") + " · need more? Add 10 clips for $4.99."
                    : "No watermark, 60-second clips and every caption style.")
       : FREE_MONTHLY + " free clips a month · " + clipsLeft() + " left this month · small watermark.";
     $("pbFree").hidden = pro.active; $("pbPro").hidden = !pro.active;
@@ -1702,7 +2036,7 @@ footer a:hover { color: var(--cta); }
       if (!pro.active && o.selected) { const sel = o.parentElement; sel.value = sel.querySelector("option:not([data-pro])[selected]") ? sel.querySelector("option:not([data-pro])[selected]").value : sel.options[0].value; }
     });
     const badge = document.querySelector(".badges span:last-child");
-    if (badge) badge.textContent = pro.active ? "Pro: " + (pro.quota ? pro.quota + " clips a month" : "no watermark") : "Free: 3 clips a month";
+    if (badge) badge.textContent = pro.active ? "Pro: " + (pro.unlimited ? "unlimited clips" : pro.quota ? pro.quota + " clips a month" : "no watermark") : "Free: 3 clips a month";
   }
   $("haveKey").addEventListener("click", () => {
     const f = $("keyForm"); f.hidden = !f.hidden;
@@ -1712,14 +2046,14 @@ footer a:hover { color: var(--cta); }
   $("keyForm").addEventListener("submit", async e => {
     e.preventDefault();
     const key = $("keyIn").value.trim();
-    if (!key) return keyMsg("Paste your Pro key. It starts with HC-.", "err");
+    if (!key) return keyMsg("Paste your Pro key (from your purchase receipt email).", "err");
     $("keyBtn").disabled = true; keyMsg("Checking your key…");
     try {
       const d = await licenseCall({ action: "validate", key });
       if (!d.ok) { keyMsg(d.error || "That key didn't work.", "err"); return; }
       const k = key.toUpperCase().replace(/\s+/g, "");
       Object.assign(pro, { active: true, key: k }); setUsage(d);
-      saveLicense({ key: k, checked: Date.now() });
+      saveLicense({ key: k, checked: Date.now() }); linkKeyToAccount(k);
       $("keyIn").value = "";
       applyPlan();
       keyMsg("Pro is unlocked on this browser. Enjoy!", "ok");
@@ -1745,7 +2079,19 @@ footer a:hover { color: var(--cta); }
     } catch (_) { keyMsg("Couldn't reach the payment provider. Try again in a minute.", "err"); }
     b.disabled = false;
   });
+  $("addTopup").addEventListener("click", async () => {
+    const t = (prompt("Paste the license key from your +10 clips receipt:") || "").trim();
+    if (!t) return;
+    keyMsg("Adding your top-up…");
+    try {
+      const d = await licenseCall({ action: "topup", key: pro.key, topup_key: t });
+      if (!d.ok) { keyMsg(d.error || "That top-up key didn't work.", "err"); return; }
+      setUsage(d); applyPlan();
+      keyMsg("Added " + d.added + " clips. You have " + d.remaining + " left this month.", "ok");
+    } catch (_) { keyMsg("Couldn't reach Hypecut. Try again in a minute.", "err"); }
+  });
   $("removeKey").addEventListener("click", () => {
+    if (acct.user && acct.user.proKey) authCall({ action: "unlink_key" }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {});
     Object.assign(pro, { active: false, key: "" });
     saveLicense(null); applyPlan(); $("keyBox").hidden = true;
     keyMsg("Pro removed from this browser. Your subscription is unchanged; paste your key to unlock again.", "ok");
@@ -1763,7 +2109,7 @@ footer a:hover { color: var(--cta); }
           if (d.ok) {
             history.replaceState(null, "", location.pathname);
             Object.assign(pro, { active: true, key: d.key });
-            saveLicense({ key: d.key, checked: Date.now() });
+            saveLicense({ key: d.key, checked: Date.now() }); linkKeyToAccount(d.key);
             try { setUsage(await licenseCall({ action: "validate", key: d.key })); } catch (_) {}
             applyPlan(); showKeyBox(d.key);
             keyMsg("You're Pro! Thanks for supporting Hypecut. Copy your key below to unlock Pro in other browsers.", "ok");

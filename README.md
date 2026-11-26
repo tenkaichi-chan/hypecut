@@ -63,7 +63,8 @@ Colours: every colour is a variable at the top of the `<style>` block in each pa
 |---|---|---|
 | Free | $0 | 3 (counted in the browser, or on the account when logged in) |
 | Pro monthly | $19.99/month | 20 |
-| Pro yearly | $99.99/year | 80 |
+| Pro quarterly | $39.99 every 3 months | 40 |
+| Pro yearly | $99.99/year | Unlimited |
 | Top-up | $4.99 | +10, up to 5 a month |
 
 Pro also unlocks no watermark, up to 8 clips per video, 60-second clips and the Neon and Clean caption styles.
@@ -75,7 +76,7 @@ Gumroad is the Merchant of Record (checkout, tax, payouts). Settings are public 
 1. **Get Pro** opens the Gumroad product page (`?recurrence=monthly|yearly` pre-selects the plan).
 2. The receipt shows a license key. The buyer pastes it in the tool under **I have a key**. `/api/license` verifies it with Gumroad and counts clips per key per month in KV (`LICENSES`).
 3. Access lasts while the membership hasn't ended (a cancelled membership keeps Pro until the paid period runs out; refunds and chargebacks remove it).
-4. **Top-up:** Gumroad can't charge a saved card, so Pro users buy **+10 clips** (one click) and paste that key under **Add top-up key**. Each top-up key works once.
+4. **Top-up:** Gumroad can't charge a saved card, so Pro users buy **+10 clips** and paste that key under **Add top-up key**. Each top-up key works once.
 5. **Manage subscription** links to Gumroad's membership page. Payouts: weekly, once the balance is over $100 (India minimum).
 
 To switch back to Dodo (automatic top-ups charged to the saved card), remove `PAYMENTS` and set the `DODO_*` secrets; see `core/license.mjs`. **Never put test keys on the live site**: anyone could then get Pro with a test card.
@@ -106,7 +107,7 @@ The free tool works without an account. Accounts keep a Pro key and the free cli
 2. **Captions:** a hook title per clip (editable). Optional speech subtitles use a small Whisper model (`Xenova/whisper-tiny.en`, ~40 MB, downloaded once) in a Web Worker; text is editable before rendering.
 3. **Render:** draws each frame to a 1080×1920 canvas (full frame with blurred fill, or smart crop that follows the action) and records it with `MediaRecorder` in real time.
 
-Free limits: up to 3 clips per video, clips up to 45 seconds, "made with hypecut" watermark. Works best in Chrome or Edge on a computer.
+Free limits: 3 clips a month, up to 3 clips per video, clips up to 45 seconds, a small "made with hypecut" watermark. Works best in Chrome or Edge on a computer.
 
 ## Updating the claude.ai page
 
