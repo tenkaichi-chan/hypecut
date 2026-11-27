@@ -27,3 +27,12 @@ tools/.gmail-consent-url.txt
 work/site-build/
 work/demo/
 work/chk*.jpg
+
+# private notes (personal details) never go in the public repo
+HANDOFF.md
+memory-backup/
+work/
+marketing/shorts/
+.playwright-mcp/
+.aider*
+test-try.mjs

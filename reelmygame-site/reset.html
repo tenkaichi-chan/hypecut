@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Reset password · Hypecut</title>
-<meta property="og:site_name" content="Hypecut">
+<title>Reset password · ReelMyGame</title>
+<meta property="og:site_name" content="ReelMyGame">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#0b0918">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="application-name" content="Hypecut">
-<meta name="apple-mobile-web-app-title" content="Hypecut">
+<meta name="application-name" content="ReelMyGame">
+<meta name="apple-mobile-web-app-title" content="ReelMyGame">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 :root { --bg: #0b0918; --panel: #19153a; --line: #2c2760; --fg: #f4f2ff; --muted: #a9a4d4; --hot: #ff3d8b; --cta: #ffd23f; --cta-ink: #1a1300; --ok: #3ee6a8; color-scheme: dark; }
@@ -102,7 +102,7 @@ button[disabled] { opacity: .6; cursor: progress; }
     try {
       const d = await call({ action: "reset_request", email });
       if (d && d.ok) say($("askMsg"), d.message, "ok"); else say($("askMsg"), (d && d.error) || "Something went wrong. Try again.", "err");
-    } catch (_) { say($("askMsg"), "Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    } catch (_) { say($("askMsg"), "Couldn't reach ReelMyGame. Check your connection and try again.", "err"); }
     finally { $("askBtn").disabled = false; }
   });
   $("set").addEventListener("submit", async (e) => {
@@ -115,7 +115,7 @@ button[disabled] { opacity: .6; cursor: progress; }
       if (d && d.ok) { say($("setMsg"), "Password changed. You're logged in. Taking you to the tool…", "ok"); setTimeout(() => location.href = "/try", 900); return; }
       say($("setMsg"), (d && d.error) || "Something went wrong. Try again.", "err");
       if (d && /expired|isn't valid/.test(d.error || "")) { $("ask").hidden = false; }
-    } catch (_) { say($("setMsg"), "Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    } catch (_) { say($("setMsg"), "Couldn't reach ReelMyGame. Check your connection and try again.", "err"); }
     finally { $("setBtn").disabled = false; }
   });
 })();

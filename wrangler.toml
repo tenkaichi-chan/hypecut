@@ -1,7 +1,7 @@
-# Cloudflare Pages config for Hypecut (PRODUCTION project "hypecut").
-# Static site: hypecut-site/   Server functions: functions/ (logic shared in core/)
-name = "hypecut"
-pages_build_output_dir = "hypecut-site"
+# Cloudflare Pages config for ReelMyGame (PRODUCTION project "reelmygame"; the old project "hypecut" only redirects here).
+# Static site: reelmygame-site/   Server functions: functions/ (logic shared in core/)
+name = "reelmygame"
+pages_build_output_dir = "reelmygame-site"
 compatibility_date = "2026-11-01"
 # The Paddle SDK verifies webhook signatures with Node's crypto.
 compatibility_flags = ["nodejs_compat"]
@@ -17,14 +17,14 @@ binding = "DB"
 database_name = "hypecut-db"
 database_id = "c40c268c-0483-409e-b6d7-77009c210b4a"
 
-# Public settings (not secrets). Google sign-in web client: Google Cloud project "Hypecut", owner sehbag11@gmail.com.
+# Public settings (not secrets). Google sign-in web client: Google Cloud project "ReelMyGame" (id concise-perigee-515711-h9), owner sehbag11@gmail.com.
 [vars]
 GOOGLE_CLIENT_ID = "517765449040-sskopvh0g0lje78herfdlifdkj91k8b3.apps.googleusercontent.com"
 # Payments through Gumroad (public product ids and links; no secrets needed to verify license keys).
 PAYMENTS = "gumroad"
 GUMROAD_PRO_PRODUCT_ID = "5_Gn9eNoHdcmFEBtu81Jdg=="
 GUMROAD_TOPUP_PRODUCT_ID = "mT7Xx1WSP1pKfB6KbzzmQQ=="
-GUMROAD_PRO_URL_MONTHLY = "https://sehbag.gumroad.com/l/hypecut-pro?recurrence=monthly"
-GUMROAD_PRO_URL_QUARTERLY = "https://sehbag.gumroad.com/l/hypecut-pro?recurrence=quarterly"
-GUMROAD_PRO_URL_YEARLY = "https://sehbag.gumroad.com/l/hypecut-pro?recurrence=yearly"
-GUMROAD_TOPUP_URL = "https://sehbag.gumroad.com/l/hypecut-topup"
+GUMROAD_PRO_URL_MONTHLY = "https://sehbag.gumroad.com/l/reelmygame-pro?recurrence=monthly"
+GUMROAD_PRO_URL_QUARTERLY = "https://sehbag.gumroad.com/l/reelmygame-pro?recurrence=quarterly"
+GUMROAD_PRO_URL_YEARLY = "https://sehbag.gumroad.com/l/reelmygame-pro?recurrence=yearly"
+GUMROAD_TOPUP_URL = "https://sehbag.gumroad.com/l/reelmygame-topup"

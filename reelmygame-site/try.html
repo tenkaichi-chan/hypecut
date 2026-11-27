@@ -1,6 +1,6 @@
 <!doctype html>
 <!--
-  Hypecut free demo: real in-browser clip maker.
+  ReelMyGame free demo: real in-browser clip maker.
   Everything runs on the visitor's device:
    1. Analyse: audio loudness spikes (Web Audio) + on-screen motion (frame differencing)
    2. Pick the top non-overlapping moments
@@ -11,25 +11,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Try Hypecut free: make Shorts from your gameplay</title>
-<meta property="og:site_name" content="Hypecut">
+<title>Try ReelMyGame free: make Shorts from your gameplay</title>
+<meta property="og:site_name" content="ReelMyGame">
 <meta name="description" content="Drop in a gameplay recording and get vertical, captioned clips for YouTube Shorts and TikTok. Free, in your browser, nothing uploaded.">
 <meta name="theme-color" content="#0b0918">
-<meta property="og:title" content="Try Hypecut free: turn gameplay into Shorts">
+<meta property="og:title" content="Try ReelMyGame free: turn gameplay into Shorts">
 <meta property="og:description" content="Drop in a gameplay recording, get vertical captioned clips. Free, runs in your browser, nothing uploaded.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://hypecut.pages.dev/try">
-<meta property="og:image" content="https://hypecut.pages.dev/og.png">
+<meta property="og:url" content="https://reelmygame.pages.dev/try">
+<meta property="og:image" content="https://reelmygame.pages.dev/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://hypecut.pages.dev/try">
+<link rel="canonical" href="https://reelmygame.pages.dev/try">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="application-name" content="Hypecut">
-<meta name="apple-mobile-web-app-title" content="Hypecut">
+<meta name="application-name" content="ReelMyGame">
+<meta name="apple-mobile-web-app-title" content="ReelMyGame">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
@@ -215,7 +215,7 @@ footer a { color: inherit; }
 
 <nav class="top">
   <div class="wrap">
-    <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span>Hypecut<small>FREE DEMO</small></a>
+    <a class="logo" href="/"><span class="logo-mark" aria-hidden="true"></span>ReelMyGame<small>FREE DEMO</small></a>
     <div class="nav-acct" id="account"><span id="acctEmail" hidden></span><a class="btn sm ghost" id="acctLogin" href="/login?next=/try">Log in</a><a class="btn sm" id="acctSignup" href="/signup?next=/try">Sign up</a><button class="btn sm ghost" id="acctLogout" type="button" hidden>Log out</button></div>
   </div>
 </nav>
@@ -223,7 +223,7 @@ footer a { color: inherit; }
 <main class="wrap">
   <header class="intro">
     <h1>Turn your gameplay into <span class="grad">Shorts</span></h1>
-    <p>Drop in a recording of your game. Hypecut finds the loudest, most action-packed moments and cuts them into vertical clips with a hook caption, ready for YouTube Shorts and TikTok.</p>
+    <p>Drop in a recording of your game. ReelMyGame finds the loudest, most action-packed moments and cuts them into vertical clips with a hook caption, ready for YouTube Shorts and TikTok.</p>
     <div class="badges"><span>Runs in your browser</span><span>Your video is never uploaded</span><span>Free: 3 clips a month</span></div>
   </header>
 
@@ -295,7 +295,7 @@ footer a { color: inherit; }
       </div>
       <div class="row">
         <button class="btn" id="renderBtn" type="button">Make my clips <span aria-hidden="true">→</span></button>
-        <span class="note">Edit the captions (and subtitles, if on) first if you like. Clips render in real time, so a 20-second clip takes about 20 seconds. <b>Keep this tab open.</b></span>
+        <span class="note">Edit the captions (and subtitles, if on) first if you like. A 20-second clip usually takes 20 seconds or less to make. <b>Keep this tab open.</b></span>
       </div>
     </div>
     <p class="msg" id="msg2" role="status" aria-live="polite"></p>
@@ -321,7 +321,7 @@ footer a { color: inherit; }
 </main>
 
 <footer>
-  <div class="wrap"><span>© 2026 Hypecut · Support: <a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a></span><span style="display:flex;gap:18px;flex-wrap:wrap"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">← Back to hypecut home</a></span></div>
+  <div class="wrap"><span>© 2026 ReelMyGame · Support: <a href="mailto:sehbag11@gmail.com">sehbag11@gmail.com</a></span><span style="display:flex;gap:18px;flex-wrap:wrap"><a href="/terms">Terms</a><a href="/privacy">Privacy</a><a href="/refunds">Refunds</a><a href="/">← Back to ReelMyGame home</a></span></div>
 </footer>
 
 <script>
@@ -412,7 +412,7 @@ footer a { color: inherit; }
     $("fInfo").textContent = fmt(state.dur) + " · " + state.vw + "×" + state.vh + " · " + fmtSize(f.size);
     $("fileRow").hidden = false; drop.hidden = true;
     $("analyzeBtn").disabled = false;
-    $("step1Note").textContent = "Analysis takes about 10–40 seconds.";
+    $("step1Note").textContent = state.dur <= 75 ? "Analysis takes under a minute." : "Analysis takes a few minutes. Keep this tab open.";
   }
 
   function resetAll() {
@@ -635,8 +635,10 @@ footer a { color: inherit; }
   $("againBtn").addEventListener("click", () => { $("step3").hidden = true; $("step2").scrollIntoView({ behavior: "smooth" }); });
 
   // ---------- step 3: render ----------
+  // v is a <video> (live render) or a WebCodecs VideoFrame (fast render)
+  const srcW = v => v.videoWidth || v.displayWidth, srcH = v => v.videoHeight || v.displayHeight;
   function drawCover(ctx, v, W, H) {
-    const vw = v.videoWidth, vh = v.videoHeight, s = Math.max(W / vw, H / vh);
+    const vw = srcW(v), vh = srcH(v), s = Math.max(W / vw, H / vh);
     ctx.drawImage(v, (W - vw * s) / 2, (H - vh * s) / 2, vw * s, vh * s);
   }
   function pickMime() {
@@ -687,7 +689,7 @@ footer a { color: inherit; }
   function drawFrame(ctx, v, W, H, t, len, m, layout, game, rt) {
     ctx.save();
     ctx.fillStyle = "#0b0918"; ctx.fillRect(0, 0, W, H);
-    const vw = v.videoWidth, vh = v.videoHeight;
+    const vw = srcW(v), vh = srcH(v);
     const portrait = vh > vw;
     if (portrait) {
       drawCover(ctx, v, W, H);
@@ -823,7 +825,7 @@ footer a { color: inherit; }
     if (!(rt && rt.pro)) {
       ctx.font = "600 " + Math.round(W * 0.026) + "px 'JetBrains Mono', monospace";
       ctx.textAlign = "right"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = "rgba(255,255,255,.75)";
-      ctx.fillText("made with hypecut", W - W * 0.04, H - 30);
+      ctx.fillText("made with reelmygame", W - W * 0.04, H - 30);
     }
     ctx.restore();
   }
@@ -982,11 +984,17 @@ footer a { color: inherit; }
       list = list.slice(0, left);
       limitNote = " You had " + left + " clip" + (left === 1 ? "" : "s") + " left this month, so we made your top " + left + ".";
     }
+    let fast = fastSupported();
+    if (fast) { try { await openMp4(state.file); } catch (e) { fast = false; console.warn("Fast render off:", e && e.message); } }
     const mime = pickMime();
-    if (!mime || !HTMLCanvasElement.prototype.captureStream) return say($("msg2"), "Your browser can't record video. Open this page in Chrome, Edge or Firefox on a computer.", "err");
+    if (!fast && (!mime || !HTMLCanvasElement.prototype.captureStream)) return say($("msg2"), "Your browser can't record video. Open this page in Chrome, Edge or Firefox on a computer.", "err");
     state.rendering = true;
     $("renderBtn").disabled = true; $("analyzeBtn").disabled = true;
-    try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); await actx.resume(); } catch (_) { actx = null; }
+    // the live recorder needs Web Audio to capture sound; the fast renderer doesn't
+    const ensureActx = async () => {
+      try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); await Promise.race([actx.resume(), new Promise(r => setTimeout(r, 2000))]); } catch (_) { actx = null; }
+    };
+    if (!fast) await ensureActx();
     try { await Promise.all([document.fonts.load("700 80px 'Chakra Petch'"), document.fonts.load("600 20px 'JetBrains Mono'")]); } catch (_) {}
     $("step3").hidden = false; say($("msg3"), "");
     const box = $("results"); box.innerHTML = "";
@@ -1034,8 +1042,17 @@ footer a { color: inherit; }
       }
       $("renStatus").textContent = "Rendering " + (i + 1) + " of " + list.length;
       try {
-        const out = await renderClip(list[i], cards[i], mime, W, H, layout, game, subs);
-        showResult(cards[i], out, i, mime);
+        let out = null, outMime = mime;
+        if (fast) {
+          try { out = await renderClipFast(list[i], cards[i], W, H, layout, game, subs); outMime = "video/mp4"; }
+          catch (e) { fast = false; console.warn("Fast render failed, using live render:", e); }
+        }
+        if (!out) {
+          if (!mime) throw new Error("no recorder");
+          await ensureActx();
+          out = await renderClip(list[i], cards[i], mime, W, H, layout, game, subs);
+        }
+        showResult(cards[i], out, i, outMime);
         made++;
         if (!pro.active) { addFreeUse(1); applyPlan(); }
       } catch (e) {
@@ -1048,6 +1065,183 @@ footer a { color: inherit; }
     const topUpNote = topUps ? " " + topUps + " automatic top-up" + (topUps === 1 ? "" : "s") + " of " + (pro.boostClips || 10) + " clips added (" + (pro.boostPrice || "$4.99") + " each)." : "";
     say($("msg3"), made ? "Done. Download your clips and post them to YouTube Shorts or TikTok." + speechNote + topUpNote + limitNote : (limitNote.trim() || "Rendering failed. Try Chrome on a computer, or an MP4 (H.264) recording."), made ? "ok" : "err");
     state.rendering = false; $("renderBtn").disabled = false; $("analyzeBtn").disabled = false;
+  }
+
+  // ---------- fast render (WebCodecs) ----------
+  // Decodes and encodes frame by frame instead of recording playback in real time, so clips stay
+  // smooth even when this window is covered, minimised or on a slow computer. MP4/MOV only;
+  // anything it can't handle falls back to the live recorder below.
+  const FPS = 30;
+  let fastLibs = null;
+  function loadScript(src) {
+    return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("couldn't load " + src)); document.head.appendChild(s); });
+  }
+  function fastSupported() {
+    return !!(window.VideoDecoder && window.VideoEncoder && window.AudioDecoder && window.AudioEncoder && window.VideoFrame && window.AudioData &&
+      "ondequeue" in VideoEncoder.prototype && "ondequeue" in VideoDecoder.prototype) && !/webm|matroska/i.test((state.file && state.file.type) || "");
+  }
+  function loadFastLibs() {
+    if (!fastLibs) fastLibs = Promise.all([loadScript("/vendor/mp4box-0.5.2.min.js"), loadScript("/vendor/mp4-muxer-5.2.2.js")]).catch(e => { fastLibs = null; throw e; });
+    return fastLibs;
+  }
+  // Read only the file's index; the sample tables give the byte position of every frame.
+  async function openMp4(file) {
+    if (state.mp4 && state.mp4.file === file) return state.mp4;
+    await loadFastLibs();
+    const mp = MP4Box.createFile();
+    mp.discardMdatData = true;
+    let info = null, err = null;
+    mp.onReady = i => { info = i; };
+    mp.onError = e => { err = e; };
+    const CH = 4 * 1048576;
+    let pos = 0, guard = 0;
+    while (!info && !err && pos < file.size && guard++ < 20000) {
+      const buf = await file.slice(pos, Math.min(file.size, pos + CH)).arrayBuffer();
+      buf.fileStart = pos;
+      const next = mp.appendBuffer(buf);
+      pos = typeof next === "number" && next > pos ? next : pos + buf.byteLength;
+    }
+    if (!info) throw new Error(err ? String(err) : "no index found");
+    const vt = info.videoTracks[0];
+    if (!vt) throw new Error("no video track");
+    const mx = vt.matrix || [];
+    if (mx[1] || mx[3]) throw new Error("rotated video");
+    state.mp4 = { file, mp, info, vt, at: info.audioTracks[0] || null };
+    return state.mp4;
+  }
+  function trackDesc(mp, id, audio) {
+    for (const e of mp.getTrackById(id).mdia.minf.stbl.stsd.entries) {
+      if (audio) { try { const d = e.esds.esd.descs[0].descs[0].data; if (d) return d; } catch (_) {} continue; }
+      const box = e.avcC || e.hvcC || e.vpcC || e.av1C;
+      if (box) { const s = new DataStream(undefined, 0, DataStream.BIG_ENDIAN); box.write(s); return new Uint8Array(s.buffer, 8); }
+    }
+    return undefined;
+  }
+  async function firstSupported(Cls, list) {
+    for (const c of list) { try { if ((await Cls.isConfigSupported(c)).supported) return c; } catch (_) {} }
+    return null;
+  }
+
+  async function renderClipFast(m, card, W, H, layout, game, subs) {
+    const canvas = card.querySelector("canvas"), ctx = canvas.getContext("2d");
+    const label = card.querySelector(".rendering span"), bar = card.querySelector(".rendering .bar i");
+    label.textContent = "Preparing…";
+    const { file, mp, vt, at } = await openMp4(state.file);
+    const start = m.start, end = m.start + m.len, us = 1e6;
+    const vs = mp.getTrackById(vt.id).samples;
+    const sec = s => s.cts / s.timescale;
+    // video: from the keyframe at or before the clip (minus a little for the crop tracker) to just past its end
+    let i0 = 0;
+    for (let i = 0; i < vs.length; i++) { if (sec(vs[i]) > start - 0.6) break; if (vs[i].is_sync) i0 = i; }
+    let i1 = i0;
+    while (i1 < vs.length && vs[i1].dts / vs[i1].timescale <= end + 0.5) i1++;
+    const vSel = vs.slice(i0, i1);
+    const aSel = at ? mp.getTrackById(at.id).samples.filter(s => sec(s) >= start - 0.05 && sec(s) < end) : [];
+    if (!vSel.length) throw new Error("no frames in range");
+    // read the clip's bytes in one go when they sit together (they usually do)
+    const all = vSel.concat(aSel);
+    const lo = Math.min(...all.map(s => s.offset)), hi = Math.max(...all.map(s => s.offset + s.size));
+    const chunk = hi - lo <= 400 * 1048576 ? await file.slice(lo, hi).arrayBuffer() : null;
+    const bytes = async s => chunk ? new Uint8Array(chunk, s.offset - lo, s.size) : new Uint8Array(await file.slice(s.offset, s.offset + s.size).arrayBuffer());
+
+    // wake-ups come from codec callbacks, not timers, so a hidden tab doesn't slow this down
+    let wake = null, failure = null;
+    const kick = () => { if (wake) { const w = wake; wake = null; w(); } };
+    const sleep = () => new Promise(r => { wake = r; });
+    const fail = e => { failure = failure || e; kick(); };
+
+    const vcfg = { codec: vt.codec, codedWidth: vt.video.width, codedHeight: vt.video.height, description: trackDesc(mp, vt.id, false) };
+    if (!(await VideoDecoder.isConfigSupported(vcfg)).supported) throw new Error("can't decode " + vt.codec);
+    const ecfg = await firstSupported(VideoEncoder, ["avc1.640028", "avc1.4d0028", "avc1.42e028"].map(codec =>
+      ({ codec, width: W, height: H, bitrate: W >= 1080 ? 8e6 : 5e6, framerate: FPS, avc: { format: "avc" } })));
+    if (!ecfg) throw new Error("no H.264 encoder");
+
+    // audio: decode the clip's audio, shift it to start at 0, re-encode
+    let acfg = null, audioOut = [];
+    if (at && aSel.length) {
+      const dcfg = { codec: at.codec, sampleRate: at.audio.sample_rate, numberOfChannels: at.audio.channel_count, description: trackDesc(mp, at.id, true) };
+      const okDec = (await AudioDecoder.isConfigSupported(dcfg).catch(() => ({}))).supported;
+      acfg = okDec && await firstSupported(AudioEncoder, [{ codec: "mp4a.40.2", sampleRate: dcfg.sampleRate, numberOfChannels: dcfg.numberOfChannels, bitrate: 160000 }]);
+      if (!acfg) throw new Error("no audio encoder");
+      const decoded = [];
+      const adec = new AudioDecoder({ output: d => decoded.push(d), error: fail });
+      adec.configure(dcfg);
+      for (const s of aSel) adec.decode(new EncodedAudioChunk({ type: "key", timestamp: Math.round(sec(s) * us), duration: Math.round(s.duration / s.timescale * us), data: await bytes(s) }));
+      await adec.flush(); adec.close();
+      if (failure) throw failure;
+      for (const d of decoded) {
+        const ts = d.timestamp - Math.round(start * us);
+        if (ts < 0 || ts >= m.len * us) { d.close(); continue; }
+        const n = d.numberOfFrames, ch = d.numberOfChannels, buf = new Float32Array(n * ch);
+        for (let c = 0; c < ch; c++) d.copyTo(buf.subarray(c * n, (c + 1) * n), { planeIndex: c, format: "f32-planar" });
+        audioOut.push(new AudioData({ format: "f32-planar", sampleRate: d.sampleRate, numberOfFrames: n, numberOfChannels: ch, timestamp: ts, data: buf }));
+        d.close();
+      }
+    }
+
+    const target = new Mp4Muxer.ArrayBufferTarget();
+    const muxer = new Mp4Muxer.Muxer({ target, fastStart: "in-memory", firstTimestampBehavior: "cross-track-offset",
+      video: { codec: "avc", width: W, height: H, frameRate: FPS },
+      audio: acfg ? { codec: "aac", sampleRate: acfg.sampleRate, numberOfChannels: acfg.numberOfChannels } : undefined });
+    if (acfg) {
+      const aenc = new AudioEncoder({ output: (c, meta) => muxer.addAudioChunk(c, meta), error: fail });
+      aenc.configure(acfg);
+      for (const d of audioOut) { aenc.encode(d); d.close(); }
+      await aenc.flush(); aenc.close();
+      if (failure) throw failure;
+    }
+
+    const frames = [];
+    const vdec = new VideoDecoder({ output: f => { frames.push(f); kick(); }, error: fail });
+    vdec.ondequeue = kick;
+    vdec.configure(vcfg);
+    const venc = new VideoEncoder({ output: (c, meta) => muxer.addVideoChunk(c, meta), error: fail });
+    venc.ondequeue = kick;
+    venc.configure(ecfg);
+
+    const rt = { tracker: layout === "smart" ? makeTracker() : null, subs: subs || null, pro: pro.active, style: pro.active ? $("optStyle").value : "bold" };
+    let si = 0, decDone = false, flushing = false, warmed = !rt.tracker;
+    const feed = async () => {
+      while (si < vSel.length && vdec.decodeQueueSize < 6 && frames.length < 12) {
+        const s = vSel[si++];
+        vdec.decode(new EncodedVideoChunk({ type: s.is_sync ? "key" : "delta", timestamp: Math.round(sec(s) * us), duration: Math.round(s.duration / s.timescale * us), data: await bytes(s) }));
+      }
+      if (si >= vSel.length && !flushing) { flushing = true; vdec.flush().then(() => { decDone = true; kick(); }, fail); }
+    };
+    const N = Math.max(1, Math.round(m.len * FPS));
+    try {
+      for (let k = 0; k < N; k++) {
+        const tUs = Math.round((start + k / FPS) * us);
+        for (;;) {
+          if (failure) throw failure;
+          while (frames.length >= 2 && frames[1].timestamp <= tUs) {
+            const old = frames.shift();
+            if (!warmed && old.timestamp >= (start - 0.6) * us) updateTracker(rt.tracker, old);
+            old.close();
+          }
+          if (frames.length >= 2 || (decDone && frames.length)) break;
+          if (decDone) throw new Error("ran out of frames");
+          await feed();
+          if (frames.length >= 2 || decDone || failure) continue;
+          await sleep();
+        }
+        if (!warmed) { warmed = true; rt.tracker.pan = rt.tracker.target; }
+        drawFrame(ctx, frames[0], W, H, k / FPS, m.len, m, layout, game, rt);
+        const vf = new VideoFrame(canvas, { timestamp: Math.round(k * us / FPS), duration: Math.round(us / FPS) });
+        venc.encode(vf, { keyFrame: k % (FPS * 2) === 0 });
+        vf.close();
+        while (venc.encodeQueueSize > 4 && !failure) await sleep();
+        if (k % 6 === 0) { const p = k / N; bar.style.width = (p * 100).toFixed(1) + "%"; label.textContent = "Rendering… " + fmt(k / FPS) + " / " + fmt(m.len); }
+      }
+      await venc.flush();
+      if (failure) throw failure;
+    } finally {
+      frames.forEach(f => f.close());
+      try { vdec.close(); } catch (_) {}
+      try { venc.close(); } catch (_) {}
+    }
+    muxer.finalize();
+    return new Blob([target.buffer], { type: "video/mp4" });
   }
 
   async function renderClip(m, card, mime, W, H, layout, game, subs) {
@@ -1120,7 +1314,7 @@ footer a { color: inherit; }
     vid.src = url; vid.controls = true; vid.playsInline = true; vid.loop = true; vid.preload = "metadata";
     frame.appendChild(vid);
     const a = document.createElement("a");
-    a.className = "btn sm dl"; a.href = url; a.download = "hypecut-clip-" + (i + 1) + "." + ext;
+    a.className = "btn sm dl"; a.href = url; a.download = "reelmygame-clip-" + (i + 1) + "." + ext;
     a.textContent = "↓ Download " + ext.toUpperCase() + " (" + fmtSize(blob.size) + ")";
     card.appendChild(a);
   }
@@ -1155,7 +1349,7 @@ footer a { color: inherit; }
     applyPlan();
   }).catch(() => {});
 
-  const PRO_STORE = "hypecut-pro";
+  const PRO_STORE = "reelmygame-pro";
   const RECHECK_MS = 24 * 3600 * 1000, OFFLINE_GRACE_MS = 7 * 24 * 3600 * 1000;
   const keyMsg = (t, kind) => say($("keyMsg"), t, kind);
   function saveLicense(o) { try { o ? localStorage.setItem(PRO_STORE, JSON.stringify(o)) : localStorage.removeItem(PRO_STORE); } catch (_) {} }
@@ -1167,7 +1361,7 @@ footer a { color: inherit; }
     return d;
   }
   // ---- monthly clip allowance: Free 3 (counted in this browser), Pro 20 / 80 (counted on the server per key) ----
-  const FREE_MONTHLY = 3, FREE_STORE = "hypecut-free-usage";
+  const FREE_MONTHLY = 3, FREE_STORE = "reelmygame-free-usage";
   const monthKey = () => new Date().toISOString().slice(0, 7);
   function freeUsedLocal() { try { const u = JSON.parse(localStorage.getItem(FREE_STORE) || "null"); return u && u.period === monthKey() ? u.used : 0; } catch (_) { return 0; } }
   function freeUsed() { return Math.max(freeUsedLocal(), (acct.user && acct.user.freeUsed) || 0); }
@@ -1257,7 +1451,7 @@ footer a { color: inherit; }
       if (!d.ok) { keyMsg(d.error || "That top-up key didn't work.", "err"); return; }
       setUsage(d); applyPlan();
       keyMsg("Added " + d.added + " clips. You have " + d.remaining + " left this month.", "ok");
-    } catch (_) { keyMsg("Couldn't reach Hypecut. Try again in a minute.", "err"); }
+    } catch (_) { keyMsg("Couldn't reach ReelMyGame. Try again in a minute.", "err"); }
   });
   $("removeKey").addEventListener("click", () => {
     if (acct.user && acct.user.proKey) authCall({ action: "unlink_key" }).then(d => { if (d && d.ok) acct.user = d.user; }).catch(() => {});
@@ -1281,7 +1475,7 @@ footer a { color: inherit; }
             saveLicense({ key: d.key, checked: Date.now() }); linkKeyToAccount(d.key);
             try { setUsage(await licenseCall({ action: "validate", key: d.key })); } catch (_) {}
             applyPlan(); showKeyBox(d.key);
-            keyMsg("You're Pro! Thanks for supporting Hypecut. Copy your key below to unlock Pro in other browsers.", "ok");
+            keyMsg("You're Pro! Thanks for supporting ReelMyGame. Copy your key below to unlock Pro in other browsers.", "ok");
             try { confettiLite(); } catch (_) {}
             return;
           }

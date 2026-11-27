@@ -1,4 +1,4 @@
-// Optional Hypecut accounts: sign up, log in, log out, "who am I", link a Pro key, count free clips.
+// Optional ReelMyGame accounts: sign up, log in, log out, "who am I", link a Pro key, count free clips.
 // POST /api/auth { action: "signup", email, password } -> { ok, user }   (also sets the session cookie)
 // POST /api/auth { action: "login",  email, password } -> { ok, user }
 // POST /api/auth { action: "logout" }                  -> { ok }
@@ -198,9 +198,9 @@ export async function handleAuth(req, env) {
       try {
         await sendMail(env, {
           to: email,
-          subject: "Reset your Hypecut password",
-          text: `Hi,\n\nSomeone (hopefully you) asked to reset the password for your Hypecut account.\n\nSet a new password here (the link works once, for 1 hour):\n${link}${google}\n\nIf you didn't ask for this, ignore this email. Your password won't change.\n\nHypecut · https://hypecut.pages.dev`,
-          html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#1a1530"><h2 style="margin:0 0 12px">Reset your Hypecut password</h2><p>Someone (hopefully you) asked to reset the password for your Hypecut account.</p><p style="margin:24px 0"><a href="${link}" style="background:#ffd23f;color:#1a1300;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Set a new password</a></p><p style="font-size:14px;color:#555">The link works once, for 1 hour.${google ? " You normally sign in with Google. Setting a password lets you log in with email too." : ""}</p><p style="font-size:14px;color:#555">If you didn't ask for this, ignore this email. Your password won't change.</p><p style="font-size:12px;color:#888">Hypecut · <a href="https://hypecut.pages.dev" style="color:#888">hypecut.pages.dev</a></p></div>`,
+          subject: "Reset your ReelMyGame password",
+          text: `Hi,\n\nSomeone (hopefully you) asked to reset the password for your ReelMyGame account.\n\nSet a new password here (the link works once, for 1 hour):\n${link}${google}\n\nIf you didn't ask for this, ignore this email. Your password won't change.\n\nReelMyGame · https://reelmygame.pages.dev`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:480px;margin:auto;color:#1a1530"><h2 style="margin:0 0 12px">Reset your ReelMyGame password</h2><p>Someone (hopefully you) asked to reset the password for your ReelMyGame account.</p><p style="margin:24px 0"><a href="${link}" style="background:#ffd23f;color:#1a1300;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold">Set a new password</a></p><p style="font-size:14px;color:#555">The link works once, for 1 hour.${google ? " You normally sign in with Google. Setting a password lets you log in with email too." : ""}</p><p style="font-size:14px;color:#555">If you didn't ask for this, ignore this email. Your password won't change.</p><p style="font-size:12px;color:#888">ReelMyGame · <a href="https://reelmygame.pages.dev" style="color:#888">reelmygame.pages.dev</a></p></div>`,
         });
       } catch (e) {
         console.error("reset mail failed", e && e.message);

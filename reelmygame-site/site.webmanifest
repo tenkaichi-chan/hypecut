@@ -1,6 +1,6 @@
 {
-  "name": "Hypecut",
-  "short_name": "Hypecut",
+  "name": "ReelMyGame",
+  "short_name": "ReelMyGame",
   "description": "Turn gameplay recordings into captioned vertical clips for YouTube Shorts and TikTok.",
   "start_url": "/",
   "display": "standalone",

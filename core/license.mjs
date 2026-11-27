@@ -1,4 +1,4 @@
-// Hypecut Pro keys, backed by Dodo Payments subscriptions.
+// ReelMyGame Pro keys, backed by Dodo Payments subscriptions.
 //
 // POST /api/license { action: "claim",    subscription_id } -> { ok, key, plan, status }  after checkout
 // POST /api/license { action: "validate", key }  -> { ok, plan, status, renews, quota, used, remaining, resets, ... }
@@ -49,7 +49,7 @@ export async function handleLicense(req, env, store) {
       const sid = String(body.subscription_id || "");
       if (!/^sub_[A-Za-z0-9]{6,60}$/.test(sid)) return json({ ok: false, error: "Bad request." }, 400);
       const sub = await dodo("/subscriptions/" + sid);
-      if (ours.size && !ours.has(sub.product_id)) return json({ ok: false, error: "That subscription isn't for Hypecut Pro." });
+      if (ours.size && !ours.has(sub.product_id)) return json({ ok: false, error: "That subscription isn't for ReelMyGame Pro." });
       if (!ON.has(sub.status)) {
         return json({ ok: false, pending: sub.status === "pending", error: sub.status === "pending" ? "Your payment is still being confirmed. This page will keep checking." : "This subscription isn't active." });
       }
@@ -58,13 +58,13 @@ export async function handleLicense(req, env, store) {
       const key = newKey();
       await store.setJSON("k_" + key, { provider: "dodo", sub: sid, customer: sub.customer && sub.customer.customer_id, created: Date.now() });
       await store.set("d_" + sid, key);
-      await dodo("/subscriptions/" + sid, { method: "PATCH", body: { metadata: { ...(sub.metadata || {}), hypecut_key: key } } }).catch(() => {});
+      await dodo("/subscriptions/" + sid, { method: "PATCH", body: { metadata: { ...(sub.metadata || {}), reelmygame_key: key } } }).catch(() => {});
       return json({ ok: true, key, plan: planName(sub), status: sub.status });
     }
 
     // ---- everything else needs a key ----
     const key = cleanKey(body.key);
-    if (!/^HC-[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key)) return json({ ok: false, error: "That doesn't look like a Hypecut key. It starts with HC-." }, 400);
+    if (!/^HC-[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key)) return json({ ok: false, error: "That doesn't look like a ReelMyGame key. It starts with HC-." }, 400);
     const rec = await store.get("k_" + key, { type: "json" });
     if (!rec || rec.provider !== "dodo") return json({ ok: false, error: "We couldn't find that key. Check it and try again." });
 
@@ -92,7 +92,7 @@ export async function handleLicense(req, env, store) {
               payment_method_id: sub.payment_method_id,
               confirm: true,
               ...(sub.billing && sub.billing.country ? { billing_address: sub.billing } : {}),
-              metadata: { app: "hypecut", kind: "topup", clips: String(BOOST_CLIPS), subscription_id: rec.sub },
+              metadata: { app: "reelmygame", kind: "topup", clips: String(BOOST_CLIPS), subscription_id: rec.sub },
             } });
             if (!pay || !pay.payment_id) throw new Error("no payment created");
           } catch (e) {

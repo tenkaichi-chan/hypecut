@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Log in · Hypecut</title>
-<meta property="og:site_name" content="Hypecut">
-<meta name="description" content="Log in or create a free Hypecut account to keep your Pro key and clip count on every device.">
+<title>Log in · ReelMyGame</title>
+<meta property="og:site_name" content="ReelMyGame">
+<meta name="description" content="Log in or create a free ReelMyGame account to keep your Pro key and clip count on every device.">
 <meta name="theme-color" content="#0b0918">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="application-name" content="Hypecut">
-<meta name="apple-mobile-web-app-title" content="Hypecut">
+<meta name="application-name" content="ReelMyGame">
+<meta name="apple-mobile-web-app-title" content="ReelMyGame">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 :root { --bg: #0b0918; --panel: #19153a; --line: #2c2760; --fg: #f4f2ff; --muted: #a9a4d4; --hot: #ff3d8b; --cta: #ffd23f; --cta-ink: #1a1300; --ok: #3ee6a8; color-scheme: dark; }
@@ -57,7 +57,7 @@ button[disabled] { opacity: .6; cursor: progress; }
 <body>
 <div class="page-aurora" data-aurora data-height=".38" aria-hidden="true"></div>
 <main>
-  <a class="back" href="/">← Hypecut</a>
+  <a class="back" href="/">← ReelMyGame</a>
   <h1 id="title">Log in</h1>
   <p id="lede">Your Pro key and clip count, on every device.</p>
   <nav class="tabs" aria-label="Account">
@@ -88,7 +88,7 @@ button[disabled] { opacity: .6; cursor: progress; }
   const $ = (id) => document.getElementById(id);
   const signup = /\/signup\/?$/.test(location.pathname) || new URLSearchParams(location.search).get("mode") === "signup";
   const next = (() => { const n = new URLSearchParams(location.search).get("next") || "/try"; return /^\/[^/\\]/.test(n) || n === "/" ? n : "/try"; })();
-  document.title = (signup ? "Sign up" : "Log in") + " · Hypecut";
+  document.title = (signup ? "Sign up" : "Log in") + " · ReelMyGame";
   $("title").textContent = signup ? "Create your account" : "Log in";
   $("lede").textContent = signup ? "Free. Keeps your Pro key and clip count on every device." : "Welcome back.";
   $("go").textContent = signup ? "Create account" : "Log in";
@@ -127,7 +127,7 @@ button[disabled] { opacity: .6; cursor: progress; }
       if (!d || !d.ok) { say((d && d.error) || "Google sign-in didn't work. Try again.", "err"); return; }
       say("Signed in as " + d.user.email + ". Taking you back…", "ok");
       setTimeout(() => location.href = next, 500);
-    } catch (_) { say("Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    } catch (_) { say("Couldn't reach ReelMyGame. Check your connection and try again.", "err"); }
   }
 
   // already logged in? go straight on
@@ -147,7 +147,7 @@ button[disabled] { opacity: .6; cursor: progress; }
       if (!d || !d.ok) { say((d && d.error) || "Something went wrong. Try again.", "err"); return; }
       say(signup ? "Account created. Taking you to the tool…" : "Logged in. Taking you back…", "ok");
       setTimeout(() => location.href = next, 500);
-    } catch (_) { say("Couldn't reach Hypecut. Check your connection and try again.", "err"); }
+    } catch (_) { say("Couldn't reach ReelMyGame. Check your connection and try again.", "err"); }
     finally { $("go").disabled = false; }
   });
 })();

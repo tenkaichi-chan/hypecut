@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
-<title>Your account · Hypecut</title>
-<meta property="og:site_name" content="Hypecut">
+<title>Your account · ReelMyGame</title>
+<meta property="og:site_name" content="ReelMyGame">
 <meta name="theme-color" content="#0b0918">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<meta name="application-name" content="Hypecut">
-<meta name="apple-mobile-web-app-title" content="Hypecut">
+<meta name="application-name" content="ReelMyGame">
+<meta name="apple-mobile-web-app-title" content="ReelMyGame">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
 :root { --bg: #0b0918; --panel: #19153a; --line: #2c2760; --fg: #f4f2ff; --muted: #a9a4d4; --hot: #ff3d8b; --cta: #ffd23f; --cta-ink: #1a1300; --ok: #3ee6a8; color-scheme: dark; }
@@ -39,7 +39,7 @@ button[disabled] { opacity: .6; cursor: progress; }
 </head>
 <body>
 <main>
-  <a class="back" href="/">← Hypecut</a>
+  <a class="back" href="/">← ReelMyGame</a>
   <h1>Your account</h1>
   <p>Manage your Pro subscription: update your card, cancel, or download invoices. You'll be taken to our payment provider's secure billing page.</p>
   <form class="card" id="form" novalidate>
@@ -55,7 +55,7 @@ button[disabled] { opacity: .6; cursor: progress; }
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var key = $("key"), msg = $("msg"), st = $("status"), go = $("go");
-  try { var saved = JSON.parse(localStorage.getItem("hypecut-pro") || "null"); if (saved && saved.key) key.value = saved.key; } catch (e) {}
+  try { var saved = JSON.parse(localStorage.getItem("reelmygame-pro") || "null"); if (saved && saved.key) key.value = saved.key; } catch (e) {}
   function say(t, err) { msg.textContent = t || ""; msg.className = "msg" + (err ? " err" : ""); }
   function call(path, k) {
     return fetch(path, { method: "POST", headers: { Authorization: "Bearer " + k, Accept: "application/json" } })

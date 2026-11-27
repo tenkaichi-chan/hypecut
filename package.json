@@ -1,9 +1,9 @@
 {
-  "name": "hypecut",
+  "name": "reelmygame",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node tools/serve.cjs hypecut-site 5178",
+    "dev": "node tools/serve.cjs reelmygame-site 5178",
     "deploy": "netlify deploy --prod --no-build"
   },
   "dependencies": {

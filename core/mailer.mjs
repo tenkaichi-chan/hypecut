@@ -24,7 +24,7 @@ export async function sendMail(env, { to, subject, text, html }) {
   if (!/^[^\s@<>"]+@[^\s@<>"]+$/.test(to)) throw new Error("bad recipient");
   const boundary = "hc" + crypto.getRandomValues(new Uint32Array(2)).join("");
   const raw = [
-    `From: ${header("Hypecut")} <${env.GMAIL_SENDER}>`,
+    `From: ${header("ReelMyGame")} <${env.GMAIL_SENDER}>`,
     `To: <${to}>`,
     `Subject: ${header(subject)}`,
     "MIME-Version: 1.0",

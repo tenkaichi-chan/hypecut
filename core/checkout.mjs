@@ -1,4 +1,4 @@
-// Starts a Dodo Payments checkout for Hypecut Pro.
+// Starts a Dodo Payments checkout for ReelMyGame Pro.
 // GET  /api/checkout                          -> { ready, mode }       (is checkout switched on?)
 // POST /api/checkout { plan: monthly|yearly } -> { url, mode }         (checkout session for the overlay)
 // Env: DODO_ENV, DODO_API_KEY, DODO_PRODUCT_MONTHLY, DODO_PRODUCT_YEARLY.
@@ -24,7 +24,7 @@ export async function handleCheckout(req, env) {
     const s = await dodo("/checkouts", { method: "POST", body: {
       product_cart: [{ product_id: products[plan], quantity: 1 }],
       return_url: origin + "/try",
-      metadata: { app: "hypecut", plan },
+      metadata: { app: "reelmygame", plan },
     } });
     if (!s || !s.checkout_url) return json({ error: "Couldn't start checkout. Try again in a minute." }, 502);
     return json({ url: s.checkout_url, mode: dodoEnv(env) });

@@ -26,3 +26,12 @@ Built by `node work/make-shorts.mjs` (Kokoro voice `am_michael`, local and free;
 - A clip maker that never uploads your video
 
 Links: YouTube Studio > Content > Shorts on each channel.
+
+## Site Shorts batch (2026-11-27)
+Approved by the user; Public, not made for kids, utm_source=youtube description.
+- GUY CLASH — Stop scrubbing through hours of gameplay: https://youtube.com/shorts/UiK6EJQByew
+- GUY CLASH — Editing gameplay is boring, so skip it: https://youtube.com/shorts/ueOa-MkC9vU
+- GUY CLASH — One gameplay video, many Shorts: https://youtube.com/shorts/mVc-QQvxLbw
+- Tenkaichi-san — Stop scrubbing through hours of gameplay: https://youtube.com/shorts/KP0qPuPzaKE
+- Tenkaichi-san — Editing gameplay is boring, so skip it: https://youtube.com/shorts/rfE8K14_XWg
+- Tenkaichi-san — One gameplay video, many Shorts: https://youtube.com/shorts/LJapnIUW_t4

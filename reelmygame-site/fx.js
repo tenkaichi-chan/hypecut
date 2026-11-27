@@ -1,4 +1,4 @@
-// Hypecut landing-page effects. Vanilla ports of React Bits ideas (reactbits.dev, MIT):
+// ReelMyGame landing-page effects. Vanilla ports of React Bits ideas (reactbits.dev, MIT):
 // Aurora (WebGL2 background), RotatingText, MagicBento spotlight, ScrollVelocity marquee, ClickSpark,
 // plus the "Watch it work" motion-graphics demo (timeline -> spikes -> vertical clips).
 (function () {
