@@ -2,7 +2,7 @@
 
 Turns gameplay recordings into vertical, captioned clips for YouTube Shorts and TikTok.
 
-- **Live site:** https://reelmygame.pages.dev (Cloudflare Pages project `hypecut`)
+- **Live site:** https://reelmygame.pages.dev (Cloudflare Pages project `reelmygame`; the old `hypecut` project only redirects to it)
 - **Free tool:** https://reelmygame.pages.dev/try
 - **Buy Pro:** https://sehbag.gumroad.com/l/reelmygame-pro · top-up: https://sehbag.gumroad.com/l/reelmygame-topup
 - **Support email:** sehbag11@gmail.com
@@ -44,7 +44,7 @@ Publish to the live site. Until Paddle is approved, deploy from a staging copy t
 2. From `.deploy/` run:
 
 ```powershell
-npx wrangler pages deploy reelmygame-site --project-name hypecut --branch main
+npx wrangler pages deploy reelmygame-site --project-name reelmygame --branch main
 ```
 
 New database tables are applied by hand (0001 to 0004 are applied):
@@ -52,6 +52,10 @@ New database tables are applied by hand (0001 to 0004 are applied):
 ```powershell
 npx wrangler d1 execute hypecut-db --remote --file migrations/0004_password_resets.sql
 ```
+
+The database keeps its old name `hypecut-db` because Cloudflare D1 databases can't be renamed.
+
+
 
 First time on a new computer: `npm install`, then `npx wrangler login`.
 
