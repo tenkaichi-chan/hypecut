@@ -35,3 +35,8 @@ Tenkaichi-san:
 - rmg-a-no-upload: Nov 30 3:00 PM, https://youtube.com/shorts/erJJD9CbD3E
 - rmg-b-pov-scrubbing: Nov 30 9:00 PM, https://youtube.com/shorts/wSdtvXKMYAU
 - rmg-c-websites-part-two: Dec 1 3:00 PM, https://youtube.com/shorts/DhrJlPsrAGo
+
+## Instagram (guy_clash_youtube), added 2026-11-28
+User asked to post all the ReelMyGame videos on Instagram too ("skip those already posted"; none were). User chose: the 20 rmg-* files, 3 now and the rest 2 a day, caption = title + ReelMyGame description + "Try it: reelmygame.pages.dev/try" + 8 hashtags. Aspect ratio Original (9:16). Scheduled with Instagram's own "Schedule content" (instagram.com/scheduled_content), so no Claude task is needed. Times IST.
+- Public now: rmg-a-free-tool https://www.instagram.com/reel/DgR7IeWTsNS/, rmg-b-pov-three-hours https://www.instagram.com/reel/DgR7TczzseV/, rmg-c-feels-illegal https://www.instagram.com/reel/DgR7cS7zhpn/
+- Scheduled 12:30 PM / 7:30 PM: 29 Nov rmg-d-i-made, rmg-a-no-upload; 30 Nov rmg-b-pov-scrubbing, rmg-c-websites-part-two; 1 Dec rmg-d-my-game, rmg-a-long-recording; 2 Dec rmg-b-pov-editor, rmg-c-hidden-gem; 3 Dec rmg-d-tired, rmg-a-twenty-seconds; 4 Dec rmg-b-pov-folder, rmg-c-bookmark; 5 Dec rmg-d-solo-dev, rmg-a-captions; 6 Dec rmg-b-pov-post-daily, rmg-c-nobody-knows; 7 Dec 12:30 rmg-d-what-next. All 17 checked in the scheduled-content calendar.
