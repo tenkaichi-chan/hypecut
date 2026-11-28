@@ -1033,7 +1033,7 @@ footer.big-foot .wrap { display: block; }
   });
 
   // ---------- pricing: billing switch + checkout ----------
-  // Checkout is Dodo Payments' overlay (see /api/checkout).
+  // Checkout is Gumroad (see /api/checkout).
   const PLANS = {
     monthly: { amt: "$19.99", per: "/ month", fine: "Billed monthly. Cancel anytime.", clips: "<b>20 clips</b> a month", deal: "About $1 a clip", badge: "Most flexible", label: "monthly" },
     quarterly: { amt: "$39.99", per: "/ 3 months", fine: "That's $13.33 a month, billed every 3 months. 2× the clips of monthly.", clips: "<b>40 clips</b> a month", deal: "About 33¢ a clip", badge: "Save 33%", label: "quarterly" },
@@ -1062,32 +1062,15 @@ footer.big-foot .wrap { display: block; }
     document.getElementById("proTopup").hidden = b === "yearly";
     document.getElementById("proDeal").textContent = PLANS[b].deal;
   }
-  // ---- Dodo Payments overlay checkout (session created by /api/checkout) ----
-  let checkoutReady = null, dodoMode = "test", dodoLoaded = null, provider = "dodo", gumroadUrls = {};
+  // ---- Gumroad checkout (the links come from /api/checkout) ----
+  let checkoutReady = null, gumroadUrls = {};
   function checkStatus() {
-    if (!checkoutReady) checkoutReady = fetch("/api/checkout").then(r => r.ok ? r.json() : { ready: false }).then(d => { dodoMode = d.mode || "test"; provider = d.provider || "dodo"; gumroadUrls = d.urls || {}; return !!d.ready; }).catch(() => false);
+    if (!checkoutReady) checkoutReady = fetch("/api/checkout").then(r => r.ok ? r.json() : { ready: false }).then(d => { gumroadUrls = d.urls || {}; return !!d.ready; }).catch(() => false);
     return checkoutReady;
-  }
-  function loadDodo() {
-    if (dodoLoaded) return dodoLoaded;
-    dodoLoaded = new Promise((ok, bad) => {
-      const sc = document.createElement("script");
-      sc.src = "https://cdn.jsdelivr.net/npm/dodopayments-checkout@2.1.0/dist/index.js"; sc.onload = ok; sc.onerror = bad;
-      document.head.appendChild(sc);
-    }).then(() => {
-      const D = window.DodoPaymentsCheckout && window.DodoPaymentsCheckout.DodoPayments;
-      if (!D) throw new Error("no sdk");
-      D.Initialize({ mode: dodoMode, displayType: "overlay", onEvent: ev => {
-        if (ev && ev.event_type === "checkout.error") document.getElementById("proAfter").textContent = "Checkout hit a problem. Please try again in a minute.";
-      } });
-      return D;
-    }).catch(e => { dodoLoaded = null; throw e; });
-    return dodoLoaded;
   }
   // if checkout isn't switched on, say so on the button
   checkStatus().then(ok => {
-    if (ok && provider === "gumroad") document.getElementById("proAfter").textContent = "Secure checkout on Gumroad. After paying, copy the license key from your receipt and paste it in the tool under \"I have a key\".";
-    if (ok) return;
+    if (ok) { document.getElementById("proAfter").textContent = "Secure checkout on Gumroad. After paying, copy the license key from your receipt and paste it in the tool under \"I have a key\"."; return; }
     const buy = document.getElementById("proBuy");
     buy.dataset.soon = "1";
     buy.innerHTML = 'Pro opens soon: try it free now <span class="arr">→</span>';
@@ -1101,17 +1084,9 @@ footer.big-foot .wrap { display: block; }
     buy.disabled = true; buy.textContent = "Opening secure checkout…";
     try {
       await checkStatus();
-      if (provider === "gumroad") { // Gumroad checkout page (secure, handles card/PayPal and tax)
-        const u = gumroadUrls[billing] || gumroadUrls.monthly;
-        if (u) { location.href = u; return; }
-      }
-      const r = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ plan: billing }) });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok || !d.url) { after.textContent = d.error || "Couldn't open checkout. Try again in a minute."; }
-      else {
-        try { const D = await loadDodo(); D.Checkout.open({ checkoutUrl: d.url }); }
-        catch (_) { location.href = d.url; } // overlay unavailable: go to the hosted checkout page
-      }
+      const u = gumroadUrls[billing] || gumroadUrls.monthly; // Gumroad's checkout page (card/PayPal, handles tax)
+      if (u) { location.href = u; return; }
+      after.textContent = "Couldn't open checkout. Try again in a minute.";
     } catch (_) {
       after.textContent = "Couldn't open checkout. Check your connection and try again.";
     }

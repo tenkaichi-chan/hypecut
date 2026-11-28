@@ -1,5 +1,5 @@
 // ReelMyGame Pro sold through Gumroad (membership with a license key per sale).
-// Same actions as core/license.mjs so the tool needs no special casing:
+// The tool calls these actions on /api/license:
 // POST /api/license { action: "validate", key }            -> { ok, plan, quota, used, remaining, boosts, resets, ... }
 // POST /api/license { action: "use", key, n }              -> same, after counting n clips (limit -> { ok:false, limit:true, topupUrl })
 // POST /api/license { action: "topup", key, topup_key }    -> redeem a "+10 clips" purchase on this Pro key

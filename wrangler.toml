@@ -6,7 +6,7 @@ compatibility_date = "2026-11-01"
 # The Paddle SDK verifies webhook signatures with Node's crypto.
 compatibility_flags = ["nodejs_compat"]
 
-# Pro keys + monthly clip counts for the Dodo-based flow.
+# Gumroad Pro keys: monthly clip counts and redeemed top-ups.
 [[kv_namespaces]]
 binding = "LICENSES"
 id = "71e1a42c8e6c40349b8475c500074ca9"

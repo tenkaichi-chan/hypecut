@@ -8,10 +8,9 @@ const SITE = "https://hypecut.pages.dev/#pricing";
 const btn = '<button class="btn magnetic" id="proBuy" type="button">Get Pro yearly <span class="arr">→</span></button>';
 if (!s.includes(btn)) throw new Error("Pro button not found");
 s = s.replace(btn, '<a class="btn magnetic" id="proBuy" href="' + SITE + '" target="_blank" rel="noopener">Get Pro yearly <span class="arr">→</span></a>');
-const a = s.indexOf("  // ---- Dodo Payments overlay checkout"), b = s.indexOf("  bm.addEventListener(\"click\"");
+const a = s.indexOf("  // ---- Gumroad checkout"), b = s.indexOf("  bm.addEventListener(\"click\"");
 if (a < 0 || b < 0) throw new Error("checkout block not found");
 s = s.slice(0, a) + "  // (claude.ai version: checkout happens on the public site)\n\n" + s.slice(b);
-s = s.replace('Secure checkout by Dodo Payments (cards, UPI and more). Taxes handled for you. Cancel anytime.', 'Opens secure checkout on hypecut.pages.dev (Dodo Payments: cards, UPI and more). Cancel anytime.');
 // the tool's plan bar: Pro keys only work on the public site (its server checks them)
 s = s.split('<a class="btn sm" href="/#pricing">Get Pro</a>').join('<a class="btn sm" href="' + SITE + '" target="_blank" rel="noopener">Get Pro</a>');
 s = s.replace('<button class="btn sm ghost" id="haveKey" type="button" aria-expanded="false" aria-controls="keyForm">I have a key</button>',

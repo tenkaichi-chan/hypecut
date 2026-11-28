@@ -328,7 +328,7 @@ footer a { color: inherit; }
 (function () {
   "use strict";
   const $ = id => document.getElementById(id);
-  // Pro is unlocked by a Pro key (HC-…) tied to a Dodo Payments subscription, checked by /api/license.
+  // Pro is unlocked by a Gumroad license key, checked by /api/license.
   // (Everything renders in the browser, so this is a convenience lock, not DRM.)
   const pro = { active: false, key: "" };
   const maxClips = () => (pro.active ? 8 : 3);
@@ -1461,32 +1461,7 @@ footer a { color: inherit; }
   });
 
   (async function restorePro() {
-    // 1) back from Dodo checkout: claim the key for this subscription
-    //    (?subscription_id= stays in the address until it works, so a reload retries safely)
-    const sid = new URLSearchParams(location.search).get("subscription_id");
-    if (sid) {
-      applyPlan(); keyMsg("Confirming your payment…");
-      for (let attempt = 0; attempt < 8; attempt++) {
-        try {
-          const d = await licenseCall({ action: "claim", subscription_id: sid });
-          if (d.ok) {
-            history.replaceState(null, "", location.pathname);
-            Object.assign(pro, { active: true, key: d.key });
-            saveLicense({ key: d.key, checked: Date.now() }); linkKeyToAccount(d.key);
-            try { setUsage(await licenseCall({ action: "validate", key: d.key })); } catch (_) {}
-            applyPlan(); showKeyBox(d.key);
-            keyMsg("You're Pro! Thanks for supporting ReelMyGame. Copy your key below to unlock Pro in other browsers.", "ok");
-            try { confettiLite(); } catch (_) {}
-            return;
-          }
-          if (!d.pending && attempt >= 1) { keyMsg(d.error || "We couldn't confirm that payment.", "err"); return; }
-          if (attempt === 7) keyMsg(d.error || "We couldn't confirm the payment yet. Reload this page in a minute.", "err");
-        } catch (_) { if (attempt === 7) keyMsg("Couldn't confirm your payment. Reload this page in a minute; you won't be charged twice.", "err"); }
-        await new Promise(r => setTimeout(r, 2000));
-      }
-      return;
-    }
-    // 2) a key saved in this browser: trust it right away, then check with Dodo
+    // A key saved in this browser: trust it right away, then check it with the server
     //    (every visit, to show this month's clips left; offline we keep Pro for a grace period)
     const saved = loadLicense();
     if (saved && saved.key) {
@@ -1507,17 +1482,6 @@ footer a { color: inherit; }
       }
     } else applyPlan();
   })();
-
-  // small celebration after upgrading
-  function confettiLite() {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const c = document.createElement("canvas"); c.style.cssText = "position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:60";
-    document.body.appendChild(c); const x = c.getContext("2d"); c.width = innerWidth; c.height = innerHeight;
-    const cols = ["#ffd23f", "#ff3d8b", "#b14dff", "#3ee6a8"];
-    const ps = Array.from({ length: 120 }, () => ({ x: innerWidth / 2, y: innerHeight * 0.25, vx: (Math.random() - .5) * 14, vy: -Math.random() * 12 - 3, s: 5 + Math.random() * 6, r: Math.random() * 6, c: cols[Math.floor(Math.random() * 4)] }));
-    let n = 0;
-    (function f() { x.clearRect(0, 0, c.width, c.height); ps.forEach(p => { p.vy += .4; p.x += p.vx; p.y += p.vy; p.r += .2; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); }); if (++n < 160) requestAnimationFrame(f); else c.remove(); })();
-  }
 
   if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
     say($("msg1"), "Heads up: this browser can find moments but can't save clips. Use Chrome, Edge or Firefox to download them.", "err");

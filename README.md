@@ -20,14 +20,13 @@ Turns gameplay recordings into vertical, captioned clips for YouTube Shorts and 
 | `reelmygame-site/404.html`, `og.png`, `_headers`, `robots.txt`, `sitemap.xml` | Not-found page, share image, security headers, search-engine files |
 | `reelmygame-site/account.html` | Paddle billing page. **Not deployed yet** (Paddle not approved) |
 | `functions/api/*.js` | Cloudflare Pages Functions (thin wrappers) |
-| `core/gumroad.mjs` | `/api/license` when `PAYMENTS=gumroad`: checks Gumroad license keys, counts clips, redeems top-ups |
-| `core/license.mjs`, `core/checkout.mjs`, `core/dodo.mjs` | Same endpoints for Dodo Payments (used if `PAYMENTS` isn't `gumroad`) |
+| `core/gumroad.mjs` | `/api/license`: checks Gumroad license keys, counts clips, redeems top-ups |
 | `core/auth.mjs`, `core/mailer.mjs` | `/api/auth`: accounts, sessions, Google sign-in, password reset emails via Gmail |
 | `core/paddle/*`, `functions/api/paddle/*` | Paddle webhooks, database mirror, portal. Built against the sandbox, **not deployed** |
 | `migrations/*.sql` | D1 database tables |
 | `marketing/` | Launch kit, YouTube Short notes, promo videos (`marketing/shorts/`) |
 | `work/make-shorts.mjs`, `work/tts/` | Builds caption-style promo Shorts with a free local voice (Kokoro) |
-| `tools/` | Local server, Dodo/Paddle setup and test scripts, Gmail authorization, claude.ai page builders |
+| `tools/` | Local server, Paddle setup and test scripts, Gmail authorization, claude.ai page builders |
 | `.env*`, `.dev.vars` | Private keys. **Never commit or share.** Git ignores them |
 
 ## Everyday tasks
@@ -82,8 +81,6 @@ Gumroad is the Merchant of Record (checkout, tax, payouts). Settings are public 
 3. Access lasts while the membership hasn't ended (a cancelled membership keeps Pro until the paid period runs out; refunds and chargebacks remove it).
 4. **Top-up:** Gumroad can't charge a saved card, so Pro users buy **+10 clips** and paste that key under **Add top-up key**. Each top-up key works once.
 5. **Manage subscription** links to Gumroad's membership page. Payouts: weekly, once the balance is over $100 (India minimum).
-
-To switch back to Dodo (automatic top-ups charged to the saved card), remove `PAYMENTS` and set the `DODO_*` secrets; see `core/license.mjs`. **Never put test keys on the live site**: anyone could then get Pro with a test card.
 
 ## Paddle billing mirror (not deployed)
 
